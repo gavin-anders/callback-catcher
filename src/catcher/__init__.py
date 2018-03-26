@@ -1,0 +1,1 @@
+default_app_config = 'catcher.apps.CatcherConfig'

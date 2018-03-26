@@ -1,0 +1,6 @@
+python-daemon
+pyopenssl
+django
+djangorestframework
+python-keyczar
+django_extensions
