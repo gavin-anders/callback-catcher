@@ -4,7 +4,7 @@ Created on 15 Sep 2017
 @author: gavin
 '''
 
-from basehandler import TcpHandler
+from .basehandler import TcpHandler
 import ssl
 import os
 
@@ -43,8 +43,8 @@ class smtp(TcpHandler):
                         self._DATA(line.replace('DATA', '').strip())
                     elif line.startswith('QUIT'):
                         self._QUIT()
-                except Exception, e:
-                    print e
+                except Exception as e:
+                    print(e)
             else:
                 break
         return

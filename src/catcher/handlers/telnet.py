@@ -4,7 +4,7 @@ Created on 15 Sep 2017
 @author: gavin
 '''
 
-from basehandler import TcpHandler
+from .basehandler import TcpHandler
 
 class telnet(TcpHandler):
     '''
@@ -31,7 +31,7 @@ class telnet(TcpHandler):
         data = self.handle_one_request()
         if len(data) > 0:
             if data[0] == '\xFF':
-                print "Telnet command incoming"
+                print("Telnet command incoming")
                 while True:
                     username = self.handle_one_request().rstrip()
                     if len(username) > 0:
@@ -51,9 +51,9 @@ class telnet(TcpHandler):
                         break
                     
         if username is not '':
-            print "#####################################"
-            print 'USERNAME:\t%s' % username.rstrip()
+            print("#####################################")
+            print('USERNAME:\t%s' % username.rstrip())
         if password is not '':    
-            print 'PASSWORD:\t%s' % password.rstrip()
-        print "#####################################"
+            print('PASSWORD:\t%s' % password.rstrip())
+        print("#####################################")
         return

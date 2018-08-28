@@ -1,3 +1,2 @@
-#!/bin/bash
-
-python ./manage.py runserver 0.0.0.0:12444
+#!/bin/sh
+python3 manage.py runserver 0.0.0.0:12443

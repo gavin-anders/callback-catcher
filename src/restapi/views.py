@@ -6,8 +6,8 @@ from catcher.models import Handler, Callback, Fingerprint, Port, Secret, Handler
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import authentication
-from serializers import CallbackSerializer, FingerprintSerializer
-from serializers import PortSerializer, SecretSerializer, HandlerSerializer, TokenSerializer
+from .serializers import CallbackSerializer, FingerprintSerializer
+from .serializers import PortSerializer, SecretSerializer, HandlerSerializer, TokenSerializer
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from rest_framework import exceptions
@@ -77,7 +77,7 @@ class PortList(generics.ListCreateAPIView):
                 serializer.validated_data['pid'] = process.pid
                 serializer.save()
                 logger.info("Started process on pid {}".format(process.pid))
-            except Exception, e:
+            except Exception as e:
                 logger.error(e)
                 return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -95,7 +95,7 @@ class PortDetail(generics.DestroyAPIView):
             logger.info("Killed process {}".format(port.pid))
         except Port.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        except Exception, e:
+        except Exception as e:
             logger.error(e)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return self.destroy(request, *args, **kwargs)

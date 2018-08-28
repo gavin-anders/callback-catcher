@@ -15,7 +15,7 @@ from catcher.settings import LISTEN_IP, HANDLER_DIR
 
 import socket
 import logging
-import settings
+from . import settings
 import base64
 
 logger = logging.getLogger(__name__)
@@ -92,7 +92,7 @@ class PortView(ListView, ModelFormMixin):
                 form.validated_data['pid'] = process.pid
                 form.save()
                 logger.info("Started process on pid {}".format(process.pid))
-            except Exception, e:
+            except Exception as e:
                 logger.error(e)
                 return HttpResponse(status=500)
             return render(request, template_name)

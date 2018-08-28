@@ -12,7 +12,7 @@ import binascii
 import os
 import ssl
 
-from basehandler import TcpHandler
+from .basehandler import TcpHandler
 
 AUTH_REQ_OK="\x00\x00\x00\x00"    # User is authenticated  
 AUTH_REQ_KRB4="\x00\x00\x00\x01"    # Kerberos V4. Not supported any more. 
@@ -43,7 +43,7 @@ class PostgresStartup(object):
         self.length = data[:4]
         self.protocol = data[4:8]
         parts = list(data[8:len(data)].split("\x00"))
-        self.datapairs = dict(zip(parts[0::2], parts[1::2]))
+        self.datapairs = dict(list(zip(parts[0::2], parts[1::2])))
         
 class AuthenticationRequest(object):
     def __init__(self, type):
@@ -79,25 +79,25 @@ class postgres(TcpHandler):
         
     def _print_creds(self):
         if self.username != '':
-            print "#" * 25
-            print "USERNAME: %s" % self.username
-            print "PASSWORD: %s" % self.password
-            print "DATABASE: %s" % self.database
-            print "#" * 25
+            print("#" * 25)
+            print("USERNAME: %s" % self.username)
+            print("PASSWORD: %s" % self.password)
+            print("DATABASE: %s" % self.database)
+            print("#" * 25)
         
     def base_handle(self):
         data = self.handle_one_request()
         init = PostgresInitMessage(data)
         if init.ssl_enabled():
             #Check if request for SSL and settings say we support SSL
-            print "Postgres: starting SSL connection"
+            print("Postgres: starting SSL connection")
             self.request.send('S')
             
             self.request = ssl.wrap_socket(self.request, keyfile=os.path.join(self.server.config.certkey), certfile=os.path.join(self.server.config.cert), server_side=True)
             startup = PostgresStartup(self.handle_one_request())
             self.username = startup.datapairs['user']
             self.database = startup.datapairs['database']
-            print self.username
+            print(self.username)
             
             #Enter a session to start reading incoming data packets
             auth = AuthenticationRequest(AUTH_REQ_PASSWORD)

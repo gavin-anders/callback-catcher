@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 from django.db import models
 from django.contrib.auth.models import User
 from django_extensions.db.fields.encrypted import EncryptedCharField
@@ -16,7 +16,7 @@ class Callback(models.Model):
     datasize    = models.IntegerField()
     data        = models.TextField()
     description = models.TextField()
-    fingerprint = models.ForeignKey('Fingerprint', null=True)
+    fingerprint = models.ForeignKey('Fingerprint', null=True, on_delete=models.DO_NOTHING)
     
     class Meta:
         db_table = 'callback'
@@ -41,7 +41,7 @@ class Port(models.Model):
     ssl           = models.IntegerField()
     created_time  = models.DateTimeField(auto_now_add=True)
     pid           = models.IntegerField(null=True)
-    handler       = models.ForeignKey('Handler', null=True)
+    handler       = models.ForeignKey('Handler', null=True, on_delete=models.DO_NOTHING)
         
     class Meta:
         db_table = 'ports'
@@ -80,7 +80,7 @@ class Secret(models.Model):
     id          = models.AutoField(primary_key=True)
     name        = models.CharField(max_length=150, null=False)
     value       = models.TextField(null=False)
-    callback    = models.ForeignKey('Callback', related_name='secrets')
+    callback    = models.ForeignKey('Callback', related_name='secrets', on_delete=models.SET_NULL)
     
     class Meta:
         db_table = 'secrets'
@@ -90,7 +90,7 @@ class Token(models.Model):
     id          = models.AutoField(primary_key=True)
     name        = models.CharField(max_length=100, null=False)
     token       = models.CharField(max_length=250, null=False, unique=True)
-    callback    = models.ForeignKey('Callback', related_name='tokens', null=True)
+    callback    = models.ForeignKey('Callback', related_name='tokens', null=True, on_delete=models.SET_NULL)
     
     class Meta:
         db_table = 'tokens'

@@ -4,7 +4,7 @@ Created on 15 Sep 2017
 @author: gavin
 '''
 
-from basehandler import TcpHandler
+from .basehandler import TcpHandler
 
 class pop3(TcpHandler):
     '''
@@ -33,19 +33,19 @@ class pop3(TcpHandler):
                     if param:
                         getattr(self, command)(param)
                     getattr(self, command)()
-                except Exception, e:
+                except Exception as e:
                     #print e
                     pass
             else:
                 break
         
         #Print out the creds for now
-        print "#####################################"
+        print("#####################################")
         if self.username:
-            print "[+] POP3 USERNAME: %s" % self.username
+            print("[+] POP3 USERNAME: %s" % self.username)
         if self.password:
-            print "[+] POP3 PASSWORD: %s" % self.password
-        print "#####################################"
+            print("[+] POP3 PASSWORD: %s" % self.password)
+        print("#####################################")
         return
         
     def _parse_command(self, line):

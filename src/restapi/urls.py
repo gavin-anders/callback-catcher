@@ -1,10 +1,10 @@
 from django.conf.urls import url
-from views import CallbackList
-from views import CallbackSecretList
-from views import PortList, PortDetail
-from views import StatusView
-from views import HandlerList
-from views import TokenList
+from .views import CallbackList
+from .views import CallbackSecretList
+from .views import PortList, PortDetail
+from .views import StatusView
+from .views import HandlerList
+from .views import TokenList
 
 urlpatterns = [
     url(r'^handler/$', HandlerList.as_view()),

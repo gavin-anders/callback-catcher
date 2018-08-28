@@ -9,7 +9,7 @@ http://m.blog.csdn.net/u011130746/article/details/66970086
 import struct
 import binascii
 
-from basehandler import TcpHandler
+from .basehandler import TcpHandler
 
 class mysql(TcpHandler):
     '''
@@ -60,7 +60,7 @@ class mysql(TcpHandler):
         header = bytearray(3)
         struct.pack_into('<h', header, 0, len(body))
         header.append(seq)
-        print binascii.hexlify(header)
+        print(binascii.hexlify(header))
         return header
     
     def read_auth_packet(self, data):
@@ -84,12 +84,12 @@ class mysql(TcpHandler):
         hash = binascii.hexlify(creds[k+1:k+21])
         database = creds[k+22:]
                 
-        print "#####################################"
-        print 'USERNAME:\t%s' % username
-        print 'PASS HASH:\t%s' % hash
-        print 'PASS SALT:\t%s' % self.SALT[:-1] + self.SALT_EX[:-1]
-        print 'DATABASE:\t%s' % database
-        print "#####################################"
+        print("#####################################")
+        print('USERNAME:\t%s' % username)
+        print('PASS HASH:\t%s' % hash)
+        print('PASS SALT:\t%s' % self.SALT[:-1] + self.SALT_EX[:-1])
+        print('DATABASE:\t%s' % database)
+        print("#####################################")
                
         
         

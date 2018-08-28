@@ -4,7 +4,7 @@ Created on 24 Aug 2017
 @author: gavin
 
 '''
-from SocketServer import BaseRequestHandler
+from socketserver import BaseRequestHandler
 from datetime import datetime
 from ssl import SSLError
 from catcher.models import Callback, Secret
@@ -55,12 +55,12 @@ class TcpHandler(BaseRequestHandler):
             self.handle_timeout()
         except SSLError as e:
             #SSLError: The read operation timed out
-            print e
+            print(e)
         except Exception as e:
             if 'The read operation timed out' in e.args:
                 self.handle_timeout()
             elif 'Connection reset by peer' in e.args:
-                print e.args
+                print(e.args)
             else:
                 raise
         

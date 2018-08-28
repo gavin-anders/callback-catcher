@@ -3,7 +3,7 @@ Created on 15 Sep 2017
 
 @author: gavin
 '''
-from basehandler import UdpHandler
+from .basehandler import UdpHandler
 from dnslib import DNSRecord, DNSRecord, DNSHeader, DNSQuestion, RR, A
 from catcher.settings import LISTEN_IP
 
@@ -37,19 +37,19 @@ class dns(UdpHandler):
                         a=RR(questionname,rdata=A(resolvedip))
                     )
                 self.send_response(resp.pack())
-            except Exception, e:
+            except Exception as e:
                 raise
 
     def get_resolved_ip(self, qname=None):
         if qname is not None:
             if "local" in qname:
-                print "Static resolving %s to 127.0.0.1:22" % qname
+                print("Static resolving %s to 127.0.0.1:22" % qname)
                 return "127.0.0.1"
             if "dynamic" in qname:
                 try:
                     hexdata = domain.split('.')[1]
                     resolve = str(binascii.a2b_hex(hexdata)).strip()
-                    print "Dynamic resolving %s to %s" % (qname, resolve)
+                    print("Dynamic resolving %s to %s" % (qname, resolve))
                     return resolve
                 except:
                     return "127.0.0.1"

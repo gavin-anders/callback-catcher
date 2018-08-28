@@ -4,7 +4,7 @@ Created on 15 Sep 2017
 @author: gavin
 '''
 
-from basehandler import TcpHandler
+from .basehandler import TcpHandler
 
 class simple(TcpHandler):
     '''

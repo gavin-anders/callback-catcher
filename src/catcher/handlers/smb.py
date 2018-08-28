@@ -4,7 +4,7 @@ Created on 15 Sep 2017
 @author: gavin
 '''
 
-from basehandler import TcpHandler
+from .basehandler import TcpHandler
 from packets import *
 
 class smb(TcpHandler):
@@ -29,16 +29,16 @@ class smb(TcpHandler):
         
         while self.session is True:
             if data[0] == "\x81":
-                print "SMB session request"
+                print("SMB session request")
                 self.request.send('\x82\x00\x00\x00')
                 data = self.handle_one_request()
                 
             if data[8:10] == "\x72\x00":
-                print "Negotiate proto answer"
+                print("Negotiate proto answer")
                 smbheader = ''
                 
             if data[8:10] == "\x73\x00":
-                print "Session Setup AndX Request"
+                print("Session Setup AndX Request")
                 
             self.session = False
             

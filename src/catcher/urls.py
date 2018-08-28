@@ -18,8 +18,8 @@ from django.conf.urls import include
 from django.conf.urls import url
 from django.contrib import admin
 
-from views import index
-from views import CallbackView, PortView, SecretView, TokenView
+from .views import index
+from .views import CallbackView, PortView, SecretView, TokenView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

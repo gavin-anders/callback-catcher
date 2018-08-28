@@ -6,10 +6,10 @@ import threading
 import socket
 import sys
 
-from SocketServer import TCPServer
-from SocketServer import UDPServer
-from SocketServer import ThreadingMixIn
-from handlers import basehandler
+from socketserver import TCPServer
+from socketserver import UDPServer
+from socketserver import ThreadingMixIn
+from .handlers import basehandler
 
 ##### OUR MIXINS HERE ############
 class ThreadedIPv6TCPServer(ThreadingMixIn, TCPServer):
@@ -89,20 +89,20 @@ class Service(multiprocessing.Process):
         Sets the local handler file
         '''
         handlername = os.path.splitext(os.path.basename(handlerfile))[0]
-        print handlername
+        print(handlername)
         try:
             plugin = importlib.import_module('catcher.handlers.' + handlername)
             self.handler = getattr(plugin, handlername)
-            print "Using custom handler: '%s'" % handlerfile
+            print("Using custom handler: '%s'" % handlerfile)
         except ImportError:
             #Doesnt quite work in daemon mode
             try:
                 sys.path.append(handlerdir)
                 plugin = importlib.import_module('handlers.' + handlername)
                 self.handler = getattr(plugin, handlername)
-                print "Using custom handler: '%s'" % os.path.join(handlerdir, handlerfile)
+                print("Using custom handler: '%s'" % os.path.join(handlerdir, handlerfile))
             except:
-                print "import from local handlers failed using default"
+                print("import from local handlers failed using default")
                 self.handler = None
 
     def run(self):
@@ -145,10 +145,10 @@ class Service(multiprocessing.Process):
                 #Pass variables to handlers
                 thread = threading.Thread(target=server.serve_forever())
                 #thread.daemon = True
-                print "Starting service on: %s %i/%s" % (address, self.protocol)
+                print("Starting service on: %s %i/%s" % (address, self.protocol))
                 thread.start()
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 self.shutdown()
                 
 if __name__ == "__main__":
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     process.set_handler('ftp.py', '/opt/catcher/handler')
     process.start()
     process.join()
-    print process.pid
+    print(process.pid)
 
     
     

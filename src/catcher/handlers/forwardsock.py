@@ -3,7 +3,7 @@ Created on 11 Oct 2017
 
 @author: gavin
 '''
-from basehandler import TcpHandler
+from .basehandler import TcpHandler
 
 import socket
 
@@ -29,8 +29,8 @@ class forwardsock(TcpHandler):
         clientsock.settimeout(self.timeout)
         try:
             clientsock.connect((self.forwardhost, self.forwardport))
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             return
              
         while self.session == True:
@@ -50,7 +50,7 @@ class forwardsock(TcpHandler):
                     if "timeout" in str(e):
                         raise
                     else:
-                        print "ForwardSock: " + str(e)
+                        print("ForwardSock: " + str(e))
                         self.session = False
         clientsock.close()
             
