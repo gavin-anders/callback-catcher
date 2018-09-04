@@ -34,11 +34,8 @@ LISTEN_IP = '0.0.0.0'
 HANDLER_DIR = os.path.join(BASE_DIR, 'handlers')
 DEBUG_LVL = 'DEBUG' #INFO for less noise
 DOMAIN = 'pentestlabs.uk'
+FINGERPRINT_DEFS = os.path.join(BASE_DIR, 'files/fingerprints.xml')
 #=============================================
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'vfbc$jpg#b+dgwkpns9ch-&dipkb2d-ryxf0og92cgh1uja5q^'
@@ -46,8 +43,7 @@ SECRET_KEY = 'vfbc$jpg#b+dgwkpns9ch-&dipkb2d-ryxf0og92cgh1uja5q^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -60,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_swagger',
     'restapi',
     'catcher',
 ]
@@ -96,7 +93,6 @@ WSGI_APPLICATION = 'catcher.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -143,6 +139,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'files/'),
+)
 
 # Django rest framework settings
 
@@ -174,4 +174,16 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'INFO',
     },
+}
+
+# Swagger settings
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'basic': {
+            'type': 'basic'
+        }
+    },
+    'JSON_EDITOR': True,
+    'SHOW_REQUEST_HEADERS': True,
+    'USE_SESSION_AUTH': False
 }

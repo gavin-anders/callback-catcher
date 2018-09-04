@@ -1,0 +1,60 @@
+<h1>Services</h1>
+<p>{{ message }}</p>
+
+<table class="table table-bordered table-condensed table-striped" show-filter="true">
+	<thead>
+      	<tr>
+	      	<th>Port</th>
+			<th>Protocol</th>
+			<th>SSL</th>
+			<th>Service</th>
+			<th>Enable</th>
+			<th style="width:50px">Edit</th>
+			<th style="width:50px">Delete</th>
+      	</tr>
+    </thead>
+	<tbody ng-repeat="s in services" >
+    	<tr>
+       		<td>{{ s.port }}</td>
+       		<td>{{ s.protocol }}</td>
+       		<td>
+				<select class="form-control" ng-model="s.is_ssl">
+			  	<option ng-selected="s.is_ssl=='true'">true</option>
+			  	<option ng-selected="s.is_ssl=='false'">false</option>
+				</select>
+			</td>
+       		<td>
+	       		<select class="form-control" ng-model="s.plugin">
+	       			<option></option>
+	       			<option ng-repeat="h in handlers" ng-selected="{{h.filename == s.plugin}}">{{ h.filename }}</option>
+	       		</select>
+       		</td>
+       		<td><input ng-model="s.enabled" type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="s.enabled==1" style="height: 20px; width: 20px;"> </td>
+       		<td><button ng-click="editService( s )" type="button" class="btn btn-block btn-primary">&#9998;</button></td>
+       		<td><button ng-click="deleteService( s.id )" type="button" class="btn btn-block btn-danger">&#10006;</button></td>
+    	</tr>
+  	</tbody>
+  	    <tr>
+       		<td><input ng-model="newservice.port" type="text" value="" class="form-control"></td>
+       		<td>
+       			<select ng-model="newservice.protocol" class="form-control">
+       			<option>tcp</option>
+			  	<option>udp</option>
+				</select>
+       		</td>
+       		<td>
+       		    <select ng-model="newservice.is_ssl" class="form-control">
+			  	<option>true</option>
+			  	<option>false</option>
+				</select>
+			</td>
+       		<td>
+       			<select ng-model="newservice.plugin" class="form-control" ng-options="h.filename for h in handlers">
+       			<option valie=""></option>
+       			</select>
+       		</td>
+       		<td><input ng-model="newservice.enabled" type="checkbox" ng-true-value="1" ng-false-value="0" style="height: 20px; width: 20px;"></td>
+       		<td></td>
+       		<td><button style="width: 100%;" ng-click="addService( newservice )" type="button" class="btn btn-block btn-success">&#10010;</button></td>
+    	</tr>
+</table>

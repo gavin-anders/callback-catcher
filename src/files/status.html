@@ -1,0 +1,40 @@
+<h3 class="display-3 catcher-page-title">Stats</h3>
+<div class="row">
+	<div class="col-5">
+		<table class="table table-condensed text-left">
+			<tbody>
+				<tr>
+					<td class="col-4">Client IP</td>
+					<td class="col-8 text-center">{{ stats.clientip }}</td>
+				</tr>
+				<tr>
+					<td class="col-4">Domain</td>
+					<td class="col-8 text-center">{{ stats.domain }}</td>
+				</tr>
+				<tr>
+					<td class="col-4">Callbacks</td>
+					<td class="col-8 text-center">{{ stats.callback_count }}</td>
+				</tr>
+				<tr>
+					<td class="col-4">Active ports</td>
+					<td class="col-8 text-center">{{ stats.port_count }}</td>
+				</tr>
+				<tr>
+					<td class="col-4">Fingerprints</td>
+					<td class="col-8 text-center">{{ stats.fingerprint_count }}</td>
+				</tr>
+				<tr>
+					<td class="col-4">Tokens</td>
+					<td class="col-8 text-center">{{ stats.handler_count }}</td>
+				</tr>
+				<tr>
+					<td class="col-4">Secrets</td>
+					<td class="col-8 text-center">{{ stats.secret_count }}</td>
+				</tr>
+		  	</tbody>
+		</table>
+	</div>
+	<div class="col-7">
+		<canvas id="pie" class="chart chart-pie" chart-data="piedata" chart-labels="pielabels" chart-options="options"></canvas> 
+	</div>
+</div>

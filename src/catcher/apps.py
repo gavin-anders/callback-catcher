@@ -7,43 +7,52 @@ class CatcherConfig(AppConfig):
     def ready(self):
         import socket
         import logging
+        import xml.etree.ElementTree as ET
         import catcher.signals
         import catcher.settings as settings
-        from catcher.models import Port
+        from catcher.models import Port, Fingerprint
         from catcher.service import Service
         
         logger = logging.getLogger(__name__)
         
+        #Adds fingerprints
+        logger.info("Loading fingerprints")
+        try:
+            tree = ET.parse(settings.FINGERPRINT_DEFS)
+            for fingerprint in tree.getroot():
+                name = fingerprint.find("name").text
+                probe = fingerprint.find("probe").text
+                obj, created = Fingerprint.objects.get_or_create(
+                    name=name,
+                    defaults={'name': name, 'probe': probe},
+                )
+        except:
+            logger.error("Unable to load {}".format(settings.FINGERPRINT_DEFS))
+            raise
+        logger.info("Fingerprints loaded successfully")
+        
         #Check if any ports are reported as running in the db and remove
+        logger.info("Cleaning up database")
         ports = Port.objects.all()
         for p in ports:
-            server_address = (settings.LISTEN_IP, p.number)
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            if p.protocol == 'udp':
-                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            try:
-                sock.bind(server_address)
-                logger.info("Removing {} entry from DB".format(p))
-                p.delete()
-            except:
-                pass
-            finally:
-                sock.close()
+            p.delete()
         
         #TESTING start services
-        #process = Service(settings.LISTEN_IP, 80, 'tcp', 0)
-        #process.set_handler('static_http.py')
-        #process.start()
+        process = Service(settings.LISTEN_IP, 8000, 'tcp', 0)
+        process.set_handler('static_http.py')
+        process.start()
+        
+        process = Service(settings.LISTEN_IP, 53, 'udp', 0)
+        process.set_handler('dns.py')
+        process.start()
         
         #process = Service(settings.LISTEN_IP, 443, 'tcp', 1)
         #process.set_handler('static_http.py')
         #process.start()
         
-        #process = Service(settings.LISTEN_IP, 21, 'tcp', 0)
-        #process.set_handler('ftp.py')
-        #process.start()
+        process = Service(settings.LISTEN_IP, 21, 'tcp', 0)
+        process.set_handler('ftp.py')
+        process.start()
         
-        #process = Service(settings.LISTEN_IP, 53, 'udp', 0)
-        #process.set_handler('dns.py')
-        #process.start()
+        
     

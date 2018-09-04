@@ -7,10 +7,11 @@ import pprint
 class SecretSerializer(serializers.ModelSerializer):
     class Meta:
         model = Secret
-        fields = (
-              'name',
-              'value'
-            )
+        fields = ('id',
+                  'name',
+                  'value',
+                  'callback'
+                  )
 
 class TokenSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,12 +20,6 @@ class TokenSerializer(serializers.ModelSerializer):
                   'name',
                   'token'
                   )
-        
-class FingerprintSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Fingerprint
-        fields = ('name', 
-                  'probe',)
 
 class HandlerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,8 +42,8 @@ class PortSerializer(serializers.ModelSerializer):
         
 class CallbackSerializer(serializers.ModelSerializer):
     secrets = SecretSerializer(many=True, read_only=True)
-    tokens = TokenSerializer(many=True, read_only=True)
-    fingerprint = serializers.StringRelatedField(many=False)
+    fingerprint = serializers.SlugRelatedField(many=False, read_only=True, slug_field='name')
+    timestamp = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S")
 
     class Meta:
         model = Callback
@@ -61,8 +56,8 @@ class CallbackSerializer(serializers.ModelSerializer):
                   'data',
                   'datasize',
                   'fingerprint',
-                  'tokens',
                   'secrets',
+                  'timestamp'
                   )
 
         

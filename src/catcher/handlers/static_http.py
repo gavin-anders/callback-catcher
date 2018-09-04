@@ -4,13 +4,18 @@ Created on 15 Sep 2017
 @author: gavin
 '''
 import os
+import logging
 from .basehandler import TcpHandler
+
+logger = logging.getLogger(__name__)
 
 class static_http(TcpHandler):
     '''
     Handles incoming connections as a session and echo the request file
     probably vulnerable to path traversal
     '''
+    DEFAULT_ENCODING = "utf-8"
+    
     def __init__(self, *args):
         '''
         Constructor
@@ -22,18 +27,19 @@ class static_http(TcpHandler):
                     ('Test', 'AAAAAAAAAAAAAAAAA')
                 ]
         self.resp = "HTTP/1.1 200 OK"
-        self.content = """<html><body>This is a page</body></html>"""
+        self.content = "<html><body>This is a page</body></html>"
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
-        data = self.handle_one_request()
+        data = self.handle_plaintext_request()
         path = data.splitlines()[0].split(" ")[1].split("?")[0]
         file = os.path.join(self.webroot, path)
         if os.path.isfile(file):
+            logger.info("Serving {}".format(file))
             with open(filename) as f:
-                self.request.send(self._build_response(self.resp, self.headers, f.read()))
-        else:
-            self.request.send(self._build_response(self.resp, self.headers, self.content))
+                self.content = f.read()
+        r = self._build_response(self.resp, self.headers, self.content)
+        self.send_response(r, encoding=self.DEFAULT_ENCODING)
         
     def _build_response(self, resp, headers, content):
         '''

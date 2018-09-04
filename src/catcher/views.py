@@ -62,6 +62,13 @@ def index(request):
     template = "index.html"
     return render(request, template, context)
 
+def script(request):
+    """
+    Script route
+    """
+    template = "script.js"
+    return render(request, template)
+
 @method_decorator(basic_auth_login, name='dispatch') 
 class PortView(ListView, ModelFormMixin):
     model = Port

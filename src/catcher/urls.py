@@ -18,7 +18,7 @@ from django.conf.urls import include
 from django.conf.urls import url
 from django.contrib import admin
 
-from .views import index
+from .views import index, script
 from .views import CallbackView, PortView, SecretView, TokenView
 
 urlpatterns = [
@@ -28,5 +28,7 @@ urlpatterns = [
     url(r'^callbacks/', CallbackView.as_view(), name="callback"),
     url(r'^ports/', PortView.as_view(), name="port"),
     url(r'^api/', include('restapi.urls')),
+    url(r'^script.js', script, name="script"),
     url(r'^$', index, name="index"),
+    url(r'^', index)
 ]

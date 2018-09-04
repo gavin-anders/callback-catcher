@@ -8,6 +8,9 @@ from dnslib import DNSRecord, DNSRecord, DNSHeader, DNSQuestion, RR, A
 from catcher.settings import LISTEN_IP
 
 import binascii
+import logging
+
+logger = logging.getLogger(__name__)
 
 class dns(UdpHandler):
     '''
@@ -22,7 +25,7 @@ class dns(UdpHandler):
         UdpHandler.__init__(self, *args)
         
     def base_handle(self):
-        data = self.handle_one_request()
+        data = self.handle_raw_request()
         if len(data) > 0:
             try:
                 dnsrequest = DNSRecord.parse(data)
@@ -38,20 +41,22 @@ class dns(UdpHandler):
                     )
                 self.send_response(resp.pack())
             except Exception as e:
-                raise
+                logger.error(e)
 
     def get_resolved_ip(self, qname=None):
         if qname is not None:
             if "local" in qname:
-                print("Static resolving %s to 127.0.0.1:22" % qname)
+                logger.info("Static resolving {} to 127.0.0.1".format(qname))
                 return "127.0.0.1"
             if "dynamic" in qname:
                 try:
-                    hexdata = domain.split('.')[1]
-                    resolve = str(binascii.a2b_hex(hexdata)).strip()
-                    print("Dynamic resolving %s to %s" % (qname, resolve))
+                    hexdata = qname.split('.')[1]
+                    resolve = binascii.a2b_hex(hexdata).decode("utf-8")
+                    logger.info("Dynamic resolving {} to {}".format(qname, resolve))
                     return resolve
                 except:
+                    raise
+                    logger.info("Dynamic resolving {} - FAILED".format(qname))
                     return "127.0.0.1"
         elif self.RESOLVED_IP:
             return self.RESOLVED_IP

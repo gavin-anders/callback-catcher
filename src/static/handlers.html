@@ -1,0 +1,32 @@
+<h1>Services</h1>
+<p>{{ message }}</p>
+
+<form ng-submit="addHandler()">
+<table class="table table-bordered table-condensed table-striped" show-filter="true">
+	<thead>
+      	<tr>
+	      	<th>Name</th>
+			<th>Description</th>
+			<th>Config</th>
+			<th>Filename</th>
+			<th style="width:50px">Delete</th>
+      	</tr>
+    </thead>
+	<tbody ng-repeat="h in handlers" >
+    	<tr>
+       		<td>{{ h.name }}</td>
+       		<td>{{ h.description }}</td>
+       		<td>{{ h.settings }}</td>
+       		<td>{{ h.filename }}</td>
+       		<td><button ng-click="deleteHandler( h.id )" type="button" class="btn btn-block btn-danger">&#10006;</button></td>
+    	</tr>
+  	</tbody>
+  	    <tr>
+       		<td><input type="text" value="" class="form-control" ng-model="handler.name"></td>
+       		<td><input type="text" value="" class="form-control" ng-model="handler.description"></td>
+       		<td><input type="text" value="" class="form-control" ng-model="handler.settings"></td>
+       		<td><input type="text" value="" class="form-control" ng-model="handler.filename"></td>
+       		<td><input type="submit" value="&#10010;" class="btn btn-block btn-success"></td>
+    	</tr>
+</table>
+</form>

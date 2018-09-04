@@ -1,0 +1,27 @@
+body {
+  padding-top: 4rem;
+}
+.container {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+.catcher-main {
+  	text-align: center;
+}
+.catcher-page-title {
+	padding-bottom: 0.3em;
+}
+.catcher-data-dump-pre {
+	padding: 7px; 
+	border-radius: 5px; 
+	background-color: #D5D8DC; 
+	overflow-wrap: normal; 
+	overflow-y: scroll; 
+	white-space: pre-wrap; 
+	overflow-x: hidden; 
+	width: 100%; 
+	min-height: 100px;
+}

@@ -14,8 +14,7 @@ class Callback(models.Model):
     protocol    = models.CharField(max_length=3, default="tcp")
     timestamp   = models.DateTimeField(auto_now_add=True)
     datasize    = models.IntegerField()
-    data        = models.TextField()
-    description = models.TextField()
+    data        = models.BinaryField()
     fingerprint = models.ForeignKey('Fingerprint', null=True, on_delete=models.DO_NOTHING)
     
     class Meta:
@@ -28,9 +27,10 @@ class Callback(models.Model):
                        serverip=serverip,
                        serverport=serverport,
                        protocol=protocol,
-                       data=base64.b64encode(data)
+                       data=data
                        )
-        callback.datasize = len(data)
+        if data is not None:
+            callback.datasize = len(data)
         return callback
     
 
@@ -80,7 +80,7 @@ class Secret(models.Model):
     id          = models.AutoField(primary_key=True)
     name        = models.CharField(max_length=150, null=False)
     value       = models.TextField(null=False)
-    callback    = models.ForeignKey('Callback', related_name='secrets', on_delete=models.SET_NULL)
+    callback    = models.ForeignKey('Callback', null=True, related_name='secrets', on_delete=models.SET_NULL)
     
     class Meta:
         db_table = 'secrets'

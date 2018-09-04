@@ -5,11 +5,14 @@ import ssl
 import threading
 import socket
 import sys
+import logging
 
 from socketserver import TCPServer
 from socketserver import UDPServer
 from socketserver import ThreadingMixIn
 from .handlers import basehandler
+
+logger = logging.getLogger(__name__)
 
 ##### OUR MIXINS HERE ############
 class ThreadedIPv6TCPServer(ThreadingMixIn, TCPServer):
@@ -56,7 +59,7 @@ class Service(multiprocessing.Process):
         return "%s://%s:%i" % (self.protocol, self.ip, self.port)
     
     def shutdown(self):
-        self.log.info("Terminating %i" % self.pid)
+        logger.info("Terminating %i" % self.pid)
         self.exit.set()
     
     def ssl_enabled(self):
@@ -89,11 +92,10 @@ class Service(multiprocessing.Process):
         Sets the local handler file
         '''
         handlername = os.path.splitext(os.path.basename(handlerfile))[0]
-        print(handlername)
         try:
             plugin = importlib.import_module('catcher.handlers.' + handlername)
             self.handler = getattr(plugin, handlername)
-            print("Using custom handler: '%s'" % handlerfile)
+            logger.info("Using custom handler: '{}'".format(handlerfile))
         except ImportError:
             #Doesnt quite work in daemon mode
             try:
@@ -142,21 +144,11 @@ class Service(multiprocessing.Process):
                                                     certfile=self.sslcert, 
                                                     keyfile=self.sslkey, 
                                                     server_side=True)
-                #Pass variables to handlers
+                logger.info("Starting service on: {}/{}".format(self.port, self.protocol))
                 thread = threading.Thread(target=server.serve_forever())
-                #thread.daemon = True
-                print("Starting service on: %s %i/%s" % (address, self.protocol))
                 thread.start()
             except Exception as e:
-                print(e)
+                logger.error(e)
                 self.shutdown()
-                
-if __name__ == "__main__":
-    process = Service('127.0.0.1', 1234, 'tcp', 0, logger)
-    process.set_handler('ftp.py', '/opt/catcher/handler')
-    process.start()
-    process.join()
-    print(process.pid)
-
-    
+                   
     

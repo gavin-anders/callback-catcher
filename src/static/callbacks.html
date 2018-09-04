@@ -1,0 +1,46 @@
+<h1 class="display-3">Callbacks</h1>
+<p>{{ message }}</p>
+
+<table class="table table-bordered table-condensed table-striped" show-filter="true">
+	<thead>
+      	<tr>
+	      	<th class="">ID</th>
+			<th class="">Timestamp</th>
+			<th class="">Client</th>
+			<th class="">Port</th>
+			<th class="">Fingerprint</th>
+			<th class="">Size</th>
+			<th class="" style="max-width: 25px">Secrets</th>
+			<th class="" style="max-width: 25px">Data</th>
+      	</tr>
+    </thead>
+	<tbody ng-repeat="c in callbacks | orderBy : '-id'" >
+    	<tr>
+       		<td>{{ c.id }}</td>
+       		<td>{{ c.timestamp }}</td>
+       		<td>{{ c.sourceip }}:{{ c.sourceport }}</td>
+       		<td>{{ c.serverport }}/{{ c.protocol }}</td>
+       		<td>{{ c.fingerprint || '-' }}</td>
+       		<td>{{ c.datasize }}</td>
+       		<td><button type="button" class="btn btn-block btn-default" data-toggle="modal" data-target="#rawdataModal">&#9919;</button></td>
+    		<td><button ng-click="viewData( c.data )" type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#rawdataModal">&#8505;</button></td>
+    	</tr>
+  	</tbody>
+</table>
+
+<div class="modal fade" id="rawdataModal" role="dialog">
+    <div class="modal-dialog modal-lg text-left">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5>Plain text</h5>
+                <pre class="catcher-data-dump-pre">{{ rawdata }}</pre>
+                <h5>Hexdump</h5>
+                <pre id="hexdump" class="catcher-data-dump-pre"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
