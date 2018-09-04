@@ -23,7 +23,7 @@ catcherApp.config(function($routeProvider) {
 		})
 
 		// route for the services page
-		.when('/services', {
+		.when('/ports', {
 			templateUrl : '{% static "ports.html" %}',
 			controller  : 'servicesController'
 		})
