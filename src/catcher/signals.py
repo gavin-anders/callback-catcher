@@ -31,8 +31,6 @@ def detect_fingerprint(sender, instance, created, **kwargs):
                         logger.info("Request recognised as {}".format(f.name))
                         break
                 except:
-                    #some of the fingerprint probes are fudged and cant be decoded
-                    raise
                     pass
         except Exception as e:
             logger.error(e)

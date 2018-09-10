@@ -4,7 +4,7 @@ PORT=12443
 
 if [[ $EUID -ne 0 ]]; then
    echo "This script should be run as root" 
-   sudo python3 manage.py runserver $HOST:$PORT
+   sudo python3 manage.py runserver $HOST:$PORT --noreload
 else
-   python3 manage.py runserver $HOST:$PORT
+   python3 manage.py runserver $HOST:$PORT --noreload
 fi

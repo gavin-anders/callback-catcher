@@ -101,7 +101,7 @@ catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 	function($scope, $location, $http) {
 		$scope.message = 'this is the services page';
 		
-		$http.get('/api/handler').then(function(data) {
+		$http.get('/api/handler/').then(function(data) {
 			$scope.handlers = data;
 		});
 		
@@ -114,10 +114,14 @@ catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 
 catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 	function($scope, $location, $http) {
-		$scope.message = 'this is the services page';
+		$scope.message = 'Running and exposed ports.';
 		
-		$http.get('/api/port').then(function(data) {
-			$scope.services = data;
+		$http.get('/api/port/').then(function(data) {
+			$scope.ports = data.data;
+		});
+		
+		$http.get('/api/handler/').then(function(data) {
+			$scope.handlers = data.data;
 		});
 
 		$scope.isMenuActive = function (viewLocation) {

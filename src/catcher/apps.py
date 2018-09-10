@@ -10,8 +10,9 @@ class CatcherConfig(AppConfig):
         import xml.etree.ElementTree as ET
         import catcher.signals
         import catcher.settings as settings
-        from catcher.models import Port, Fingerprint
+        from catcher.models import Port, Fingerprint, Port, Handler
         from catcher.service import Service
+        import multiprocessing
         
         logger = logging.getLogger(__name__)
         
@@ -38,21 +39,17 @@ class CatcherConfig(AppConfig):
             p.delete()
         
         #TESTING start services
-        process = Service(settings.LISTEN_IP, 8000, 'tcp', 0)
-        process.set_handler('static_http.py')
-        process.start()
-        
-        process = Service(settings.LISTEN_IP, 53, 'udp', 0)
-        process.set_handler('dns.py')
-        process.start()
-        
-        #process = Service(settings.LISTEN_IP, 443, 'tcp', 1)
-        #process.set_handler('static_http.py')
-        #process.start()
-        
-        process = Service(settings.LISTEN_IP, 21, 'tcp', 0)
-        process.set_handler('ftp.py')
-        process.start()
+        try:
+            for p in settings.DEFAULT_PORTS:
+                process = Service(settings.LISTEN_IP, p['port'], p['protocol'], p['ssl'])
+                process.set_handler(p['handler'])
+                process.start()
+                handler = Handler.objects.get(filename=p['handler'])
+                Port.objects.create(number=process.number, protocol=process.protocol, ssl=process.ssl, handler=handler, pid=process.pid)
+        except Exception as e:
+            logger.error("Failed to start process")
+            logger.exception(e)
+            raise
         
         
     

@@ -31,6 +31,8 @@ class HandlerSerializer(serializers.ModelSerializer):
                   'settings')
 
 class PortSerializer(serializers.ModelSerializer):
+    handler = serializers.SlugRelatedField(many=False, read_only=True, slug_field='name')
+
     class Meta:
         model = Port
         fields = ('id',

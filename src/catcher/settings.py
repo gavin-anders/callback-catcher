@@ -35,6 +35,17 @@ HANDLER_DIR = os.path.join(BASE_DIR, 'handlers')
 DEBUG_LVL = 'DEBUG' #INFO for less noise
 DOMAIN = 'pentestlabs.uk'
 FINGERPRINT_DEFS = os.path.join(BASE_DIR, 'files/fingerprints.xml')
+DEFAULT_PORTS = (
+         {'port': 21, 'protocol': 'tcp', 'handler': 'ftp.py', 'ssl': 0},
+         {'port': 80, 'protocol': 'tcp', 'handler': 'static_http.py', 'ssl': 0},
+         {'port': 8000, 'protocol': 'tcp', 'handler': 'static_http.py', 'ssl': 0},
+         {'port': 443, 'protocol': 'tcp', 'handler': 'static_http.py', 'ssl': 1},
+         {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
+         {'port': 25, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
+         {'port': 587, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
+         {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
+         
+    )
 #=============================================
 
 # SECURITY WARNING: keep the secret key used in production secret!

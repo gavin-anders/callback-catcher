@@ -48,14 +48,10 @@ class PortList(generics.ListCreateAPIView):
     serializer_class = PortSerializer
     #authentication_classes = (BasicAuthentication,)
     
-    def post(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         serializer = PortSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                if serializer.validated_data.get('pid', None) != None:
-                    kill_process(pid)
-                    logger.info("Killed process {}".format(pid))
-                
                 process = Service(LISTEN_IP, 
                           serializer.validated_data['number'], 
                           serializer.validated_data['protocol'], 

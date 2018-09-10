@@ -46,7 +46,7 @@ class Service(multiprocessing.Process):
         multiprocessing.Process.__init__(self)
         self.exit = multiprocessing.Event()
         self.ip = ip
-        self.port = port
+        self.number = port
         self.protocol = protocol.lower()
         self.ssl = ssl
         self.ipv6 = ipv6
@@ -56,10 +56,10 @@ class Service(multiprocessing.Process):
         self.handler = None
         
     def __str__(self):
-        return "%s://%s:%i" % (self.protocol, self.ip, self.port)
+        return "%s://%s:%i" % (self.protocol, self.ip, self.number)
     
     def shutdown(self):
-        logger.info("Terminating %i" % self.pid)
+        logger.info("Terminating {}".format(self.pid))
         self.exit.set()
     
     def ssl_enabled(self):
@@ -97,26 +97,19 @@ class Service(multiprocessing.Process):
             self.handler = getattr(plugin, handlername)
             logger.info("Using custom handler: '{}'".format(handlerfile))
         except ImportError:
-            #Doesnt quite work in daemon mode
-            try:
-                sys.path.append(handlerdir)
-                plugin = importlib.import_module('handlers.' + handlername)
-                self.handler = getattr(plugin, handlername)
-                print("Using custom handler: '%s'" % os.path.join(handlerdir, handlerfile))
-            except:
-                print("import from local handlers failed using default")
-                self.handler = None
+            logger.exception("Import from local handlers failed. Using default handler...")
+            self.handler = None
 
     def run(self):
         '''
         Starts the port as a service
         '''
-        while not self.exit.is_set():          
+        while not self.exit.is_set():
             #Do we need ipv6? - this is a bit shit as it will be either ipv4 or ipv6
             try:
-                address = (self.ip, self.port)
+                address = (self.ip, self.number)
                 if self.ipv6:
-                    address = ('::1', self.port, 0, 0)
+                    address = ('::1', self.number, 0, 0)
                 
                 if self.handler:
                     #start server with specific handler
@@ -144,7 +137,6 @@ class Service(multiprocessing.Process):
                                                     certfile=self.sslcert, 
                                                     keyfile=self.sslkey, 
                                                     server_side=True)
-                logger.info("Starting service on: {}/{}".format(self.port, self.protocol))
                 thread = threading.Thread(target=server.serve_forever())
                 thread.start()
             except Exception as e:

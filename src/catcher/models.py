@@ -32,7 +32,6 @@ class Callback(models.Model):
         if data is not None:
             callback.datasize = len(data)
         return callback
-    
 
 class Port(models.Model):
     id            = models.AutoField(primary_key=True)
