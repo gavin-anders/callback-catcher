@@ -40,6 +40,7 @@ class dns(UdpHandler):
                         q=question,
                         a=RR(questionname,rdata=A(resolvedip))
                     )
+                self.set_fingerprint()
                 self.send_response(resp.pack())
             except Exception as e:
                 logger.error(e)
