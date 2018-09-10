@@ -70,7 +70,5 @@ class dns(UdpHandler):
                 except:
                     logger.info("Extracting data from {} - FAILED".format(qname))
                 return "127.0.0.1"
-        elif self.RESOLVED_IP:
-            return self.RESOLVED_IP
-        return self.server.socket.getsockname()[0]
+        return self.RESOLVED_IP
 
