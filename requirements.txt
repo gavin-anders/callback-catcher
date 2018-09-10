@@ -1,4 +1,3 @@
-python-daemon
 pyopenssl
 django
 djangorestframework
