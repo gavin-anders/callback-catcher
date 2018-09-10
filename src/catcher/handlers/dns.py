@@ -45,6 +45,7 @@ class dns(UdpHandler):
 
     def get_resolved_ip(self, qname=None):
         if qname is not None:
+            self.add_secret("Domain lookup", qname)
             if "local" in qname:
                 logger.info("Static resolving {} to 127.0.0.1".format(qname))
                 return "127.0.0.1"
