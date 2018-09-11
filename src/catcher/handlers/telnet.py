@@ -17,43 +17,34 @@ class telnet(TcpHandler):
         Constructor
         '''
         self.session = True
-        self.banner = '''OpenBSD/i386 (oof) (ttyp1)\r\n'''
-        self.welcome = '''\r\nLast login: Thu Dec  2 21:32:59 on ttyp1 from bam.zing.org\r\nWarning: no Kerberos tickets issued.\rOpenBSD 2.6-beta (OOF) #4: Tue Oct 12 20:42:32 CDT 1999\r\nWelcome to OpenBSD: The proactively secure Unix-like operating system.\r\n\r\n '''
+        self.banner = b'OpenBSD/i386 (oof) (ttyp1)\r\n'
+        self.welcome = b'\r\nLast login: Thu Dec  2 21:32:59 on ttyp1 from bam.zing.org\r\nWarning: no Kerberos tickets issued.\rOpenBSD 2.6-beta (OOF) #4: Tue Oct 12 20:42:32 CDT 1999\r\nWelcome to OpenBSD: The proactively secure Unix-like operating system.\r\n\r\n'
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
-        self.request.send(self.banner)
-        
-        username = ''
-        password = ''
-        
-        self.request.send(b'Username: ')
-        data = self.handle_one_request()
-        if len(data) > 0:
-            if data[0] == '\xFF':
-                print("Telnet command incoming")
-                while True:
-                    username = self.handle_one_request().rstrip()
-                    if len(username) > 0:
-                        self.request.send(b'Password: ')
-                        password = self.handle_one_request().rstrip()
-                        if len(password) > 0:
-                            self.request.send(self.welcome)
-                            #Keep reading shit until ^C
+        try:
+            self.send_response(self.banner)
+            self.send_response(b'Username: ')
+            data = self.handle_raw_request()
+            if len(data) > 0:
+                while self.session is True:
+                    username = self.handle_plaintext_request()
+                    self.add_secret("Telnet Username", username.strip())
+                    if len(username.strip()) > 0:
+                        self.send_response(b'Password: ')
+                        password = self.handle_raw_request()
+                        self.add_secret("Telnet Password", password.strip())
+                        if len(password.strip()) > 0:
+                            self.send_response(self.welcome)
                             termsess = True
                             while termsess is True:
-                                self.request.send(b'$')
-                                cmd = self.handle_one_request()
-                                if cmd[:2] == '\xFF\xF4' or 'exit' in cmd or 'quit' in cmd:
+                                self.send_response(b'$')
+                                cmd = self.handle_raw_request()
+                                if cmd[:2] == '\xFF\xF4' or 'exit' in cmd.decode("utf-8") or 'quit' in cmd.decode("utf-8"):
                                     termsess = False
-                            break
+                            self.session = False
                     else:
-                        break
-                    
-        if username is not '':
-            print("#####################################")
-            print('USERNAME:\t%s' % username.rstrip())
-        if password is not '':    
-            print('PASSWORD:\t%s' % password.rstrip())
-        print("#####################################")
+                        self.session = False
+        except:
+            raise
         return

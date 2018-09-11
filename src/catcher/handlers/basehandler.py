@@ -195,9 +195,9 @@ class TcpHandler(BaseCatcherHandler):
         Used by subclasses
         '''
         try:
-            self.append_data(response)
             if encoding is not None:
                 response = response.encode(encoding)
+            self.append_data(response)
             self.request.send(response)
         except LookupError as e:
             logger.error("{} Sending default response".format(str(e)))
