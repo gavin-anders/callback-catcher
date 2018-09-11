@@ -117,6 +117,9 @@ class BaseCatcherHandler(BaseRequestHandler):
         Use this to add a secret to the callback
         '''
         try:
+            if isinstance(value, (bytes, bytearray)):
+                #convert it to string if it is bytes
+                value = value.decode()
             logger.info("Secret ({}): {}".format(name, value))
             secret = Secret.objects.create(name=name, value=value, callback=self.callback)
         except Exception as e:
