@@ -16,32 +16,36 @@
 	    	<tr>
 	       		<td>{{ p.number }}</td>
 	       		<td>{{ p.protocol | uppercase }}</td>
-	       		<td><input type="checkbox" ng-model="p.ssl" style="transform: scale(1.5);" disabled></td>
+	       		<td><input type="checkbox" ng-checked="p.ssl" style="transform: scale(1.5);" disabled></td>
 	       		<td>{{ p.handler }}</td>
 	       		<td><button ng-click="stopPort(p.id)" type="button" class="btn btn-block btn-danger">&#10006;</button></td>
 	    	</tr>
 	    </tbody>
+	    	<form ng-click="startPort()">
 	    	<tr>
-	       		<td><input type="text"></td>
+	    		
+	       		<td><input type="text" name="number" ng-model="number"></td>
 	       		<td>
-	       			<select class="form-control">
+	       			<select class="form-control" name="protocol" ng-model="protocol">
 					  	<option>tcp</option>
 					  	<option>udp</option>
 					</select>
 				</td>
 	       		<td>
-					<select class="form-control">
+					<select class="form-control" name="protocol" ng-model="protocol">
 					  	<option value=1>true</option>
 					  	<option value=0>false</option>
 					</select>
 				</td>
 	       		<td>
-		       		<select class="form-control" ng-model="p.plugin">
+		       		<select class="form-control" name="handler" ng-model="handler">
 		       			<option></option>
 		       			<option ng-repeat="h in handlers">{{ h.name }}</option>
 		       		</select>
 	       		</td>
-	       		<td><button ng-click="addService( p.id )" type="button" class="btn btn-block btn-success">&#10003;</button></td>
+	       		<td><input type="submit" ng-click="startPort()" class="btn btn-block btn-success" value="&#10003;"></td>
+	    		
 	    	</tr>
+	    	</form>
 	</table>
 </div>

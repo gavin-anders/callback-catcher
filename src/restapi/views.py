@@ -48,7 +48,7 @@ class PortList(generics.ListCreateAPIView):
     serializer_class = PortSerializer
     #authentication_classes = (BasicAuthentication,)
     
-    def put(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = PortSerializer(data=request.data)
         if serializer.is_valid():
             try:
@@ -57,13 +57,15 @@ class PortList(generics.ListCreateAPIView):
                           serializer.validated_data['protocol'], 
                           serializer.validated_data['ssl']
                           )
-                if len(serializer.validated_data['handler'].filename) > 0:
-                    process.set_handler(serializer.validated_data['handler'].filename)
+                if request.data.get('handler', None):
+                    if str(serializer.validated_data['handler'].filename).endswith(".py"):
+                        process.set_handler(serializer.validated_data['handler'].filename)
                 process.start()
                 serializer.validated_data['pid'] = process.pid
                 serializer.save()
-                logger.info("Started process on pid {}".format(process.pid))
+                logger.info("Started port {}/{} (pid {})".format(process.number, process.protocol, process.pid))
             except Exception as e:
+                logger.info("Failed to start port {}/{}".format(process.number, process.protocol))
                 logger.error(e)
                 return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -31,7 +31,7 @@ class HandlerSerializer(serializers.ModelSerializer):
                   'settings')
 
 class PortSerializer(serializers.ModelSerializer):
-    handler = serializers.SlugRelatedField(many=False, read_only=True, slug_field='name')
+    handler = serializers.SlugRelatedField(many=False, required=False, queryset=Handler.objects.all(), slug_field='filename')
 
     class Meta:
         model = Port
@@ -39,8 +39,7 @@ class PortSerializer(serializers.ModelSerializer):
                   'number', 
                   'protocol', 
                   'ssl',  
-                  'handler',
-                  'pid')
+                  'handler')
         
 class CallbackSerializer(serializers.ModelSerializer):
     secrets = SecretSerializer(many=True, read_only=True)

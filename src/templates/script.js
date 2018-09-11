@@ -121,14 +121,33 @@ catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 			$scope.ports = data.data;
 		});
 		
+		$http.get('/api/handler/').then(function(data) {
+			$scope.handlers = data.data;
+		});
+		
+		$scope.startPort = function() {
+			console.log("running startPort");
+			console.log($scope.number);
+			$http({
+			    method: 'POST',
+			    url: '/api/port/',
+			    data: JSON.stringify({number: $scope.number,protocol: $scope.protocol,ssl: $scope.ssl,handler: $scope.handler}),
+		        headers: {'Content-Type': 'application/json'}
+			}).then(function successCallback(response) {
+				console.log("Service started");
+				window.location.reload();
+			}, function errorCallback(response) {
+			    console.log('Failed to start port');
+			    alert("Failed to start port");
+			});
+		};
+		
 		$scope.stopPort = function(pk) { 
 			$http.delete('/api/port/' + pk + '/')
-			   .then(
-			       function(response){
+			   .then(function(response){
 			         console.log("Service stopped");
 			         window.location.reload();
-			       }, 
-			       function(response){
+			       }, function(response){
 			    	   console.log("Failed to stop process");
 			    	   alert("Failed to stop process");
 			       }
