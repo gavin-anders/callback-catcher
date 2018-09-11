@@ -38,7 +38,7 @@ FINGERPRINT_DEFS = os.path.join(BASE_DIR, 'files/fingerprints.xml')
 DEFAULT_PORTS = (
          {'port': 21, 'protocol': 'tcp', 'handler': 'ftp.py', 'ssl': 0},
          {'port': 80, 'protocol': 'tcp', 'handler': 'static_http.py', 'ssl': 0},
-         {'port': 8000, 'protocol': 'tcp', 'handler': 'static_http.py', 'ssl': 0},
+         {'port': 8000, 'protocol': 'tcp', 'handler': 'static_http.py', 'ssl': 1},
          {'port': 443, 'protocol': 'tcp', 'handler': 'static_http.py', 'ssl': 1},
          {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
          {'port': 25, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
@@ -46,6 +46,8 @@ DEFAULT_PORTS = (
          {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
          
     )
+SSL_KEY = os.path.join(BASE_DIR, 'files/catcher.key')
+SSL_CERT = os.path.join(BASE_DIR, 'files/catcher.crt')
 #=============================================
 
 # SECURITY WARNING: keep the secret key used in production secret!

@@ -29,7 +29,7 @@ class CatcherConfig(AppConfig):
                 )
         except:
             logger.error("Unable to load {}".format(settings.FINGERPRINT_DEFS))
-            raise
+            #raise
         logger.info("Fingerprints loaded successfully")
         
         #Check if any ports are reported as running in the db and remove
@@ -39,17 +39,19 @@ class CatcherConfig(AppConfig):
             p.delete()
         
         #TESTING start services
-        try:
-            for p in settings.DEFAULT_PORTS:
+        for p in settings.DEFAULT_PORTS:
+            try:
                 process = Service(settings.LISTEN_IP, p['port'], p['protocol'], p['ssl'])
                 process.set_handler(p['handler'])
+                if p['ssl'] is 1:
+                    process.set_ssl_context(settings.SSL_CERT, settings.SSL_KEY)
                 process.start()
                 handler = Handler.objects.get(filename=p['handler'])
-                Port.objects.create(number=process.number, protocol=process.protocol, ssl=process.ssl, handler=handler, pid=process.pid)
-        except Exception as e:
-            logger.error("Failed to start process")
-            logger.exception(e)
-            raise
+                pobj = Port.objects.create(number=process.number, protocol=process.protocol, ssl=process.ssl, handler=handler, pid=process.pid)
+            except Exception as e:
+                logger.error("Failed to start process")
+                logger.exception(e)
+                #raise
         
         
     

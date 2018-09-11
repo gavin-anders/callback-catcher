@@ -7,6 +7,8 @@ import socket
 import sys
 import logging
 
+from catcher.models import Port
+
 from socketserver import TCPServer
 from socketserver import UDPServer
 from socketserver import ThreadingMixIn
@@ -54,7 +56,7 @@ class Service(multiprocessing.Process):
         self.sslkey = None
         self.daemon = True
         self.handler = None
-        
+
     def __str__(self):
         return "%s://%s:%i" % (self.protocol, self.ip, self.number)
     
@@ -99,6 +101,15 @@ class Service(multiprocessing.Process):
         except ImportError:
             logger.exception("Import from local handlers failed. Using default handler...")
             self.handler = None
+            
+    def is_running(self):
+        '''
+        Checks if the service is running
+        '''
+        if isinstance(self.pid, int):
+            return True
+        else:
+            return False
 
     def run(self):
         '''
@@ -140,6 +151,7 @@ class Service(multiprocessing.Process):
                 thread = threading.Thread(target=server.serve_forever())
                 thread.start()
             except Exception as e:
+                raise
                 logger.error(e)
                 self.shutdown()
                    

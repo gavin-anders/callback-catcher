@@ -44,7 +44,7 @@ class CallbackDetail(generics.RetrieveAPIView):
     #authentication_classes = (BasicAuthentication,)
 
 class PortList(generics.ListCreateAPIView):
-    queryset = Port.objects.all()
+    queryset = Port.objects.filter(pid__isnull=False)
     serializer_class = PortSerializer
     #authentication_classes = (BasicAuthentication,)
     
@@ -79,7 +79,6 @@ class PortDetail(generics.DestroyAPIView):
         try:
             port = Port.objects.get(pk=int(pk))
             kill_process(port.pid)
-            logger.info("Killed process {}".format(port.pid))
         except Port.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
