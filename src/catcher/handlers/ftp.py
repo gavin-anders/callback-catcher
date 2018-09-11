@@ -30,7 +30,7 @@ class ftp(TcpHandler):
                     else:
                         getattr(self, command)()
                 except Exception as e:
-                    self.session is True
+                    self.session = False
             else:
                 self.session = False
     
