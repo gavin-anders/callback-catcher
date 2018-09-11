@@ -1,20 +1,24 @@
 # Callback Catcher
 A Django rest server that dynamically offers a number of vulnerable services that are used to help security researchers. The tool purposfully opens up sockets and records any incoming traffic, along with it's connection details. Callback Catcher affectivly acts like a honeypot and can create a number of different "handlers" based on user defined code. Upon connection from the client the handler attempts to detect the protocol being used and logs it to stdout as a hexdump. Callback Catcher is designed to help quickly find and extract unique values from the incoming request, based on a predefined or user supplied list. 
 
+The tool is written in Python and based on the ServerSocket.TcpServer/UdpServer modules.
+
 ### How is this tool going to help me? 
-It allows you to spin up a service really fast, arguably faster that ```nc -vlp <port>```
-Vulnerable services can be easily created in Python and spun up in a matter of minutes
-Easy greping/regex of data across multiple data sets
-Aids in testing for SSRF
+1. It allows you to spin up a service really fast, arguably faster that ```nc -vlp <port>```
+2. Vulnerable services can be easily created in Python and spun up in a matter of minutes
+3. Easy greping/regex of data across multiple data sets
+4. Aids in testing for SSRF
 
 # Supported services (AKA Handlers)
-Catcher suports a number of services and it is relativtly easy to create your own. By default a raw TCP socket that does nothing will be opened up if no handler is defined.
-* http
-* ftp
-* smtp
-* pop
-* dns
-* socket forwarding
+Catcher suports a number of services (all of which can be wrapped in SSL) and it is relativtly easy to create your own. By default a raw TCP socket that does nothing will be opened up if no handler is defined.
+
++ ftp
++ smtp
++ telnet
++ postgres
++ mysql
++ dns
++ socket forwarding
 
 # Dependancies
 You will require Python3 in order for catcher to work. Python dependancies can be installed with:
