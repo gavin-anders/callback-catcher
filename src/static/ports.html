@@ -12,12 +12,12 @@
 				<th>Start/Stop</th>
 	      	</tr>
 	    </thead>
-		<tbody ng-repeat="p in ports" >
+		<tbody ng-repeat="p in ports | orderBy : 'number'" >
 	    	<tr>
 	       		<td>{{ p.number }}</td>
 	       		<td>{{ p.protocol | uppercase }}</td>
 	       		<td><input type="checkbox" ng-checked="p.ssl" style="transform: scale(1.5);" disabled></td>
-	       		<td>{{ p.handler }}</td>
+	       		<td>{{ p.handler || '-' }}</td>
 	       		<td><button ng-click="stopPort(p.id)" type="button" class="btn btn-block btn-danger">&#10006;</button></td>
 	    	</tr>
 	    </tbody>
@@ -27,20 +27,20 @@
 	       		<td><input type="text" name="number" ng-model="number"></td>
 	       		<td>
 	       			<select class="form-control" name="protocol" ng-model="protocol">
-					  	<option>tcp</option>
+					  	<option selected="selected">tcp</option>
 					  	<option>udp</option>
 					</select>
 				</td>
 	       		<td>
-					<select class="form-control" name="protocol" ng-model="protocol">
-					  	<option value=1>true</option>
-					  	<option value=0>false</option>
+					<select class="form-control" name="protocol" ng-model="ssl">
+					  	<option value=1 >true</option>
+					  	<option value=0 selected="selected">false</option>
 					</select>
 				</td>
 	       		<td>
 		       		<select class="form-control" name="handler" ng-model="handler">
 		       			<option></option>
-		       			<option ng-repeat="h in handlers">{{ h.name }}</option>
+		       			<option value="{{ h.filename }}" ng-repeat="h in handlers">{{ h.name }}</option>
 		       		</select>
 	       		</td>
 	       		<td><input type="submit" ng-click="startPort()" class="btn btn-block btn-success" value="&#10003;"></td>
