@@ -5,8 +5,10 @@ Created on 15 Sep 2017
 '''
 
 from .basehandler import TcpHandler
+
 import ssl
 import os
+import base64
 
 class smtp(TcpHandler):
     '''
@@ -22,12 +24,12 @@ class smtp(TcpHandler):
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
-        self.request.send(b'220 %s ESMTP CallbackCatcher service ready\r\n' % self.HOSTNAME)
+        self.send_response(b'220 catcher ESMTP CallbackCatcher service ready\r\n')
         
         while self.session is True:
-            data = self.handle_one_request()         
+            data = self.handle_plaintext_request()       
             if len(data) > 0:
-                line = data.decode('utf-8').rstrip()
+                line = data.rstrip()
                 try:
                     if line.startswith('HELO'):
                         self._HELO(line.replace('HELO', '').strip())
@@ -36,57 +38,76 @@ class smtp(TcpHandler):
                     elif line.startswith('STARTTLS'):
                         self._STARTTLS()
                     elif line.startswith('MAIL FROM'):
-                        self._MAIL_FROM(line.replace('MAIL_FROM:', '').strip())
+                        self._MAIL_FROM()
                     elif line.startswith('RCPT TO'):
-                        self._RCPT_TO(line.replace('RECPT_TO:', '').strip())
+                        self._RCPT_TO()
                     elif line.startswith('DATA'):
-                        self._DATA(line.replace('DATA', '').strip())
+                        self._DATA()
+                    elif line.startswith('AUTH PLAIN'):
+                        self._AUTH_PLAIN(line.replace('AUTH PLAIN', '').strip())
+                    elif line.startswith('AUTH LOGIN'):
+                        self._AUTH_LOGIN()
                     elif line.startswith('QUIT'):
                         self._QUIT()
                 except Exception as e:
-                    print(e)
+                    raise
+                    session = False
             else:
                 break
         return
         
-    def _HELO(self, param=None):
-        if param:
-            self.request.send(b'220 Hello %s, pleased to meet you\r\n') % param
-        else:
-            self.request.send(b'220 Hello, pleased to meet you\r\n') % param
+    def _HELO(self, param=""):
+        resp = '220 Hello {} pleased to meet you\r\n'.format(param)
+        self.send_response(resp.encode()) 
         
     def _EHLO(self, param=None):
-        if param:
-            self.request.send(b'250 Hello %s\r\n250 STARTTLS\r\n' % param)
-        else:
-            self.request.send(b'250 Hello\r\n250 STARTTLS\r\n' % param)
+        resp = '250 Hello {}\r\n250 STARTTLS\r\n'.format(param)
+        self.send_response(resp.encode()) 
         
     def _STARTTLS(self):
-        self.request.send(b'220 Ready to start TLS\r\n')
+        self.send_response(b'220 Ready to start TLS\r\n')
         key = os.path.join(os.getcwd(), 'ssl', 'server.key')
         cert = os.path.join(os.getcwd(), 'ssl', 'server.crt')
-        
         self.request = ssl.wrap_socket(self.request, keyfile=key, certfile=cert, server_side=True)
         
-    def _MAIL_FROM(self, param=None):
-        self.request.send(b'250 Okd\r\n')
-        if param:
-            line = param.replace('MAIL_FROM:', '').strip()
-        else:
-            self.request.send(b'Not implemented\r\n')
-            self._QUIT()
+    def _MAIL_FROM(self, param=""):
+        self.send_response(b'250 Ok\r\n')
         
     def _RCPT_TO(self, param=None):
-        self.request.send(b'250 Okd\r\n')
-        if param:
-            line = param.replace('RCPT_TO:', '').strip()
-        else:
-            self.request.send(b'Not implemented\r\n')
-            self._QUIT()
+        self.send_response(b'250 Ok\r\n')
         
-    def _DATA(self, param=None):
-        self.request.send(b'354 Send datad\r\n')
+    def _DATA(self):
+        while True:
+            data = self.handle_plaintext_request()
+            if data.strip() == ".":
+                break
+        self.send_response(b'250 Ok\r\n')
+        
+    def _AUTH_PLAIN(self, param=""):
+        if param == "":
+            self.send_response(b'334\r\n')
+            param = self.handle_plaintext_request()
+        
+        credsline = base64.b64decode(param)
+        creds = credsline.split(b"\0")
+        if len(creds) == 3:
+            self.add_secret("SMTP Identity", creds[0])
+            self.add_secret("SMTP Username", creds[1])
+            self.add_secret("SMTP Password", creds[2])
+        else:
+            self.add_secret("SMTP Username", creds[0])
+            self.add_secret("SMTP Password", creds[1])
+        self.send_response(b'235 Authentication successful\r\n')
+        
+    def _AUTH_LOGIN(self):
+        self.send_response(b'334 VXNlcm5hbWU6\r\n')
+        username = self.handle_plaintext_request()
+        self.add_secret("SMTP Username", base64.b64decode(username.strip()))
+        self.send_response(b'334 UGFzc3dvcmQ6\r\n')
+        password = self.handle_plaintext_request()
+        self.add_secret("SMTP Password", base64.b64decode(password.strip()))
+        self.send_response(b'235 Authentication successful\r\n')
         
     def _QUIT(self):
-        self.request.send(b'Bye\r\n')
+        self.send_response(b'221 Bye\r\n')
         self.session = False
