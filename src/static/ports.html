@@ -18,7 +18,7 @@
 	       		<td>{{ p.protocol | uppercase }}</td>
 	       		<td><input type="checkbox" ng-model="p.ssl" style="transform: scale(1.5);" disabled></td>
 	       		<td>{{ p.handler }}</td>
-	       		<td><button ng-click="deleteService( p.id )" type="button" class="btn btn-block btn-danger">&#10006;</button></td>
+	       		<td><button ng-click="stopPort(p.id)" type="button" class="btn btn-block btn-danger">&#10006;</button></td>
 	    	</tr>
 	    </tbody>
 	    	<tr>

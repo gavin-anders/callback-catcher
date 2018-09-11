@@ -69,7 +69,7 @@ catcherApp.controller('callbackController', ['$scope', '$location', '$http',
 	            container: 'hexdump'
 	            , base: 'hexadecimal'
 	            , width: 16
-	            , ascii: true
+	            , ascii: false
 	            , byteGrouping: 0
 	            , html: true
 	            , lineNumber: true
@@ -109,6 +109,7 @@ catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 		     var active = (viewLocation === $location.path());
 		     return active;
 		};
+		
 	}
 ]);
 
@@ -120,9 +121,19 @@ catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 			$scope.ports = data.data;
 		});
 		
-		$http.get('/api/handler/').then(function(data) {
-			$scope.handlers = data.data;
-		});
+		$scope.stopPort = function(pk) { 
+			$http.delete('/api/port/' + pk + '/')
+			   .then(
+			       function(response){
+			         console.log("Service stopped");
+			         window.location.reload();
+			       }, 
+			       function(response){
+			    	   console.log("Failed to stop process");
+			    	   alert("Failed to stop process");
+			       }
+			    );
+	    };
 
 		$scope.isMenuActive = function (viewLocation) {
 		     var active = (viewLocation === $location.path());
