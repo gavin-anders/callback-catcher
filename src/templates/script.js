@@ -67,12 +67,12 @@ catcherApp.controller('callbackController', ['$scope', '$location', '$http',
 	        $scope.rawdata = atob($d);
 	        new Hexdump(atob($d), {
 	            container: 'hexdump'
-	            , base: 'hexadecimal'
+	            , base: 'hex'
 	            , width: 16
 	            , ascii: false
-	            , byteGrouping: 0
+	            , byteGrouping: 16
 	            , html: true
-	            , lineNumber: true
+	            , lineNumber: false
 	            , style: {
 	                lineNumberLeft: ''
 	              , lineNumberRight: ':'
