@@ -16,6 +16,8 @@ class CatcherConfig(AppConfig):
         
         logger = logging.getLogger(__name__)
         
+        print(settings.BANNER)
+        
         #Adds fingerprints
         logger.info("Loading fingerprints")
         try:
