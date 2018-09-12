@@ -128,7 +128,7 @@ catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 		});
 		
 		$http.get('/api/handler/').then(function(data) {
-			$scope.handlers = data.data;
+			$scope.handlers = data.data.results;
 		});
 		
 		$scope.startPort = function() {
