@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
+from django import forms
 
 from rest_framework import status, generics, authentication, exceptions, permissions
 from rest_framework.response import Response
@@ -20,6 +21,8 @@ from .serializers import PortSerializer, SecretSerializer, HandlerSerializer, To
 
 import logging
 import base64
+import django_filters
+from django_filters import rest_framework as filters
 
 logger = logging.getLogger(__name__)
 
@@ -31,12 +34,25 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+class CallbackFilter(filters.FilterSet):
+    class Meta:
+        model = Callback
+        fields = {
+            'sourceip': ['exact'],
+            'protocol': ['exact'],
+            'serverport': ['exact'],
+            'sourceip': ['exact', 'contains'],
+        }
+        
+
 class CallbackList(generics.ListAPIView):
-    queryset = Callback.objects.all()
+    queryset = Callback.objects.all().order_by('-pk')
     serializer_class = CallbackSerializer
     paginate_by = 100
     authentication_classes = (BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('sourceip', 'protocol', 'serverport',)
     
 class CallbackDetail(generics.RetrieveAPIView):
     queryset = Callback.objects.all()

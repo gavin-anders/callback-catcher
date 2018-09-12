@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django_extensions.db.fields.encrypted import EncryptedCharField
 from django.core.validators import MaxValueValidator, MinValueValidator
 import base64
+import binascii
 
 class Callback(models.Model):
     id          = models.AutoField(primary_key=True)
@@ -14,6 +15,7 @@ class Callback(models.Model):
     protocol    = models.CharField(max_length=3, default="tcp")
     timestamp   = models.DateTimeField(auto_now_add=True)
     datasize    = models.IntegerField()
+    datahex     = models.TextField(null=True)
     data        = models.BinaryField()
     fingerprint = models.ForeignKey('Fingerprint', null=True, on_delete=models.DO_NOTHING)
     
@@ -29,9 +31,12 @@ class Callback(models.Model):
                        protocol=protocol,
                        data=data
                        )
-        if data is not None:
-            callback.datasize = len(data)
         return callback
+    
+    def save(self, *args, **kwargs):
+        self.datasize = len(self.data)
+        self.datahex = binascii.hexlify(self.data).decode()
+        super().save(*args, **kwargs)
 
 class Port(models.Model):
     id            = models.AutoField(primary_key=True)

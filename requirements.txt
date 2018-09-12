@@ -6,3 +6,4 @@ django_extensions
 django-rest-swagger
 python3-keyczar==0.71rc0
 dnslib
+django-filters

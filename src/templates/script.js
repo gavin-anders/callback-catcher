@@ -60,7 +60,9 @@ catcherApp.controller('callbackController', ['$scope', '$location', '$http',
 		$scope.message = 'History of incoming connections';
 		
 		$http.get('/api/callback/').then(function(data) {
-			$scope.callbacks = data.data;
+			$scope.callbacks = data.data.results;
+			$scope.next = data.data.next;
+			$scope.previous = data.data.previous;
 		});
 		
 		$scope.viewData = function($d) {
@@ -102,7 +104,9 @@ catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 		$scope.message = 'this is the services page';
 		
 		$http.get('/api/handler/').then(function(data) {
-			$scope.handlers = data;
+			$scope.handlers = data.data.results;
+			$scope.next = data.data.next;
+			$scope.previous = data.data.previous;
 		});
 		
 		$scope.isMenuActive = function (viewLocation) {
@@ -118,7 +122,9 @@ catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 		$scope.message = 'Running and exposed ports.';
 		
 		$http.get('/api/port/').then(function(data) {
-			$scope.ports = data.data;
+			$scope.ports = data.data.results;
+			$scope.next = data.data.next;
+			$scope.previous = data.data.previous;
 		});
 		
 		$http.get('/api/handler/').then(function(data) {
