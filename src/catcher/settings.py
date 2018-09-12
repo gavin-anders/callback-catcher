@@ -144,9 +144,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
     ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
 }
 
 
@@ -174,12 +171,8 @@ LOGGING = {
 
 # Swagger settings
 SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'basic': {
-            'type': 'basic'
-        }
-    },
     'JSON_EDITOR': True,
     'SHOW_REQUEST_HEADERS': True,
-    'USE_SESSION_AUTH': False
+    'USE_SESSION_AUTH': False,
+    "SHOW_REQUEST_HEADERS": True,
 }

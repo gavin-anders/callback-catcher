@@ -36,17 +36,20 @@ class CallbackList(generics.ListAPIView):
     serializer_class = CallbackSerializer
     paginate_by = 100
     authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
     
 class CallbackDetail(generics.RetrieveAPIView):
     queryset = Callback.objects.all()
     serializer_class = CallbackSerializer
     lookup_field = 'id'
     authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
 class PortList(generics.ListCreateAPIView):
     queryset = Port.objects.filter(pid__isnull=False)
     serializer_class = PortSerializer
     authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
     
     def post(self, request, *args, **kwargs):
         serializer = PortSerializer(data=request.data)
@@ -76,6 +79,7 @@ class PortDetail(generics.DestroyAPIView):
     queryset = Port.objects.filter(pid__isnull=False)
     serializer_class = PortSerializer
     authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
     
     def delete(self, request, pk, *args, **kwargs):
         try:
@@ -93,25 +97,30 @@ class SecretList(generics.ListAPIView):
     serializer_class = SecretSerializer
     paginate_by = 100
     authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
     
 class SecretDetail(generics.RetrieveAPIView):
     queryset = Secret.objects.all()
     serializer_class = SecretSerializer
     lookup_field = 'id'
     authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
     
 class HandlerList(generics.ListAPIView):
     queryset = Handler.objects.all()
     serializer_class = HandlerSerializer
     authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
 class TokenList(generics.ListCreateAPIView):
     queryset = Token.objects.all()
     serializer_class = TokenSerializer
     authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
 class StatusView(APIView):
     authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
     
     def get(self, request, format=None):
         data = {}

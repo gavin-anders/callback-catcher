@@ -7,7 +7,19 @@ from .views import HandlerList
 from .views import TokenList
 from rest_framework_swagger.views import get_swagger_view
 
-schema_view = get_swagger_view(title='Catcher API')
+from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
+from rest_framework.decorators import api_view, renderer_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import response, schemas
+
+schema_view = get_swagger_view(title='Callback Catcher API')
+
+#@api_view()
+#@permission_classes((IsAuthenticated, ))
+#@renderer_classes([SwaggerUIRenderer, OpenAPIRenderer])
+#def schema_view(request):
+#    generator = schemas.SchemaGenerator(title='Callback Catcher API', url='')
+#    return response.Response(generator.get_schema(request=request))
 
 urlpatterns = [
     url(r'^$', schema_view),
