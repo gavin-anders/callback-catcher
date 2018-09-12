@@ -10,6 +10,7 @@ class CatcherConfig(AppConfig):
         import xml.etree.ElementTree as ET
         import catcher.signals
         import catcher.settings as settings
+        from django.contrib.auth.models import User
         from catcher.models import Port, Fingerprint, Port, Handler
         from catcher.service import Service
         import multiprocessing
@@ -17,6 +18,13 @@ class CatcherConfig(AppConfig):
         logger = logging.getLogger(__name__)
         
         print(settings.BANNER)
+        
+        #Drop all the users and add one user to rule them all
+        logger.info("Setting up users")
+        User.objects.all().delete() 
+        user = User.objects.create_user(username=settings.USERNAME, 
+                                        email=settings.EMAIL, 
+                                        password=settings.PASSWORD)
         
         #Adds fingerprints
         logger.info("Loading fingerprints")
