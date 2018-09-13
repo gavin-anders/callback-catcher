@@ -12,7 +12,7 @@
 				<th>Start/Stop</th>
 	      	</tr>
 	    </thead>
-		<tbody ng-repeat="p in ports | orderBy : 'number'" >
+		<tbody ng-repeat="p in ports | orderBy : 'number' | filter : searchTable"" >
 	    	<tr>
 	       		<td>{{ p.number }}</td>
 	       		<td>{{ p.protocol | uppercase }}</td>

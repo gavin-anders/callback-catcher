@@ -14,7 +14,7 @@
 			<th class="" style="max-width: 25px">Data</th>
       	</tr>
     </thead>
-	<tbody ng-repeat="c in callbacks" >
+	<tbody ng-repeat="c in callbacks | filter : searchTable" >
     	<tr>
        		<td>{{ c.id }}</td>
        		<td>{{ c.timestamp }}</td>

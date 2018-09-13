@@ -11,7 +11,7 @@
 			<!-- <th style="width:50px">Edit</th>  -->
       	</tr>
     </thead>
-	<tbody ng-repeat="h in handlers" >
+	<tbody ng-repeat="h in handlers | filter : searchTable"" >
     	<tr>
        		<td>{{ h.name }}</td>
        		<td>{{ h.description }}</td>
