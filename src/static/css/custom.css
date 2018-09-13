@@ -26,3 +26,6 @@ body {
 	min-height: 100px;
 	max-height: 400px;
 }
+.catcher-spacer {
+	padding-top: 20px;
+}

@@ -79,6 +79,9 @@ class Fingerprint(models.Model):
     def __unicode__(self):
         return self.name
     
+    def __str__(self):
+        return self.name
+    
 
 class Secret(models.Model):
     id          = models.AutoField(primary_key=True)
@@ -88,14 +91,4 @@ class Secret(models.Model):
     
     class Meta:
         db_table = 'secrets'
-        
-        
-class Token(models.Model):
-    id          = models.AutoField(primary_key=True)
-    name        = models.CharField(max_length=100, null=False)
-    token       = models.CharField(max_length=250, null=False, unique=True)
-    callback    = models.ForeignKey('Callback', related_name='tokens', null=True, on_delete=models.SET_NULL)
-    
-    class Meta:
-        db_table = 'tokens'
         

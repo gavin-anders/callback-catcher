@@ -1,0 +1,52 @@
+<h1 class="display-3 catcher-page-title">Search</h1>
+<p>{{ message }}</p>
+
+<div class="row">
+	<div class="row">
+	<form class="form-inline">
+	  <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder="Search" required>
+	  <select class="form-control" required>
+	        <option></option>
+	        <option>Text</option>
+	        <option>Regular Expression</option>
+	        <option>Hex</option>
+	      </select>
+	    <div class="form-check mb-2 mr-sm-2 mb-sm-0">
+	  </div>
+	  <button type="submit" class="btn btn-info">Submit</button>
+	  </div>
+	  <div class="row catcher-spacer">
+	  <div class="jumbotron">
+        <div class="col-sm-8 mx-auto">
+          <h1>Navbar examples</h1>
+          <p>This example is a quick exercise to illustrate how the navbar and its contents work. Some navbars extend the width of the viewport, others are confined within a <code>.container</code>. For positioning of navbars, checkout the <a href="../navbar-top/">top</a> and <a href="../navbar-top-fixed/">fixed top</a> examples.</p>
+          <p>At the smallest breakpoint, the collapse plugin is used to hide the links and show a menu button to toggle the collapsed content.</p>
+          <p>
+            <a class="btn btn-primary" href="../../components/navbar/" role="button">View navbar docs »</a>
+          </p>
+        </div>
+      </div>
+      </div>
+	</form>
+</div>
+<div class="row catcher-spacer">
+	<table class="table table-bordered table-condensed table-striped" show-filter="true">
+		<thead>
+	      	<tr>
+		      	<th>Type</th>
+				<th>Name</th>
+				<th>Created</th>
+				<th>Hits</th>
+	      	</tr>
+	    </thead>
+		<tbody ng-repeat="s in search" >
+	    	<tr>
+	       		<td>{{ s.name }}</td>
+	       		<td>{{ h.description }}</td>
+	       		<!-- <td>{{ h.settings | '-' }}</td>  -->
+	       		<td>{{ h.filename }}</td>
+	       		<!-- <td><button ng-click="editHandler( h.id )" type="button" class="btn btn-block btn-danger">&#9998;</button></td>  -->
+	    	</tr>
+	  	</tbody>
+	</table>
+</div>

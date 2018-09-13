@@ -33,6 +33,12 @@ catcherApp.config(function($routeProvider) {
 			templateUrl : '{% static "handlers.html" %}',
 			controller  : 'handlersController'
 		})
+		
+				// route for the handlers page
+		.when('/search', {
+			templateUrl : '{% static "search.html" %}',
+			controller  : 'searchController'
+		})
 });
 
 catcherApp.controller('statusController', ['$scope', '$location', '$http',
@@ -99,24 +105,6 @@ catcherApp.controller('callbackController', ['$scope', '$location', '$http',
 	}
 ]);
 
-catcherApp.controller('handlersController', ['$scope', '$location', '$http',
-	function($scope, $location, $http) {
-		$scope.message = '';
-		
-		$http.get('/api/handler/').then(function(data) {
-			$scope.handlers = data.data.results;
-			$scope.next = data.data.next;
-			$scope.previous = data.data.previous;
-		});
-		
-		$scope.isMenuActive = function (viewLocation) {
-		     var active = (viewLocation === $location.path());
-		     return active;
-		};
-		
-	}
-]);
-
 catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 	function($scope, $location, $http) {
 		$scope.message = '';
@@ -164,5 +152,35 @@ catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 		     var active = (viewLocation === $location.path());
 		     return active;
 		};
+	}
+]);
+
+catcherApp.controller('handlersController', ['$scope', '$location', '$http',
+	function($scope, $location, $http) {
+		$scope.message = '';
+		
+		$http.get('/api/handler/').then(function(data) {
+			$scope.handlers = data.data.results;
+			$scope.next = data.data.next;
+			$scope.previous = data.data.previous;
+		});
+		
+		$scope.isMenuActive = function (viewLocation) {
+		     var active = (viewLocation === $location.path());
+		     return active;
+		};
+		
+	}
+]);
+
+catcherApp.controller('searchController', ['$scope', '$location', '$http',
+	function($scope, $location, $http) {
+		$scope.message = '';
+		
+		$scope.isMenuActive = function (viewLocation) {
+		     var active = (viewLocation === $location.path());
+		     return active;
+		};
+		
 	}
 ]);

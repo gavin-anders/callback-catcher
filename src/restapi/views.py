@@ -10,19 +10,21 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
 
+from django_filters import rest_framework as filters
+
 from catcher.service import Service
 from catcher.settings import LISTEN_IP, HANDLER_DIR
 from catcher.utils import kill_process
 from catcher import settings
-from catcher.models import Handler, Callback, Fingerprint, Port, Secret, Handler, Token
+from catcher.models import Handler, Callback, Fingerprint, Port, Secret, Handler
 
 from .serializers import CallbackSerializer
-from .serializers import PortSerializer, SecretSerializer, HandlerSerializer, TokenSerializer
+from .serializers import PortSerializer, SecretSerializer, HandlerSerializer
+
+from .filters import CallbackFilter
 
 import logging
 import base64
-import django_filters
-from django_filters import rest_framework as filters
 
 logger = logging.getLogger(__name__)
 
@@ -34,17 +36,6 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-class CallbackFilter(filters.FilterSet):
-    class Meta:
-        model = Callback
-        fields = {
-            'sourceip': ['exact'],
-            'protocol': ['exact'],
-            'serverport': ['exact'],
-            'sourceip': ['exact', 'contains'],
-        }
-        
-
 class CallbackList(generics.ListAPIView):
     queryset = Callback.objects.all().order_by('-pk')
     serializer_class = CallbackSerializer
@@ -52,15 +43,8 @@ class CallbackList(generics.ListAPIView):
     authentication_classes = (BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('sourceip', 'protocol', 'serverport',)
+    filterset_class = CallbackFilter
     
-class CallbackDetail(generics.RetrieveAPIView):
-    queryset = Callback.objects.all()
-    serializer_class = CallbackSerializer
-    lookup_field = 'id'
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
-
 class PortList(generics.ListCreateAPIView):
     queryset = Port.objects.filter(pid__isnull=False)
     serializer_class = PortSerializer
@@ -115,22 +99,9 @@ class SecretList(generics.ListAPIView):
     authentication_classes = (BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
     
-class SecretDetail(generics.RetrieveAPIView):
-    queryset = Secret.objects.all()
-    serializer_class = SecretSerializer
-    lookup_field = 'id'
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
-    
 class HandlerList(generics.ListAPIView):
     queryset = Handler.objects.all()
     serializer_class = HandlerSerializer
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
-
-class TokenList(generics.ListCreateAPIView):
-    queryset = Token.objects.all()
-    serializer_class = TokenSerializer
     authentication_classes = (BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
 

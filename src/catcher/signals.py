@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from catcher.models import Callback, Fingerprint, Token
+from catcher.models import Callback, Fingerprint
 
 import base64
 import logging
@@ -34,26 +34,3 @@ def detect_fingerprint(sender, instance, created, **kwargs):
                     pass
         except Exception as e:
             logger.error(e)
-            
-@receiver(post_save, sender=Callback)
-def detect_token(sender, instance, created, **kwargs):
-    """
-    Runs after saving to Callback model
-    Checks if there is a token in the the callback
-    """
-    callback = instance
-    #data = base64.b64decode(callback.data)
-    #raw = "".join([hex(ord(c))[2:].zfill(2) for c in data])
-    #tokens = Token.objects.all()
-    
-    #try:
-    #    for t in tokens:
-    #        rawtoken = str(t.token).encode('hex')
-    #        if rawtoken in raw:
-    #            logger.info("Token ({}): {}".format(t.name, t.token))
-    #            t.callback = callback
-    #            t.save()
-    #except Exception as e:
-    #    logger.error(e)
-        
-    

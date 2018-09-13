@@ -1,33 +1,34 @@
 <h1 class="display-3 catcher-page-title">Callbacks</h1>
 <p>{{ message }}</p>
 
-<table class="table table-bordered table-condensed table-striped" show-filter="true">
-	<thead>
-      	<tr>
-	      	<th class="">ID</th>
-			<th class="">Timestamp</th>
-			<th class="">Client</th>
-			<th class="">Port</th>
-			<th class="">Fingerprint</th>
-			<th class="">Size</th>
-			<th class="" style="max-width: 25px">Secrets</th>
-			<th class="" style="max-width: 25px">Data</th>
-      	</tr>
-    </thead>
-	<tbody ng-repeat="c in callbacks | filter : searchTable" >
-    	<tr>
-       		<td>{{ c.id }}</td>
-       		<td>{{ c.timestamp }}</td>
-       		<td>{{ c.sourceip }}:{{ c.sourceport }}</td>
-       		<td>{{ c.serverport }}/{{ c.protocol }}</td>
-       		<td>{{ c.fingerprint || '-' }}</td>
-       		<td>{{ c.datasize }}</td>
-       		<td><button ng-click="viewSecrets( c.secrets )" ng-disabled="c.secrets.length == 0" type="button" class="btn btn-block btn-default" data-toggle="modal" data-target="#secretdataModal">&#128065;</button></td>
-    		<td><button ng-click="viewData( c.data )" type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#rawdataModal">&#8505;</button></td>
-    	</tr>
-  	</tbody>
-</table>
-
+<div class="row">
+	<table class="table table-bordered table-condensed table-striped" show-filter="true">
+		<thead>
+	      	<tr>
+		      	<th class="hidden-sm-down">ID</th>
+				<th class="">Timestamp</th>
+				<th class="">Client</th>
+				<th class="">Port</th>
+				<th class="">Fingerprint</th>
+				<th class="hidden-sm-down">Size</th>
+				<th class="" >Secrets</th>
+				<th class="" >Data</th>
+	      	</tr>
+	    </thead>
+		<tbody ng-repeat="c in callbacks | filter : filterTable" >
+	    	<tr>
+	       		<td>{{ c.id }}</td>
+	       		<td>{{ c.timestamp }}</td>
+	       		<td>{{ c.sourceip }}:{{ c.sourceport }}</td>
+	       		<td>{{ c.serverport }}/{{ c.protocol }}</td>
+	       		<td>{{ c.fingerprint || '-' }}</td>
+	       		<td>{{ c.datasize }}</td>
+	       		<td><button ng-click="viewSecrets( c.secrets )" ng-disabled="c.secrets.length == 0" type="button" class="btn btn-block btn-default" data-toggle="modal" data-target="#secretdataModal">&#128065;</button></td>
+	    		<td><button ng-click="viewData( c.data )" type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#rawdataModal">&#8505;</button></td>
+	    	</tr>
+	  	</tbody>
+	</table>
+</div>
 <script>
 $(document).ready(function(){
   $("#myInput").on("keyup", function() {

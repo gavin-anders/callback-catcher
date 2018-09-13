@@ -1,23 +1,24 @@
 <h1 class="display-3 catcher-page-title">Handlers</h1>
 <p>{{ message }}</p>
-
-<table class="table table-bordered table-condensed table-striped" show-filter="true">
-	<thead>
-      	<tr>
-	      	<th>Name</th>
-			<th>Description</th>
-			<!-- <th>Config</th>-->
-			<th>Filename</th>
-			<!-- <th style="width:50px">Edit</th>  -->
-      	</tr>
-    </thead>
-	<tbody ng-repeat="h in handlers | filter : searchTable"" >
-    	<tr>
-       		<td>{{ h.name }}</td>
-       		<td>{{ h.description }}</td>
-       		<!-- <td>{{ h.settings | '-' }}</td>  -->
-       		<td>{{ h.filename }}</td>
-       		<!-- <td><button ng-click="editHandler( h.id )" type="button" class="btn btn-block btn-danger">&#9998;</button></td>  -->
-    	</tr>
-  	</tbody>
-</table>
+<div class="row">
+	<table class="table table-bordered table-condensed table-striped" show-filter="true">
+		<thead>
+	      	<tr>
+		      	<th>Name</th>
+				<th>Description</th>
+				<!-- <th>Config</th>-->
+				<th>Filename</th>
+				<!-- <th style="width:50px">Edit</th>  -->
+	      	</tr>
+	    </thead>
+		<tbody ng-repeat="h in handlers | filter : filterTable"" >
+	    	<tr>
+	       		<td>{{ h.name }}</td>
+	       		<td>{{ h.description }}</td>
+	       		<!-- <td>{{ h.settings | '-' }}</td>  -->
+	       		<td>{{ h.filename }}</td>
+	       		<!-- <td><button ng-click="editHandler( h.id )" type="button" class="btn btn-block btn-danger">&#9998;</button></td>  -->
+	    	</tr>
+	  	</tbody>
+	</table>
+</div>

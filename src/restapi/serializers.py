@@ -1,4 +1,4 @@
-from catcher.models import Handler, Callback, Fingerprint, Port, Handler, Secret, Token
+from catcher.models import Handler, Callback, Fingerprint, Port, Handler, Secret
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
@@ -11,14 +11,6 @@ class SecretSerializer(serializers.ModelSerializer):
                   'name',
                   'value',
                   'callback'
-                  )
-
-class TokenSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Token
-        fields = ('id',
-                  'name',
-                  'token'
                   )
 
 class HandlerSerializer(serializers.ModelSerializer):

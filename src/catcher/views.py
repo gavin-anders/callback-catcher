@@ -8,7 +8,7 @@ from django.utils.http import is_safe_url
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
-from catcher.models import Port, Callback, Handler, Secret, Token
+from catcher.models import Port, Callback, Handler, Secret
 from catcher.service import Service
 from catcher.settings import LISTEN_IP, HANDLER_DIR
 
