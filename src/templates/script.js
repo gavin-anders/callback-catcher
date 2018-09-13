@@ -30,7 +30,7 @@ catcherApp.config(function($routeProvider) {
 		
 		// route for the handlers page
 		.when('/handlers', {
-			templateUrl : '{% static "handler.html" %}',
+			templateUrl : '{% static "handlers.html" %}',
 			controller  : 'handlersController'
 		})
 });
@@ -57,7 +57,7 @@ catcherApp.controller('statusController', ['$scope', '$location', '$http',
 
 catcherApp.controller('callbackController', ['$scope', '$location', '$http',
 	function($scope, $location, $http) {
-		$scope.message = 'History of incoming connections';
+		$scope.message = '';
 		
 		$http.get('/api/callback/').then(function(data) {
 			$scope.callbacks = data.data.results;
@@ -101,7 +101,7 @@ catcherApp.controller('callbackController', ['$scope', '$location', '$http',
 
 catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 	function($scope, $location, $http) {
-		$scope.message = 'this is the services page';
+		$scope.message = '';
 		
 		$http.get('/api/handler/').then(function(data) {
 			$scope.handlers = data.data.results;
@@ -119,7 +119,7 @@ catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 
 catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 	function($scope, $location, $http) {
-		$scope.message = 'Running and exposed ports.';
+		$scope.message = '';
 		
 		$http.get('/api/port/').then(function(data) {
 			$scope.ports = data.data.results;
@@ -144,7 +144,7 @@ catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 				window.location.reload();
 			}, function errorCallback(response) {
 			    console.log('Failed to start port');
-			    alert("Failed to start port");
+			    $scope.message = "Error: Failed to start port";
 			});
 		};
 		
@@ -155,7 +155,7 @@ catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 			         window.location.reload();
 			       }, function(response){
 			    	   console.log("Failed to stop process");
-			    	   alert("Failed to stop process");
+			    	   $scope.message = "Error: Failed to stop process";
 			       }
 			    );
 	    };
