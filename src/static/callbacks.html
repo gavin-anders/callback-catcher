@@ -1,7 +1,53 @@
 <h1 class="display-3 catcher-page-title">Callbacks</h1>
 <p>{{ message }}</p>
-
-<div class="row">
+<div class="catcher-search-box">
+	<div class="row">
+		<div class="col-11">
+			<a data-toggle="collapse" href="#collapseSearch"><h3>Advanced search</h1></a>
+		</div>
+		<div class="col-1 catcher-search-row">
+			<button type="button" class="btn btn-block btn-info" ng-click="executeQuery()">&#128270;</button>
+		</div>
+	</div>
+	<div class="collapse" id="collapseSearch">
+	    <div class="row" >
+	        <div class="col-3"><small>Field</small></div>
+	        <div class="col-2"><small>Lookup</small></div>
+	        <div class="col-5"><small>Search</small></div>
+	        <div class="col-1"></div>
+	        <div class="col-1"></div>
+	    </div>
+	    <div class="row" ng-repeat="q in queries track by $index">
+	        <div class="col-3">
+	            <input class="form-control" type="text" value="{{ q.field.label }}" readonly>
+	        </div>
+	        <div class="col-2">
+	            <input class="form-control" type="text" value="{{ q.lookup }}" readonly>
+	        </div>
+	        <div class="col-6">
+	            <input class="form-control" type="text" value="{{ q.value }}" readonly>
+	        </div>
+	        <div class="col-1">
+	            <button type="button" class="btn btn-block btn-danger" ng-click="removeRow(q)" >&#10006;</button>
+	        </div>
+	    </div>
+	    <form class="row" name="empty" ng-submit="addRow()">
+	        <div class="col-3">
+	        	<select class="form-control" ng-model="newfield" ng-options="field as field.label for field in fields track by field.id" ng-change="setLookups(newfield)" ng-model="selected" placeholder="Protocol" required></select>
+	        </div>
+	        <div class="col-2">
+	            <select class="form-control" ng-model="newlookup" ng-options="l for l in lookups" placeholder="contains" required></select>
+	        </div>
+	        <div class="col-6">
+	            <input class="form-control" ng-model="newvalue" type="text" placeholder="tcp" required>
+	        </div>
+	        <div class="col-1">
+	            <button type="submit" class="btn btn-block btn-info" >&#x2b;</button>
+	        </div>
+		</form>
+	</div>
+</div>
+<div class="catcher-spacer">
 	<table class="table table-bordered table-condensed table-striped">
 		<thead>
 	      	<tr>

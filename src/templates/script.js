@@ -33,12 +33,6 @@ catcherApp.config(function($routeProvider) {
 			templateUrl : '{% static "handlers.html" %}',
 			controller  : 'handlersController'
 		})
-		
-				// route for the handlers page
-		.when('/search', {
-			templateUrl : '{% static "search.html" %}',
-			controller  : 'searchController'
-		})
 });
 
 catcherApp.controller('statusController', ['$scope', '$location', '$http',
@@ -70,6 +64,72 @@ catcherApp.controller('callbackController', ['$scope', '$location', '$http',
 			$scope.next = data.data.next;
 			$scope.previous = data.data.previous;
 		});
+		
+		$scope.message = '';
+		$scope.lookups = [];
+		$scope.queries = [];
+		$scope.fields = [{
+			  id: 0,
+			  label: 'Source IP',
+			  name: 'ip',
+			  lookups: ['contains', 'exact']
+			}, {
+			  id: 1,
+			  label: 'Port',
+			  name: 'port',
+			  lookups: ['contains', 'exact']
+			}, {
+			  id: 2,
+			  label: 'Protocol',
+			  lookups: ['contains', 'exact']
+			}, {
+			  id: 3,
+			  label: 'Data',
+			  name: 'data',
+			  lookups: ['contains', 'exact']
+			}, {
+			  id: 4,
+			  label: 'Timestamp',
+			  name: 'timestamp',
+			  lookups: ['timestamp_before', 'timestamp_after']
+			}];
+		
+		$scope.executeQuery = function() {
+			// ?ip=&ip_lookup=&port=&port_lookup=&protocol=&timestamp_after=&timestamp_before=&fingerprint=&data=&data_lookup=
+			var p = {};
+			for (q of $scope.queries) {
+				var lookup_name = q.field.name + '_lookup';
+				p[lookup_name] = q.lookup;
+				p[q.field.name] = q.value;
+			};
+			$http({
+			     url: '/api/callback/', 
+			     method: 'GET',
+			     params: p
+			}).then(function mySuccess(data) {
+				$scope.callbacks = data.data.results;
+				$scope.next = data.data.next;
+				$scope.previous = data.data.previous;
+		    }, function myError(data) {
+		        console.log(data);
+		    });
+		};
+		
+		$scope.addRow = function() {
+			var f = {field: $scope.newfield, lookup: $scope.newlookup, value: $scope.newvalue};
+			console.log($scope.newfield.id);
+			$scope.queries.splice($scope.newfield.id, 0, f);
+			console.log($scope);
+		};
+		$scope.removeRow = function($q) { 
+			console.log($q.index);
+			$scope.queries.splice($q.index, 1); 
+		};
+		$scope.setLookups = function($l) { $scope.lookups = $l.lookups; };
+		$scope.isMenuActive = function (viewLocation) {
+		     var active = (viewLocation === $location.path());
+		     return active;
+		};
 		
 		$scope.viewData = function($d) {
 	        $scope.rawdata = atob($d);
@@ -165,77 +225,6 @@ catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 			$scope.previous = data.data.previous;
 		});
 		
-		$scope.isMenuActive = function (viewLocation) {
-		     var active = (viewLocation === $location.path());
-		     return active;
-		};
-		
-	}
-]);
-
-catcherApp.controller('searchController', ['$scope', '$location', '$http',
-	function($scope, $location, $http) {
-		$scope.message = '';
-		$scope.lookups = [];
-		$scope.queries = [];
-		$scope.fields = [{
-			  id: 0,
-			  label: 'Source IP',
-			  name: 'ip',
-			  lookups: ['contains', 'exact']
-			}, {
-			  id: 1,
-			  label: 'Port',
-			  name: 'port',
-			  lookups: ['contains', 'exact']
-			}, {
-			  id: 2,
-			  label: 'Protocol',
-			  lookups: ['contains', 'exact']
-			}, {
-			  id: 3,
-			  label: 'Data',
-			  name: 'data',
-			  lookups: ['contains', 'exact']
-			}, {
-			  id: 4,
-			  label: 'Timestamp',
-			  name: 'timestamp',
-			  lookups: ['timestamp_before', 'timestamp_after']
-			}];
-		
-		$scope.executeQuery = function() {
-			// ?ip=&ip_lookup=&port=&port_lookup=&protocol=&timestamp_after=&timestamp_before=&fingerprint=&data=&data_lookup=
-			var p = {};
-			for (q of $scope.queries) {
-				var lookup_name = q.field.name + '_lookup';
-				p[lookup_name] = q.lookup;
-				p[q.field.name] = q.value;
-			};
-			$http({
-			     url: '/api/callback/', 
-			     method: 'GET',
-			     params: p
-			}).then(function mySuccess(data) {
-				$scope.callbacks = data.data.results;
-				$scope.next = data.data.next;
-				$scope.previous = data.data.previous;
-		    }, function myError(data) {
-		        console.log(data);
-		    });
-		};
-		
-		$scope.addRow = function() {
-			var f = {field: $scope.newfield, lookup: $scope.newlookup, value: $scope.newvalue};
-			console.log($scope.newfield.id);
-			$scope.queries.splice($scope.newfield.id, 0, f);
-			console.log($scope);
-		};
-		$scope.removeRow = function($q) { 
-			console.log($q.index);
-			$scope.queries.splice($q.index, 1); 
-		};
-		$scope.setLookups = function($l) { $scope.lookups = $l.lookups; };
 		$scope.isMenuActive = function (viewLocation) {
 		     var active = (viewLocation === $location.path());
 		     return active;
