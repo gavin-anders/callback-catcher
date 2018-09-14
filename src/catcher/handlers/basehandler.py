@@ -106,10 +106,10 @@ class BaseCatcherHandler(BaseRequestHandler):
         if self.callback.fingerprint is None:
             if name is None:
                 name = str(self.__class__.__name__)
-            f, c = Fingerprint.objects.get_or_create(name=name, defaults={'name':name, 'probe': ''})
-            logger.info("Request recognised as {}".format(f.name))
-            self.callback.fingerprint = f
-            self.callback.save()
+                f, c = Fingerprint.objects.get_or_create(name=name, defaults={'name':name, 'probe': ''})
+                logger.info("Request recognised as {}".format(f.name))
+                self.callback.fingerprint = f
+                self.callback.save()
         return
         
     def add_secret(self, name, value):

@@ -1,6 +1,6 @@
 from django import forms
 from django_filters import rest_framework as filters
-from catcher.models import Callback, Fingerprint
+from catcher.models import Callback, Fingerprint, Secret
 
 import django_filters
 import binascii
@@ -15,10 +15,10 @@ def is_hex(data):
     except:
         return False
 
-class CallbackFilter(filters.FilterSet):
-    number_choices = [('exact', 'Equals'),('gt', 'Greater than'),('lt', 'Less than'),('regex', 'Regex'),]
-    char_choices = [('exact', 'Equals'),('contains', 'Contains'),('regex', 'Regex'),]
-    
+number_choices = [('exact', 'Equals'),('gt', 'Greater than'),('lt', 'Less than'),('regex', 'Regex'),]
+char_choices = [('exact', 'Equals'),('contains', 'Contains'),]
+
+class CallbackFilter(filters.FilterSet):  
     ip = django_filters.LookupChoiceFilter(
         field_class=forms.CharField,
         field_name='sourceip', 
@@ -61,4 +61,23 @@ class CallbackFilter(filters.FilterSet):
             'timestamp',
             'fingerprint',
             'data',
+            )
+        
+class SecretFilter(filters.FilterSet):
+    name = django_filters.LookupChoiceFilter(
+        field_class=forms.CharField,
+        field_name='name', 
+        lookup_choices=char_choices
+    ) 
+    value = django_filters.LookupChoiceFilter(
+        field_class=forms.CharField,
+        field_name='value', 
+        lookup_choices=char_choices
+    )
+  
+    class Meta:
+        model = Secret
+        fields = (
+            'name',
+            'value'
             )

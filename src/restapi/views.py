@@ -21,7 +21,7 @@ from catcher.models import Handler, Callback, Fingerprint, Port, Secret, Handler
 from .serializers import CallbackSerializer
 from .serializers import PortSerializer, SecretSerializer, HandlerSerializer
 
-from .filters import CallbackFilter
+from .filters import CallbackFilter, SecretFilter
 
 import logging
 import base64
@@ -98,6 +98,8 @@ class SecretList(generics.ListAPIView):
     paginate_by = 100
     authentication_classes = (BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = SecretFilter
     
 class HandlerList(generics.ListAPIView):
     queryset = Handler.objects.all()
