@@ -15,7 +15,7 @@ def is_hex(data):
     except:
         return False
 
-number_choices = [('exact', 'Equals'),('gt', 'Greater than'),('lt', 'Less than'),('regex', 'Regex'),]
+number_choices = [('exact', 'Equals'),('gt', 'Greater than'),('lt', 'Less than'),('regex', 'Regex'),('contains', 'Contains'),]
 char_choices = [('exact', 'Equals'),('contains', 'Contains'),]
 
 class CallbackFilter(filters.FilterSet):  

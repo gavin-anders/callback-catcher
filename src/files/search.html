@@ -1,52 +1,106 @@
 <h1 class="display-3 catcher-page-title">Search</h1>
 <p>{{ message }}</p>
-
-<div class="row">
+<div class="catcher-search-box">
 	<div class="row">
-	<form class="form-inline">
-	  <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder="Search" required>
-	  <select class="form-control" required>
-	        <option></option>
-	        <option>Text</option>
-	        <option>Regular Expression</option>
-	        <option>Hex</option>
-	      </select>
-	    <div class="form-check mb-2 mr-sm-2 mb-sm-0">
-	  </div>
-	  <button type="submit" class="btn btn-info">Submit</button>
-	  </div>
-	  <div class="row catcher-spacer">
-	  <div class="jumbotron">
-        <div class="col-sm-8 mx-auto">
-          <h1>Navbar examples</h1>
-          <p>This example is a quick exercise to illustrate how the navbar and its contents work. Some navbars extend the width of the viewport, others are confined within a <code>.container</code>. For positioning of navbars, checkout the <a href="../navbar-top/">top</a> and <a href="../navbar-top-fixed/">fixed top</a> examples.</p>
-          <p>At the smallest breakpoint, the collapse plugin is used to hide the links and show a menu button to toggle the collapsed content.</p>
-          <p>
-            <a class="btn btn-primary" href="../../components/navbar/" role="button">View navbar docs »</a>
-          </p>
+		<div class="col-11">
+			<p class="lead">Advanced search page.</p>
+		</div>
+		<div class="col-1 catcher-search-row">
+			<button type="button" class="btn btn-block btn-info" ng-click="executeQuery()">&#128270;</button>
+		</div>
+	</div>
+    <div class="row">
+        <div class="col-3"><small>Field</small></div>
+        <div class="col-2"><small>Lookup</small></div>
+        <div class="col-5"><small>Search</small></div>
+        <div class="col-1"></div>
+        <div class="col-1"></div>
+    </div>
+    <div class="row catcher-search-row" ng-repeat="q in queries track by $index">
+        <div class="col-3">
+            <input class="form-control" type="text" value="{{ q.field.label }}" readonly>
         </div>
-      </div>
-      </div>
+        <div class="col-2">
+            <input class="form-control" type="text" value="{{ q.lookup }}" readonly>
+        </div>
+        <div class="col-6">
+            <input class="form-control" type="text" value="{{ q.value }}" readonly>
+        </div>
+        <div class="col-1">
+            <button type="button" class="btn btn-block btn-danger" ng-click="removeRow(q)" >&#10006;</button>
+        </div>
+    </div>
+    <form class="row catcher-search-row" name="empty" ng-submit="addRow()">
+        <div class="col-3">
+        	<select class="form-control" ng-model="newfield" ng-options="field as field.label for field in fields track by field.id" ng-change="setLookups(newfield)" ng-model="selected" placeholder="Protocol" required></select>
+        </div>
+        <div class="col-2">
+            <select class="form-control" ng-model="newlookup" ng-options="l for l in lookups" placeholder="contains" required></select>
+        </div>
+        <div class="col-6">
+            <input class="form-control" ng-model="newvalue" type="text" placeholder="tcp" required>
+        </div>
+        <div class="col-1">
+            <button type="submit" class="btn btn-block btn-info" >&#x2b;</button>
+        </div>
 	</form>
 </div>
-<div class="row catcher-spacer">
-	<table class="table table-bordered table-condensed table-striped" show-filter="true">
-		<thead>
-	      	<tr>
-		      	<th>Type</th>
-				<th>Name</th>
-				<th>Created</th>
-				<th>Hits</th>
-	      	</tr>
-	    </thead>
-		<tbody ng-repeat="s in search" >
-	    	<tr>
-	       		<td>{{ s.name }}</td>
-	       		<td>{{ h.description }}</td>
-	       		<!-- <td>{{ h.settings | '-' }}</td>  -->
-	       		<td>{{ h.filename }}</td>
-	       		<!-- <td><button ng-click="editHandler( h.id )" type="button" class="btn btn-block btn-danger">&#9998;</button></td>  -->
+<div class="catcher-spacer">
+    <table class="table table-bordered table-condensed table-striped">
+        <thead>
+            <tr>
+                <th class="hidden-sm-down">ID</th>
+                <th>Timestamp</th>
+                <th>Client</th>
+                <th>Port</th>
+                <th>Finger</th>
+                <th class="hidden-sm-down">Size</th>
+                <th class="hidden-sm-down">Secrets</th>
+                <th class="hidden-sm-down">Data</th>
+            </tr>
+        </thead>
+        <tbody ng-repeat="c in callbacks | filter : filterTable">
+            <tr>
+                <td class="hidden-sm-down">{{ c.id }}</td>
+                <td>{{ c.timestamp }}</td>
+                <td>{{ c.sourceip }}:{{ c.sourceport }}</td>
+                <td>{{ c.serverport }}/{{ c.protocol }}</td>
+                <td>{{ c.fingerprint || '-' }}</td>
+                <td class="hidden-sm-down">{{ c.datasize }}</td>
+                <td class="hidden-sm-down" "><button ng-click="viewSecrets( c.secrets ) " ng-disabled="c.secrets.length==0" type="button" class="btn btn-block btn-default " data-toggle="modal " data-target="#secretdataModal ">&#128065;</button></td>
+	    		<td class="hidden-sm-down "><button ng-click="viewData( c.data ) " type="button " class="btn btn-block btn-info " data-toggle="modal " data-target="#rawdataModal ">&#8505;</button></td>
 	    	</tr>
 	  	</tbody>
 	</table>
+</div>
+
+<div class="modal fade" id="rawdataModal " role="dialog ">
+    <div class="modal-dialog modal-lg text-left ">
+        <div class="modal-content ">
+            <div class="modal-body ">
+                <h5>Plain text</h5>
+                <pre class="catcher-data-dump-pre ">{{ rawdata }}</pre>
+                <h5>Hexdump</h5>
+                <pre id="hexdump " class="catcher-data-dump-pre "></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade " id="secretdataModal " role="dialog ">
+    <div class="modal-dialog modal-lg text-left ">
+        <div class="modal-content ">
+            <div class="modal-body ">
+                <h5>Secrets</h5>
+                <table class="table table-bordered table-condensed table-striped ">
+	                <tbody ng-repeat="s in secrets ">
+				    	<tr>
+				       		<td><b>{{ s.name }}</b></td>
+				       		<td>{{ s.value }}</td>
+				    	</tr>
+				    </tbody>
+			    </table>
+            </div>
+        </div>
+    </div>
 </div>

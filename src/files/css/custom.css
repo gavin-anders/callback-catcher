@@ -29,3 +29,18 @@ body {
 .catcher-spacer {
 	padding-top: 20px;
 }
+.catcher-search-box {
+	padding: 1rem 1rem;
+	text-align: left;
+	margin-bottom: 1rem;
+	border-radius: .3rem;
+	background-color: #eceeef;
+}
+.catcher-search-row {
+	padding-bottom: 0.5em;
+}
+.catcher-search-button {
+	margin-left: 15px;
+	margin-right: 15px;
+	float: right !important;
+}
