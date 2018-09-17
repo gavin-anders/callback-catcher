@@ -27,24 +27,24 @@ BANNER = """
  \____/\__,_|_|_\____/ \__,_|\___|_|\_\\____/\__,_|\__\___|_| |_|\___|_|   
                                                                                                                                
 """
+DEBUG_LVL = 'INFO' #INFO for less noise
 USERNAME = 'admin'
 PASSWORD = 'password'
 EMAIL = 'gavin.anders@googlemail.com'
 LISTEN_IP = '0.0.0.0'
-HANDLER_DIR = os.path.join(BASE_DIR, 'handlers')
-DEBUG_LVL = 'DEBUG' #INFO for less noise
 DOMAIN = 'pentestlabs.uk'
+HANDLER_DIR = os.path.join(BASE_DIR, 'catcher/handlers')
 FINGERPRINT_DEFS = os.path.join(BASE_DIR, 'files/fingerprints.xml')
 DEFAULT_PORTS = (
          {'port': 21, 'protocol': 'tcp', 'handler': 'ftp.py', 'ssl': 0},
-         {'port': 80, 'protocol': 'tcp', 'handler': 'static_http.py', 'ssl': 0},
-         {'port': 8000, 'protocol': 'tcp', 'handler': 'static_http.py', 'ssl': 1},
-         {'port': 443, 'protocol': 'tcp', 'handler': 'static_http.py', 'ssl': 1},
-         {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
+         {'port': 23, 'protocol': 'tcp', 'handler': 'telnet.py', 'ssl': 0},
          {'port': 25, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
+         {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
+         {'port': 80, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 0},
+         {'port': 443, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
          {'port': 587, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
          {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
-         
+         {'port': 8000, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
     )
 SSL_KEY = os.path.join(BASE_DIR, 'files/catcher.key')
 SSL_CERT = os.path.join(BASE_DIR, 'files/catcher.crt')
@@ -170,7 +170,7 @@ LOGGING = {
     },
     'root': {  # For dev, show errors + some info in the console
         'handlers': ['console'],
-        'level': 'INFO',
+        'level': DEBUG_LVL,
     },
 }
 

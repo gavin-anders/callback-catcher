@@ -7,9 +7,8 @@ Created on 15 Sep 2017
 from .basehandler import TcpHandler
 
 class pop3(TcpHandler):
-    '''
-    Handles incoming Pop connections, just a clone of the FTP module really
-    '''
+    NAME = "POP3"
+    DESCRIPTION = '''POP3 mail server. Records username and password to secrets.'''
 
     def __init__(self, *args):
         '''

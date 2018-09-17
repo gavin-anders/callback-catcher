@@ -11,9 +11,8 @@ import os
 import base64
 
 class smtp(TcpHandler):
-    '''
-    Handles incoming FTPD connections
-    '''
+    NAME = "SMTP"
+    DESCRIPTION = '''Another basic mail server. Records LOGIN AUTH and AUTH PLAIN to secrets.'''
     HOSTNAME = 'catcher.nccgroup.com'
 
     def __init__(self, *args):

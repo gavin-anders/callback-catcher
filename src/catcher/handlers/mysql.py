@@ -12,9 +12,8 @@ import binascii
 from .basehandler import TcpHandler
 
 class mysql(TcpHandler):
-    '''
-    Handles incoming connections and keeps it open
-    '''
+    NAME = "MySQL"
+    DESCRIPTION = '''Handles incoming MySQL connections. Records username and password to secrets.'''
     MYSQL_VERSION = '5.1.66'
     SALT = '\x41\x41\x41\x41\x41\x41\x41\x41\x00'
     SALT_EX = '\x42\x42\x42\x42\x42\x42\x42\x42\x42\x42\x42\x42\x00'

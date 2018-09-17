@@ -14,6 +14,8 @@ class CatcherConfig(AppConfig):
         from catcher.models import Port, Fingerprint, Port, Handler
         from catcher.service import Service
         import multiprocessing
+        import os
+        import importlib
         
         logger = logging.getLogger(__name__)
         
@@ -41,6 +43,37 @@ class CatcherConfig(AppConfig):
             logger.error("Unable to load {}".format(settings.FINGERPRINT_DEFS))
             #raise
         logger.info("Fingerprints loaded successfully")
+        
+        #Add handlers to database
+        logger.info("Loading handlers")
+        exclude_handlers = ('__init__.py', 'basehandler.py')
+        try:
+            handler_count = 0
+            for filename in os.listdir(settings.HANDLER_DIR):
+                if filename.endswith(".py") and filename not in exclude_handlers: 
+                    try:
+                        handlername, ext = filename.split(".", 1)
+                        plugin = importlib.import_module('catcher.handlers.' + handlername)
+                        handler = getattr(plugin, handlername)
+                        description = ""
+                        if hasattr(handler, 'NAME') and hasattr(handler, 'DESCRIPTION'):
+                            handlername = handler.NAME
+                            handlerdesc = handler.DESCRIPTION
+                        else:
+                            raise AttributeError
+                        obj, created = Handler.objects.update_or_create(
+                            name=handlername,
+                            defaults={'name': handlername, 'filename': filename, 'description': handlerdesc},
+                        )
+                        handler_count = handler_count + 1
+                    except ImportError:
+                        logger.error("Import handler {} failed. Skipping".format(filename))
+                    except AttributeError:
+                        logger.error("Import handler {} failed. Missing handler NAME or DESCRIPTION attributes. Skipping".format(filename))
+        except:
+            logger.error("Unable to load {}".format(settings.FINGERPRINT_DEFS))
+            raise
+        logger.info("{} handlers loaded successfully".format(handler_count))
         
         #Check if any ports are reported as running in the db and remove
         logger.info("Cleaning up database")

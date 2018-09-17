@@ -7,11 +7,10 @@ Created on 15 Sep 2017
 from .basehandler import TcpHandler
 
 class telnet(TcpHandler):
-    '''
-    Handles incoming telnet connections
-    A telnet session in "cooked" (per-line) mode.
-    Tested with Linux telnet client
-    '''
+    NAME = "Telnet"
+    DESCRIPTION = '''Handles incoming telnet sessions. This handler only supports the "cooked" per-line mode, 
+    not the binary version of the protocol'''
+    
     def __init__(self, *args):
         '''
         Constructor

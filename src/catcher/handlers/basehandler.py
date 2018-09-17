@@ -121,7 +121,8 @@ class BaseCatcherHandler(BaseRequestHandler):
                 #convert it to string if it is bytes
                 value = value.decode()
             logger.info("Secret ({}): {}".format(name, value))
-            secret = Secret.objects.create(name=name, value=value, callback=self.callback)
+            if len(value) > 0:
+                secret = Secret.objects.create(name=name, value=value, callback=self.callback)
         except Exception as e:
             logger.error("Failed to save secret {}".format(e))
         

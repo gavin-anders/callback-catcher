@@ -9,11 +9,9 @@ from .basehandler import TcpHandler
 
 logger = logging.getLogger(__name__)
 
-class static_http(TcpHandler):
-    '''
-    Handles incoming connections as a session and echo the request file
-    probably vulnerable to path traversal
-    '''
+class statichttp(TcpHandler):
+    NAME = "Static HTTP"
+    DESCRIPTION = '''A HTTP server that responds with files and content from a local directory.'''
     DEFAULT_ENCODING = "utf-8"
     
     def __init__(self, *args):

@@ -62,9 +62,8 @@ class AuthenticationResponse(object):
         self.password = data[5:len(data)]
 
 class postgres(TcpHandler):
-    '''
-    Handles incoming connections and keeps it open
-    '''
+    NAME = "Postgres"
+    DESCRIPTION = '''Postgres databases server. Records username, databasename and password to secrets.'''
     POSTGRES_VERSION = 1
 
     def __init__(self, *args):

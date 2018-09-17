@@ -7,9 +7,8 @@ Created on 15 Sep 2017
 from .basehandler import TcpHandler
 
 class simple(TcpHandler):
-    '''
-    Handles incoming connections as a session and echo incoming data
-    '''
+    NAME = "Simple"
+    DESCRIPTION = '''The most basic of handlers. Echos any data that is sent. Use this as a template or example.'''
     def __init__(self, *args):
         '''
         Constructor
@@ -24,7 +23,7 @@ class simple(TcpHandler):
         self.request.send(b'Callback Catcher Echo Service\r\n')
         
         while self.session is True:
-            data = self.handle_one_request()
+            data = self.handle_raw_request()
             if data:
                 #MANIPULATE DATA HERE
                 data = data
@@ -32,4 +31,4 @@ class simple(TcpHandler):
                 #SEND DATA TO CLIENT
                 self.request.send(data)
             else:
-                break
+                self.session = False

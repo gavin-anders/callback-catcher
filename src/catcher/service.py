@@ -97,9 +97,9 @@ class Service(multiprocessing.Process):
         try:
             plugin = importlib.import_module('catcher.handlers.' + handlername)
             self.handler = getattr(plugin, handlername)
-            logger.info("Using custom handler: '{}'".format(handlerfile))
+            logger.info("Set custom handler: '{}'".format(handlerfile))
         except ImportError:
-            logger.exception("Import from local handlers failed. Using default handler...")
+            logger.error("Import from local handlers failed. Using default handler...")
             self.handler = None
             
     def is_running(self):
@@ -148,6 +148,7 @@ class Service(multiprocessing.Process):
                                                     certfile=self.sslcert, 
                                                     keyfile=self.sslkey, 
                                                     server_side=True)
+                logger.info("Starting service on {}/{}".format(self.number, self.protocol))
                 thread = threading.Thread(target=server.serve_forever())
                 thread.start()
             except Exception as e:

@@ -14,9 +14,8 @@ import re
 logger = logging.getLogger(__name__)
 
 class dns(UdpHandler):
-    '''
-    Handles incoming connections and keeps it open
-    '''
+    NAME = "DNS Server"
+    DESCRIPTION = "Basic UDP domain server. Responds to A records, supports data DNS exfil and dynamic resolving via hex encoded subdomain values (max length 53 chars)."
     RESOLVED_IP = LISTEN_IP
 
     def __init__(self, *args):

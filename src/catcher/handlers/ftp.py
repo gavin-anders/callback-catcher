@@ -7,9 +7,8 @@ Created on 15 Sep 2017
 from .basehandler import TcpHandler
 
 class ftp(TcpHandler):
-    '''
-    Handles incoming FTPD connections
-    '''
+    NAME = "FTP"
+    DESCRIPTION = '''Handles incoming FTPD connections. Records username and password to secrets.'''
     def __init__(self, *args):
         '''
         Constructor

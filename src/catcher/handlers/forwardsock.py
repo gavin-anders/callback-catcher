@@ -7,12 +7,11 @@ from .basehandler import TcpHandler
 
 import socket
 
-class forwardsock(TcpHandler):
+class forwardsocket(TcpHandler):
+    NAME = "Foward Socket"
+    DESCRIPTION = '''Handles incoming connections and forwards onto a socket of your choice
+    For use when callback catcher doesnt have an appropirate handler. This is not a socks4/5 proxy.
     '''
-    Handles incoming connections and forwards onto a socket of your choice
-    For use when callback catcher doesnt have an appropirate handler
-    '''
-
     def __init__(self, *args):
         '''
         Constructor
@@ -30,11 +29,10 @@ class forwardsock(TcpHandler):
         try:
             clientsock.connect((self.forwardhost, self.forwardport))
         except Exception as e:
-            print(e)
             return
              
         while self.session == True:
-            data = self.handle_one_request()
+            data = self.handle_raw_request()
             if len(data) > 0:
                 try:
                     clientsock.send(data)
@@ -50,7 +48,6 @@ class forwardsock(TcpHandler):
                     if "timeout" in str(e):
                         raise
                     else:
-                        print("ForwardSock: " + str(e))
                         self.session = False
         clientsock.close()
             
