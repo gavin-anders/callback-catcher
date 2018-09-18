@@ -26,7 +26,6 @@ from .filters import CallbackFilter, SecretFilter
 
 import logging
 import base64
-from daemon import pidfile
 
 logger = logging.getLogger(__name__)
 
