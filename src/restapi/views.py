@@ -124,7 +124,6 @@ class HandlerDetail(generics.UpdateAPIView):
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data)
             if serializer.is_valid(raise_exception=True):
-                print(serializer.validated_data)
                 settings = serializer.validated_data['settings']
                 logger.debug("Validating settings")
                 parser = CatcherConfigParser(SETTINGS.DEFAULT_HANDLER_SETTINGS)

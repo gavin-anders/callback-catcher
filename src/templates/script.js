@@ -219,7 +219,7 @@ catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 	function($scope, $location, $http) {
 		$scope.message = '';
 		$scope.setting_error = '';
-		$scope.newsetting = null;
+		$scope.settingsid = null;
 		
 		$http.get('/api/handler/').then(function(data) {
 			$scope.handlers = data.data.results;
@@ -228,19 +228,20 @@ catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 		});
 		
 		$scope.editSettings = function(h) {
-			$scope.newsetting = angular.copy(h);
+			$scope.settings = h.settings;
+			$scope.settingsid = h.id;
 		};
 		
 		$scope.saveSettings = function() {
-			console.log($scope.newsetting);
+			console.log($scope.settings);
 			$http({
 			    method: 'PATCH',
-			    url: '/api/handler/' + $scope.newsetting.id + '/',
-			    data: {"settings" : $scope.newsetting.settings},
+			    url: '/api/handler/' + $scope.settingsid + '/',
+			    data: {"settings" : $scope.settings},
 		        headers: {'Content-Type': 'application/json'}
 			}).then(function successHandler(response) {
 				console.log("Handler updated");
-				//window.location.reload();
+				$scope.message = "Handler updated";
 			}, function errorHandler(response) {
 			    console.log('Failed to edit handler');
 			    $scope.message = "Error: Failed to edit handler";

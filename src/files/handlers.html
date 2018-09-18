@@ -25,11 +25,11 @@
         <div class="modal-content">
             <div class="modal-body">
                 <h5>Settings</h5>
-                <textarea class="catcher-settings-pre">{{ newsetting.settings }}</textarea>
+                <textarea class="catcher-settings-pre" ng-model="settings"></textarea>
             </div>
             <div class="modal-footer">
             	<p>{{ setting_error }}</p>
-            	<button ng-click="saveSettings()" type="button" class="btn btn-info">Save</button>
+            	<button ng-click="saveSettings()" type="button" class="btn btn-info" data-dismiss="modal">Save</button>
             </div>
         </div>
     </div>
