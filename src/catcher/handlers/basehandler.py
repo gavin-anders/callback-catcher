@@ -157,7 +157,7 @@ class TcpHandler(BaseCatcherHandler):
         
     def setup(self):
         super().setup()
-        self.set_timeout(TcpHandler.TIMEOUT)
+        self.set_timeout(self.TIMEOUT)
     
     def base_handle(self):
         '''
@@ -201,8 +201,10 @@ class TcpHandler(BaseCatcherHandler):
             self.append_data(response)
             self.request.send(response)
         except LookupError as e:
-            logger.error("{} Sending default response".format(str(e)))
+            logger.warning("{}. Sending default response".format(str(e)))
             self.request.send(b'\r\n')
+        except TypeError as e:
+            logger.warning("{}. Sending default response".format(str(e)))
                 
 class UdpHandler(BaseCatcherHandler):
     '''

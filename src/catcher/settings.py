@@ -27,7 +27,7 @@ BANNER = """
  \____/\__,_|_|_\____/ \__,_|\___|_|\_\\____/\__,_|\__\___|_| |_|\___|_|   
                                                                                                                                
 """
-DEBUG_LVL = 'INFO' #INFO for less noise
+DEBUG_LVL = 'DEBUG' #INFO for less noise
 USERNAME = 'admin'
 PASSWORD = 'password'
 EMAIL = 'gavin.anders@googlemail.com'
@@ -36,19 +36,28 @@ DOMAIN = 'pentestlabs.uk'
 HANDLER_DIR = os.path.join(BASE_DIR, 'catcher/handlers')
 FINGERPRINT_DEFS = os.path.join(BASE_DIR, 'files/fingerprints.xml')
 DEFAULT_PORTS = (
-         {'port': 21, 'protocol': 'tcp', 'handler': 'ftp.py', 'ssl': 0},
-         {'port': 23, 'protocol': 'tcp', 'handler': 'telnet.py', 'ssl': 0},
-         {'port': 25, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
-         {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
-         {'port': 80, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 0},
-         {'port': 443, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
-         {'port': 587, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
-         {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
-         {'port': 8000, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
-    )
+     {'port': 21, 'protocol': 'tcp', 'handler': 'ftp.py', 'ssl': 0},
+     {'port': 23, 'protocol': 'tcp', 'handler': 'telnet.py', 'ssl': 0},
+     {'port': 25, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
+     {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
+     {'port': 80, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 0},
+     {'port': 443, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
+     {'port': 587, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
+     {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
+     {'port': 8000, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
+)
 SSL_KEY = os.path.join(BASE_DIR, 'files/catcher.key')
 SSL_CERT = os.path.join(BASE_DIR, 'files/catcher.crt')
-#=============================================
+DEFAULT_HANDLER_SETTINGS = {
+    'server' : {
+        'timeout': 5,
+        'buffer_size': 1024
+    },
+    'handler' : {
+    }
+}
+
+#===================================
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'vfbc$jpg#b+dgwkpns9ch-&dipkb2d-ryxf0og92cgh1uja5q^'

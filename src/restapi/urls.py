@@ -3,7 +3,7 @@ from .views import CallbackList
 from .views import PortList, PortDetail
 from .views import SecretList
 from .views import StatusView
-from .views import HandlerList
+from .views import HandlerList, HandlerDetail
 from rest_framework_swagger.views import get_swagger_view
 
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
@@ -16,6 +16,7 @@ schema_view = get_swagger_view(title='Callback Catcher API')
 urlpatterns = [
     url(r'^$', schema_view),
     url(r'^handler/$', HandlerList.as_view()),
+    url(r'^handler/(?P<pk>[0-9]+)/$', HandlerDetail.as_view()),
     url(r'^callback/$', CallbackList.as_view()),
     url(r'^port/(?P<pk>[0-9]+)/$', PortDetail.as_view()),
     url(r'^port/$', PortList.as_view(),),

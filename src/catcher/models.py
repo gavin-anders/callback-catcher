@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django_extensions.db.fields.encrypted import EncryptedCharField
 from django.core.validators import MaxValueValidator, MinValueValidator
+from jsonfield import JSONField
 import base64
 import binascii
 
@@ -60,7 +61,7 @@ class Handler(models.Model):
     name         = models.CharField(max_length=100)
     description  = models.TextField()
     filename     = models.CharField(max_length=200, null=False)
-    settings     = models.TextField(null=True) #might need to be a relationship
+    settings     = JSONField(null=True)
     
     class Meta:
         db_table = 'handlers'

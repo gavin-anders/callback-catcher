@@ -26,6 +26,21 @@ body {
 	min-height: 100px;
 	max-height: 400px;
 }
+.catcher-settings-pre {
+	padding: 7px; 
+	border-radius: 5px; 
+	background-color: #D5D8DC; 
+	overflow-wrap: normal; 
+	overflow-y: scroll; 
+	white-space: pre-wrap; 
+	overflow-x: hidden; 
+	width: 100%; 
+	min-height: 100px;
+	max-height: 400px;
+	font-size: 90%;
+	resize: none;
+	font-family: Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
 .catcher-spacer {
 	padding-top: 20px;
 }

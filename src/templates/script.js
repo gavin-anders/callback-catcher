@@ -218,12 +218,35 @@ catcherApp.controller('servicesController', ['$scope', '$location', '$http',
 catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 	function($scope, $location, $http) {
 		$scope.message = '';
+		$scope.setting_error = '';
+		$scope.newsetting = null;
 		
 		$http.get('/api/handler/').then(function(data) {
 			$scope.handlers = data.data.results;
 			$scope.next = data.data.next;
 			$scope.previous = data.data.previous;
 		});
+		
+		$scope.editSettings = function(h) {
+			$scope.newsetting = angular.copy(h);
+		};
+		
+		$scope.saveSettings = function() {
+			console.log($scope.newsetting);
+			$http({
+			    method: 'PATCH',
+			    url: '/api/handler/' + $scope.newsetting.id + '/',
+			    data: {"settings" : $scope.newsetting.settings},
+		        headers: {'Content-Type': 'application/json'}
+			}).then(function successHandler(response) {
+				console.log("Handler updated");
+				//window.location.reload();
+			}, function errorHandler(response) {
+			    console.log('Failed to edit handler');
+			    $scope.message = "Error: Failed to edit handler";
+			});
+			$scope.edit_handler = null;
+		};
 		
 		$scope.isMenuActive = function (viewLocation) {
 		     var active = (viewLocation === $location.path());

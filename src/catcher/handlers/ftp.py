@@ -9,6 +9,8 @@ from .basehandler import TcpHandler
 class ftp(TcpHandler):
     NAME = "FTP"
     DESCRIPTION = '''Handles incoming FTPD connections. Records username and password to secrets.'''
+    BANNER = '220 (CallbackCatcherFTPD 0.1a)\r\n'
+    
     def __init__(self, *args):
         '''
         Constructor
@@ -17,7 +19,7 @@ class ftp(TcpHandler):
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
-        self.request.send(b'220 (CallbackCatcherFTPD 0.1a)\r\n')
+        self.send_response(self.BANNER, 'utf-8')
         
         while self.session is True:
             data = self.handle_plaintext_request()
@@ -62,7 +64,7 @@ class ftp(TcpHandler):
         
     def _PWD(self, line):
         self.set_fingerprint()
-        self.request.send(b'257 "/callback/catcher"\r\n')
+        self.send_response('257 "/callback/catcher"\r\n', 'utf-8')
     
     def _DELE(self, line):
         pass
@@ -84,14 +86,14 @@ class ftp(TcpHandler):
     
     def _PASS(self, line):
         self.add_secret("FTP Password", line)
-        self.send_response(b'230 You are now logged in.\r\n')
+        self.send_response('230 You are now logged in.\r\n', 'utf-8')
     
     def _USER(self, line):
         self.set_fingerprint()
         self.add_secret("FTP Username", line)
-        self.send_response(b'331 Please specify password.\r\n')
+        self.send_response('331 Please specify password.\r\n', 'utf-8')
     
     def _QUIT(self):
-        self.request.send(b'221-Goodbye.\r\n')
+        self.request.send('221-Goodbye.\r\n', 'utf-8')
         self.session = False
         #self.request.close() #this breaks stuff with threading

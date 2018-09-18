@@ -14,6 +14,12 @@ class SecretSerializer(serializers.ModelSerializer):
                   )
 
 class HandlerSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
+    filename = serializers.CharField(read_only=True)
+    settings = serializers.CharField(read_only=False)
+    
     class Meta:
         model = Handler
         fields = ('id',

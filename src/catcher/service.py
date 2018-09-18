@@ -6,6 +6,7 @@ import threading
 import socket
 import sys
 import logging
+import inspect
 
 from catcher.models import Port
 
@@ -13,6 +14,9 @@ from socketserver import TCPServer
 from socketserver import UDPServer
 from socketserver import ThreadingMixIn
 from .handlers import basehandler
+from .config import CatcherConfigParser
+
+import catcher.settings as settings
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +93,7 @@ class Service(multiprocessing.Process):
         self.sslcert = certfile
         self.sslkey = keyfile
         
-    def set_handler(self, handlerfile, handlerdir=None):
+    def set_handler(self, handlerfile, config_string=None):
         '''
         Sets the local handler file
         '''
@@ -98,9 +102,25 @@ class Service(multiprocessing.Process):
             plugin = importlib.import_module('catcher.handlers.' + handlername)
             self.handler = getattr(plugin, handlername)
             logger.info("Set custom handler: '{}'".format(handlerfile))
+            
+            config = CatcherConfigParser(defaults=settings.DEFAULT_HANDLER_SETTINGS)
+            if config_string:
+                config.read(config_string)
+            self.handler = self._set_config(self.handler, config.get_server_settings())
+            self.handler = self._set_config(self.handler, config.get_handler_settings())    
         except ImportError:
             logger.error("Import from local handlers failed. Using default handler...")
             self.handler = None
+            
+    def _set_config(self, handler, setting):
+        for i, v in setting.items():
+            setting_name = i.upper()
+            try:
+                setattr(handler, setting_name, v)
+                logger.debug("{}.{}={}".format(handler.__name__, setting_name, v))
+            except AttributeError:
+                pass
+        return handler
             
     def is_running(self):
         '''
@@ -148,12 +168,11 @@ class Service(multiprocessing.Process):
                                                     certfile=self.sslcert, 
                                                     keyfile=self.sslkey, 
                                                     server_side=True)
-                logger.info("Starting service on {}/{}".format(self.number, self.protocol))
+                logger.info("Starting service on {}/{} - ".format(self.number, self.protocol))
                 thread = threading.Thread(target=server.serve_forever())
                 thread.start()
             except Exception as e:
-                raise
-                logger.error(e)
+                logger.error("Failed to start service on {}/{}".format(self.number, self.protocol))
                 self.shutdown()
                    
     

@@ -15,7 +15,8 @@ from django_filters import rest_framework as filters
 from catcher.service import Service
 from catcher.settings import LISTEN_IP, HANDLER_DIR
 from catcher.utils import kill_process
-from catcher import settings
+from catcher import settings as SETTINGS
+from catcher.config import CatcherConfigParser
 from catcher.models import Handler, Callback, Fingerprint, Port, Secret, Handler
 
 from .serializers import CallbackSerializer
@@ -25,6 +26,7 @@ from .filters import CallbackFilter, SecretFilter
 
 import logging
 import base64
+from daemon import pidfile
 
 logger = logging.getLogger(__name__)
 
@@ -36,37 +38,39 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+def start_port(number, protocol, ssl, handler=None):
+    process = Service(LISTEN_IP, number, protocol, ssl)
+    if handler:
+        process.set_handler(handler.filename, handler.settings)
+    process.start()
+    return process.pid
+
 class CallbackList(generics.ListAPIView):
+    authentication_classes = (BasicAuthentication,)
+    #permission_classes = (IsAuthenticated,)
     queryset = Callback.objects.all().order_by('-pk')
     serializer_class = CallbackSerializer
     paginate_by = 100
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = CallbackFilter
     
 class PortList(generics.ListCreateAPIView):
+    authentication_classes = (BasicAuthentication,)
+    #permission_classes = (IsAuthenticated,)
     queryset = Port.objects.filter(pid__isnull=False)
     serializer_class = PortSerializer
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
     
     def post(self, request, *args, **kwargs):
         serializer = PortSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                process = Service(LISTEN_IP, 
-                          serializer.validated_data['number'], 
-                          serializer.validated_data['protocol'], 
-                          serializer.validated_data['ssl']
-                          )
                 if request.data.get('handler', None):
                     if str(serializer.validated_data['handler'].filename).endswith(".py"):
-                        process.set_handler(serializer.validated_data['handler'].filename)
-                process.start()
-                serializer.validated_data['pid'] = process.pid
+                        pid = start_port(serializer.validated_data['number'], serializer.validated_data['protocol'], serializer.validated_data['ssl'], serializer.validated_data['handler'])
+                else:
+                    pid = start_port(serializer.validated_data['number'], serializer.validated_data['protocol'], serializer.validated_data['ssl'])
+                serializer.validated_data['pid'] = pid
                 serializer.save()
-                logger.info("Started port {}/{} (pid {})".format(process.number, process.protocol, process.pid))
             except Exception as e:
                 logger.info("Failed to start port {}/{}".format(process.number, process.protocol))
                 logger.error(e)
@@ -75,11 +79,10 @@ class PortList(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PortDetail(generics.DestroyAPIView):
-    #queryset = Port.objects.all()
+    authentication_classes = (BasicAuthentication,)
+    #permission_classes = (IsAuthenticated,)
     queryset = Port.objects.filter(pid__isnull=False)
     serializer_class = PortSerializer
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
     
     def delete(self, request, pk, *args, **kwargs):
         try:
@@ -93,23 +96,60 @@ class PortDetail(generics.DestroyAPIView):
         return self.destroy(request, *args, **kwargs)
 
 class SecretList(generics.ListAPIView):
+    authentication_classes = (BasicAuthentication,)
+    #permission_classes = (IsAuthenticated,)
     queryset = Secret.objects.all()
     serializer_class = SecretSerializer
     paginate_by = 100
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = SecretFilter
     
 class HandlerList(generics.ListAPIView):
+    authentication_classes = (BasicAuthentication,)
+    #permission_classes = (IsAuthenticated,)
     queryset = Handler.objects.all()
     serializer_class = HandlerSerializer
+    
+class HandlerDetail(generics.UpdateAPIView):
     authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
+    queryset = Handler.objects.all()
+    lookup_field = 'pk'
+    http_method_names = ['get', 'patch'] #ignore put
+    serializer_class = HandlerSerializer
+
+    def patch(self, request, pk, *args, **kwargs):
+        try:
+            #not sure why partial_update wouldnt save
+            instance = self.get_object()
+            serializer = self.get_serializer(instance, data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                print(serializer.validated_data)
+                settings = serializer.validated_data['settings']
+                logger.debug("Validating settings")
+                parser = CatcherConfigParser(SETTINGS.DEFAULT_HANDLER_SETTINGS)
+                parser.read(settings)
+                if parser.is_valid():
+                    self.perform_update(serializer)
+                else:
+                    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                handler = self.get_object()
+                ports = Port.objects.filter(handler=handler)
+                for p in ports:
+                    kill_process(p.pid)
+                    pid = start_port(p.number, p.protocol, p.ssl, handler)
+                    p.pid = pid
+                    p.save()
+            return Response(serializer.data)
+        except Handler.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(e)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class StatusView(APIView):
     authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     
     def get(self, request, format=None):
         data = {}
@@ -119,7 +159,7 @@ class StatusView(APIView):
             data['port_count'] = Port.objects.all().count()
             data['callback_count'] = Callback.objects.all().count()
             data['secret_count'] = Secret.objects.all().count()
-            data['domain'] = settings.DOMAIN
+            data['domain'] = SETTINGS.DOMAIN
             data['clientip'] = get_client_ip(request)
             
             fingercallbacks = {}

@@ -6,19 +6,31 @@
 	      	<tr>
 		      	<th>Name</th>
 				<th>Description</th>
-				<!-- <th>Config</th>-->
 				<th>Filename</th>
-				<!-- <th style="width:50px">Edit</th>  -->
+				<th>Settings</th>
 	      	</tr>
 	    </thead>
-		<tbody ng-repeat="h in handlers | filter : filterTable"" >
+		<tbody ng-repeat="h in handlers | filter : filterTable" >
 	    	<tr>
 	       		<td>{{ h.name }}</td>
 	       		<td>{{ h.description }}</td>
-	       		<!-- <td>{{ h.settings | '-' }}</td>  -->
 	       		<td>{{ h.filename }}</td>
-	       		<!-- <td><button ng-click="editHandler( h.id )" type="button" class="btn btn-block btn-danger">&#9998;</button></td>  -->
+	       		<td><button ng-click="editSettings( h )" type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#settingsModal">&#9998;</button></td>
 	    	</tr>
 	  	</tbody>
 	</table>
+</div>
+<div class="modal fade" id="settingsModal" role="dialog">
+    <div class="modal-dialog modal-lg text-left">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5>Settings</h5>
+                <textarea class="catcher-settings-pre">{{ newsetting.settings }}</textarea>
+            </div>
+            <div class="modal-footer">
+            	<p>{{ setting_error }}</p>
+            	<button ng-click="saveSettings()" type="button" class="btn btn-info">Save</button>
+            </div>
+        </div>
+    </div>
 </div>

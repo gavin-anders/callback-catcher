@@ -26,6 +26,18 @@ body {
 	min-height: 100px;
 	max-height: 400px;
 }
+.catcher-settings-pre {
+	padding: 7px; 
+	border-radius: 5px; 
+	background-color: #D5D8DC; 
+	overflow-wrap: normal; 
+	overflow-y: scroll; 
+	white-space: pre-wrap; 
+	overflow-x: hidden; 
+	width: 100%; 
+	min-height: 200px;
+	max-height: 500px;
+}
 .catcher-spacer {
 	padding-top: 20px;
 }
@@ -38,8 +50,6 @@ body {
 .catcher-search-row {
 	padding-bottom: 0.5em;
 }
-.catcher-search-button {
-	margin-left: 15px;
-	margin-right: 15px;
-	float: right !important;
+.catcher-search-toggle {
+	font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }

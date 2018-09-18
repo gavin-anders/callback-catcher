@@ -2,10 +2,12 @@
 <p>{{ message }}</p>
 <div class="catcher-search-box">
 	<div class="row">
-		<div class="col-11">
-			<a data-toggle="collapse" href="#collapseSearch"><h3>Advanced search</h1></a>
+		<div class="col-11 align-bottom">
+			<button class="btn btn-link dropdown-toggle catcher-search-toggle" data-toggle="collapse" data-target="#collapseSearch" type="button">
+				<span class="caret"></span>Advanced search
+	    	</button>
 		</div>
-		<div class="col-1 catcher-search-row">
+		<div class="col-1">
 			<button type="button" class="btn btn-block btn-info" ng-click="executeQuery()">&#128270;</button>
 		</div>
 	</div>
@@ -17,7 +19,7 @@
 	        <div class="col-1"></div>
 	        <div class="col-1"></div>
 	    </div>
-	    <div class="row" ng-repeat="q in queries track by $index">
+	    <div class="row catcher-search-row" ng-repeat="q in queries track by $index">
 	        <div class="col-3">
 	            <input class="form-control" type="text" value="{{ q.field.label }}" readonly>
 	        </div>
