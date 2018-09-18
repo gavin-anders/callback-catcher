@@ -106,18 +106,17 @@ class Service(multiprocessing.Process):
             config = CatcherConfigParser(defaults=settings.DEFAULT_HANDLER_SETTINGS)
             if config_string:
                 config.read(config_string)
-            self.handler = self._set_config(self.handler, config.get_server_settings())
-            self.handler = self._set_config(self.handler, config.get_handler_settings())    
+            self.handler = self._set_config(self.handler, config.get_settings())  
         except ImportError:
-            logger.error("Import from local handlers failed. Using default handler...")
+            logger.error("Importing file from local handlers directory failed. Using default handler...")
             self.handler = None
             
     def _set_config(self, handler, setting):
         for i, v in setting.items():
-            setting_name = i.upper()
+            setting_name = i
             try:
                 setattr(handler, setting_name, v)
-                logger.debug("{}.{}={}".format(handler.__name__, setting_name, v))
+                logger.debug("{}.{}={}".format(handler.__name__, setting_name, repr(v)))
             except AttributeError:
                 pass
         return handler
@@ -168,7 +167,7 @@ class Service(multiprocessing.Process):
                                                     certfile=self.sslcert, 
                                                     keyfile=self.sslkey, 
                                                     server_side=True)
-                logger.info("Starting service on {}/{} - ".format(self.number, self.protocol))
+                logger.info("Starting service on {}/{}".format(self.number, self.protocol))
                 thread = threading.Thread(target=server.serve_forever())
                 thread.start()
             except Exception as e:

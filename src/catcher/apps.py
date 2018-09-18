@@ -2,19 +2,23 @@ from django.apps import AppConfig
 
 class CatcherConfig(AppConfig):
     name = 'catcher'
-    verbose_name = 'CallBackCatcher Client'
+    verbose_name = 'CallBack Catcher'
  
     def ready(self):
-        import socket
-        import logging
-        import xml.etree.ElementTree as ET
-        import catcher.signals
-        import catcher.settings as settings
         from django.contrib.auth.models import User
         from catcher.models import Port, Fingerprint, Port, Handler
         from catcher.service import Service
+        from catcher.config import CatcherConfigParser
+        
+        import catcher.signals
+        import catcher.settings as settings
+        
+        import socket
+        import logging
+        import xml.etree.ElementTree as ET
         import multiprocessing
         import os
+        import sys
         import importlib
         
         logger = logging.getLogger(__name__)
@@ -45,7 +49,7 @@ class CatcherConfig(AppConfig):
         logger.info("Fingerprints loaded successfully")
         
         #Add handlers to database
-        logger.info("Loading handlers")
+        logger.info("Importing handlers")
         exclude_handlers = ('__init__.py', 'basehandler.py')
         try:
             handler_count = 0
@@ -55,23 +59,38 @@ class CatcherConfig(AppConfig):
                         handlername, ext = filename.split(".", 1)
                         plugin = importlib.import_module('catcher.handlers.' + handlername)
                         handler = getattr(plugin, handlername)
+                                                
                         description = ""
                         if hasattr(handler, 'NAME') and hasattr(handler, 'DESCRIPTION'):
                             handlername = handler.NAME
                             handlerdesc = handler.DESCRIPTION
+                            #Parse any settings that the handler may have
+                            defaults={'name': handlername, 'filename': filename, 'description': handlerdesc, 'settings': {}}
+                            c = CatcherConfigParser(defaults=settings.DEFAULT_HANDLER_SETTINGS)
+                            if hasattr(handler, 'SETTINGS'):
+                                logger.debug("{}: Found custom settings. Updating db.".format(filename))
+                                for i, v in getattr(handler, 'SETTINGS').items():
+                                    c.add_setting(i, v)
+                                    
+                            defaults['settings'] = c.get_settings(json_format=True)
+                            handlerobj, created = Handler.objects.update_or_create(
+                                name=handlername,
+                                defaults=defaults,
+                            )
+                            handler_count = handler_count + 1
                         else:
                             raise AttributeError
-                        obj, created = Handler.objects.update_or_create(
-                            name=handlername,
-                            defaults={'name': handlername, 'filename': filename, 'description': handlerdesc},
-                        )
-                        handler_count = handler_count + 1
+                        logger.info("{}: Imported".format(filename))
                     except ImportError:
-                        logger.error("Import handler {} failed. Skipping".format(filename))
+                        logger.error("{}: Import failed. Skipping".format(filename))
                     except AttributeError:
-                        logger.error("Import handler {} failed. Missing handler NAME or DESCRIPTION attributes. Skipping".format(filename))
+                        logger.error("{}: Import failed. Handler missing attribute. Skipping...".format(filename))
+                    except Exception as e:
+                        raise
+                        logger.exception("{}: Unknown error whilst importing. {}".format(filename, e))
+                        sys.exit()
         except:
-            logger.error("Unable to load {}".format(settings.FINGERPRINT_DEFS))
+            logger.exception("Unable to load handlers")
             raise
         logger.info("{} handlers loaded successfully".format(handler_count))
         

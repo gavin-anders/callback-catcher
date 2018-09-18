@@ -9,7 +9,9 @@ from .basehandler import TcpHandler
 class ftp(TcpHandler):
     NAME = "FTP"
     DESCRIPTION = '''Handles incoming FTPD connections. Records username and password to secrets.'''
-    BANNER = '220 (CallbackCatcherFTPD 0.1a)\r\n'
+    SETTINGS = {
+            'banner': '220 (CallbackCatcherFTPD 0.1a)\r\n',
+        }
     
     def __init__(self, *args):
         '''

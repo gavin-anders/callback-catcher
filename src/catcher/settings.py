@@ -49,12 +49,8 @@ DEFAULT_PORTS = (
 SSL_KEY = os.path.join(BASE_DIR, 'files/catcher.key')
 SSL_CERT = os.path.join(BASE_DIR, 'files/catcher.crt')
 DEFAULT_HANDLER_SETTINGS = {
-    'server' : {
-        'timeout': 5,
-        'buffer_size': 1024
-    },
-    'handler' : {
-    }
+    "timeout": 5,
+    "buffer_size": 1024
 }
 
 #===================================
