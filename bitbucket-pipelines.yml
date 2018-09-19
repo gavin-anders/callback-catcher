@@ -13,8 +13,11 @@ pipelines:
     - step:
         name: Docker build
         script:
-          - ssh $user@$server 'docker build --network host -t callback-catcher .'
+          - ssh $user@$server 'cd callback-catcher && docker build --network host -t callback-catcher .'
     - step:
         name: Docker run
         script:
-          - ssh $user@$server 'docker run -d callback-catcher'
+          - echo 'Stopping running docker containers'--
+          - ssh $user@$server 'docker ps -a -q  --filter ancestor=callback-catcher'
+          - echo 'Starting container'--
+          - ssh $user@$server 'cd callback-catcher && docker run -d callback-catcher'
