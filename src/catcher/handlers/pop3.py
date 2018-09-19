@@ -9,6 +9,9 @@ from .basehandler import TcpHandler
 class pop3(TcpHandler):
     NAME = "POP3"
     DESCRIPTION = '''POP3 mail server. Records username and password to secrets.'''
+    SETTINGS = {
+        'banner': '220 (CallbackCatcherFTPD 0.1a)\r\n',
+    }
 
     def __init__(self, *args):
         '''
@@ -20,55 +23,48 @@ class pop3(TcpHandler):
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
-        self.request.send(b'+OK pop ready for requests from %s\r\n' % self.client_address[0])
+        self.send_response('+OK pop ready for requests from {}\r\n'.format(self.client_address[0]), encoding='utf-8')
         
         while self.session is True:
-            data = self.handle_one_request()         
-            if len(data) > 0:
-                line = data.decode('utf-8').rstrip()
-                command, param = self._parse_command(line)
+            data = self.handle_plaintext_request()
+            if data:
+                command, param = self._parse_command(data)
                 try:
-                    command = '_' + command
                     if param:
                         getattr(self, command)(param)
-                    getattr(self, command)()
+                    else:
+                        getattr(self, command)()
                 except Exception as e:
-                    #print e
-                    pass
+                    self.session = False
             else:
-                break
-        
-        #Print out the creds for now
-        print("#####################################")
-        if self.username:
-            print("[+] POP3 USERNAME: %s" % self.username)
-        if self.password:
-            print("[+] POP3 PASSWORD: %s" % self.password)
-        print("#####################################")
-        return
+                self.session = False
         
     def _parse_command(self, line):
         '''
         returns the command that has been requested
         '''
-        line = line.decode('utf-8').rstrip()
+        line = line.strip()
         param = ''
         try:
             parsed = line.split(' ')
-            command = parsed[0]
-            command = command.replace(" ", "_")
-            param = parsed[1]
+            if len(parsed) > 1:
+                command = parsed[0]
+                param = parsed[1]
+            else:
+                command = line
+                param = None
         except:
             pass
-        return (command, param)
-        
+        return ("_"+command, param)
+    
     def _USER(self, username):
         self.username = username
-        self.request.send(b'+OK send PASS\r\n')
+        self.add_secret("POP Username", username)
+        self.send_response(b'+OK send PASS\r\n')
         
     def _PASS(self, password):
-        self.request.send(b'+OK Welcome.\r\n')
-        self.password = password
+        self.send_response(b'+OK Welcome.\r\n')
+        self.add_secret("POP Password", password)
         self._QUIT()
         
     def _STAT(self, param):
@@ -87,11 +83,11 @@ class pop3(TcpHandler):
         self.default()
         
     def _NOOP(self, param):
-        self.request.send(b'+Ok\r\n')
+        self.send_response(b'+Ok\r\n')
         
     def _QUIT(self):
-        self.request.send(b'DONE\r\n')
+        self.send_response(b'DONE\r\n')
         self.session = False
         
     def default(self):
-        self.request.send(b'Not implemented\r\n')
+        self.send_response(b'Not implemented\r\n')

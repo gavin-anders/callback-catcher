@@ -13,7 +13,9 @@ import base64
 class smtp(TcpHandler):
     NAME = "SMTP"
     DESCRIPTION = '''Another basic mail server. Records LOGIN AUTH and AUTH PLAIN to secrets.'''
-    HOSTNAME = 'catcher.nccgroup.com'
+    SETTINGS = {
+        'hostname': 'catcher.nccgroup.com',
+    }
 
     def __init__(self, *args):
         '''
@@ -23,7 +25,7 @@ class smtp(TcpHandler):
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
-        self.send_response(b'220 catcher ESMTP CallbackCatcher service ready\r\n')
+        self.send_response('220 {} ESMTP CallbackCatcher service ready\r\n'.format(self.hostname), encoding='utf-8')
         
         while self.session is True:
             data = self.handle_plaintext_request()       

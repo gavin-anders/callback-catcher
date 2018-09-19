@@ -101,7 +101,7 @@ class Service(multiprocessing.Process):
         try:
             plugin = importlib.import_module('catcher.handlers.' + handlername)
             self.handler = getattr(plugin, handlername)
-            logger.info("Set custom handler: '{}'".format(handlerfile))
+            logger.debug("Set custom handler: '{}'".format(handlerfile))
             
             config = CatcherConfigParser(defaults=settings.DEFAULT_HANDLER_SETTINGS)
             if config_string:
@@ -172,6 +172,7 @@ class Service(multiprocessing.Process):
                 thread.start()
             except Exception as e:
                 logger.error("Failed to start service on {}/{}".format(self.number, self.protocol))
+                logger.debug("Error: {}".format(e))
                 self.shutdown()
                    
     

@@ -9,6 +9,9 @@ from .basehandler import TcpHandler
 class simple(TcpHandler):
     NAME = "Simple"
     DESCRIPTION = '''The most basic of handlers. Echos any data that is sent. Use this as a template or example.'''
+    SETTINGS = {
+        'banner': 'Callback Catcher Online\r\n',
+    }
     def __init__(self, *args):
         '''
         Constructor
@@ -20,9 +23,10 @@ class simple(TcpHandler):
         """
         Simple echo handler
         """
-        self.request.send(b'Callback Catcher Echo Service\r\n')
+        self.request.send(self.banner)
         
         while self.session is True:
+            
             data = self.handle_raw_request()
             if data:
                 #MANIPULATE DATA HERE

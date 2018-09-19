@@ -32,6 +32,7 @@ USERNAME = 'admin'
 PASSWORD = 'password'
 EMAIL = 'gavin.anders@googlemail.com'
 LISTEN_IP = '0.0.0.0'
+EXTERNAL_IP = '18.221.124.159'
 DOMAIN = 'pentestlabs.uk'
 HANDLER_DIR = os.path.join(BASE_DIR, 'catcher/handlers')
 FINGERPRINT_DEFS = os.path.join(BASE_DIR, 'files/fingerprints.xml')
@@ -41,9 +42,11 @@ DEFAULT_PORTS = (
      {'port': 25, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
      {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
      {'port': 80, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 0},
+     {'port': 110, 'protocol': 'tcp', 'handler': 'pop3.py', 'ssl': 0},
      {'port': 443, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
      {'port': 587, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
      {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
+     {'port': 3307, 'protocol': 'tcp', 'handler': 'mysql.py', 'ssl': 0},
      {'port': 8000, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
 )
 SSL_KEY = os.path.join(BASE_DIR, 'files/catcher.key')

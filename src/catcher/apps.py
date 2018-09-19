@@ -45,12 +45,13 @@ class CatcherConfig(AppConfig):
                 )
         except:
             logger.error("Unable to load {}".format(settings.FINGERPRINT_DEFS))
-            #raise
+
         logger.info("Fingerprints loaded successfully")
         
         #Add handlers to database
         logger.info("Importing handlers")
         exclude_handlers = ('__init__.py', 'basehandler.py')
+        handler_settings = {}
         try:
             handler_count = 0
             for filename in os.listdir(settings.HANDLER_DIR):
@@ -73,6 +74,7 @@ class CatcherConfig(AppConfig):
                                     c.add_setting(i, v)
                                     
                             defaults['settings'] = c.get_settings(json_format=True)
+                            handler_settings[filename] = defaults['settings']
                             handlerobj, created = Handler.objects.update_or_create(
                                 name=handlername,
                                 defaults=defaults,
@@ -80,7 +82,7 @@ class CatcherConfig(AppConfig):
                             handler_count = handler_count + 1
                         else:
                             raise AttributeError
-                        logger.info("{}: Imported".format(filename))
+                        logger.debug("{}: Imported".format(filename))
                     except ImportError:
                         logger.error("{}: Import failed. Skipping".format(filename))
                     except AttributeError:
@@ -104,7 +106,7 @@ class CatcherConfig(AppConfig):
         for p in settings.DEFAULT_PORTS:
             try:
                 process = Service(settings.LISTEN_IP, p['port'], p['protocol'], p['ssl'])
-                process.set_handler(p['handler'])
+                process.set_handler(p['handler'], config_string=handler_settings[p['handler']])
                 if p['ssl'] is 1:
                     process.set_ssl_context(settings.SSL_CERT, settings.SSL_KEY)
                 process.start()

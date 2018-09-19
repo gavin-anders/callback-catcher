@@ -5,7 +5,6 @@ Created on 15 Sep 2017
 '''
 from .basehandler import UdpHandler
 from dnslib import DNSRecord, DNSRecord, DNSHeader, DNSQuestion, RR, A
-from catcher.settings import LISTEN_IP
 
 import binascii
 import logging
@@ -16,7 +15,9 @@ logger = logging.getLogger(__name__)
 class dns(UdpHandler):
     NAME = "DNS Server"
     DESCRIPTION = "Basic UDP domain server. Responds to A records, supports data DNS exfil and dynamic resolving via hex encoded subdomain values (max length 53 chars)."
-    RESOLVED_IP = LISTEN_IP
+    SETTINGS = {
+        "resolveip": "1.2.3.4"
+    }
 
     def __init__(self, *args):
         '''
@@ -65,9 +66,9 @@ class dns(UdpHandler):
                     if re.match('[0-9a-fA-F]{2}', hexdata):   
                         logger.info("Extracting data from DNS entry")
                         raw = binascii.a2b_hex(hexdata)
-                        self.add_secret("DNS Data Exfiltration", raw.decode("utf-8"))
+                        self.add_secret("Data Exfiltration", raw.decode("utf-8"))
                 except:
                     logger.info("Extracting data from {} - FAILED".format(qname))
                 return "127.0.0.1"
-        return self.RESOLVED_IP
+        return self.resolveip
 

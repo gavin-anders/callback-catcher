@@ -1,5 +1,5 @@
-import logging
 import json
+import logging
 import copy
 
 from .catcherexceptions import MissingConfigSection, InvalidConfigSection, InvalidConfigFormat
@@ -29,7 +29,6 @@ class CatcherConfigParser(object):
         '''
         Validates that the settings have the correct sections
         '''
-        logger.debug("Validating settings")
         try:
             if not isinstance(settings, dict):
                 raise InvalidConfigFormat
@@ -38,10 +37,8 @@ class CatcherConfigParser(object):
         return settings
     
     def read(self, string):
-        logger.debug("Reading JSON string")
         try:
             parsed = json.loads(string)
-            print(parsed)
             self._validate(parsed)
             self.settings = parsed
         except ValueError as e:

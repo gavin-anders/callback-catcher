@@ -12,14 +12,16 @@ class forwardsocket(TcpHandler):
     DESCRIPTION = '''Handles incoming connections and forwards onto a socket of your choice
     For use when callback catcher doesnt have an appropirate handler. This is not a socks4/5 proxy.
     '''
+    SETTINGS = {
+        'forwardhost': '127.0.0.1',
+        'forwardhport': 4444,
+        'buffersize': 4096
+    }
     def __init__(self, *args):
         '''
         Constructor
         '''
         self.session = True
-        self.forwardhost = '127.0.0.1'
-        self.forwardport = 666
-        self.timeout = 5
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
@@ -38,7 +40,7 @@ class forwardsocket(TcpHandler):
                     clientsock.send(data)
                     buffer = ""
                     while True:
-                        clientdata = clientsock.recv(4096)
+                        clientdata = clientsock.recv(self.buffersize)
                         if not clientdata:
                             break
                         buffer += clientdata
