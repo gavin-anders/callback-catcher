@@ -3,6 +3,8 @@ image: python:3
 pipelines:
   default:
     - step:
+        caches:
+          - pip
         script:
           - ssh $user@$server ls -l /home/$user
           - pip3 install -r requirements.txt
