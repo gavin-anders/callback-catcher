@@ -5,7 +5,7 @@ pipelines:
     - step:
         name: Checking access
         script:
-          - ssh $user@$server 'ls -l /home/$user' 
+          - ssh $user@$server 'ls -l ~/' 
     - step:
         name: Clone
         script:
