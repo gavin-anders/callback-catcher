@@ -25,7 +25,7 @@ RUN apt-get install -y sqlite3
 RUN python3 /usr/lib/python3/dist-packages/easy_install.py pip
    
 #Setup project
-$PROJECT_DIR=/root/callback-catcher
+ENV $PROJECT_DIR=/root/callback-catcher
 COPY . $PROJECT_DIR
 WORKDIR $PROJECT_DIR/src
 
