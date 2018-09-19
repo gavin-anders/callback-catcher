@@ -6,15 +6,27 @@ from .views import StatusView
 from .views import HandlerList, HandlerDetail
 from rest_framework_swagger.views import get_swagger_view
 
-from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
-from rest_framework.decorators import api_view, renderer_classes, permission_classes
+from rest_framework.decorators import renderer_classes, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import response, schemas
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.response import Response
+from rest_framework.schemas import SchemaGenerator
+from rest_framework.views import APIView
+from rest_framework_swagger.renderers import SwaggerUIRenderer
 
-schema_view = get_swagger_view(title='Callback Catcher API')
+class SwaggerSchemaView(APIView):
+    title='Callback Catcher API'
+    authentication_classes = [BasicAuthentication, ]
+    permission_classes = [IsAuthenticated, ]
+    renderer_classes = [SwaggerUIRenderer, ]
+
+    def get(self, request):
+        generator = SchemaGenerator()
+        schema = generator.get_schema(request=request)
+        return Response(schema)
 
 urlpatterns = [
-    url(r'^$', schema_view),
+    url(r'^$', SwaggerSchemaView.as_view()),
     url(r'^handler/$', HandlerList.as_view()),
     url(r'^handler/(?P<pk>[0-9]+)/$', HandlerDetail.as_view()),
     url(r'^callback/$', CallbackList.as_view()),

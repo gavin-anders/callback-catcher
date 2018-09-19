@@ -46,7 +46,7 @@ def start_port(number, protocol, ssl, handler=None):
 
 class CallbackList(generics.ListAPIView):
     authentication_classes = (BasicAuthentication,)
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset = Callback.objects.all().order_by('-pk')
     serializer_class = CallbackSerializer
     paginate_by = 100
@@ -55,7 +55,7 @@ class CallbackList(generics.ListAPIView):
     
 class PortList(generics.ListCreateAPIView):
     authentication_classes = (BasicAuthentication,)
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset = Port.objects.filter(pid__isnull=False)
     serializer_class = PortSerializer
     
@@ -79,7 +79,7 @@ class PortList(generics.ListCreateAPIView):
 
 class PortDetail(generics.DestroyAPIView):
     authentication_classes = (BasicAuthentication,)
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset = Port.objects.filter(pid__isnull=False)
     serializer_class = PortSerializer
     
@@ -96,7 +96,7 @@ class PortDetail(generics.DestroyAPIView):
 
 class SecretList(generics.ListAPIView):
     authentication_classes = (BasicAuthentication,)
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset = Secret.objects.all()
     serializer_class = SecretSerializer
     paginate_by = 100
@@ -105,13 +105,13 @@ class SecretList(generics.ListAPIView):
     
 class HandlerList(generics.ListAPIView):
     authentication_classes = (BasicAuthentication,)
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset = Handler.objects.all()
     serializer_class = HandlerSerializer
     
 class HandlerDetail(generics.UpdateAPIView):
     authentication_classes = (BasicAuthentication,)
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset = Handler.objects.all()
     lookup_field = 'pk'
     http_method_names = ['get', 'patch'] #ignore put
@@ -147,7 +147,7 @@ class HandlerDetail(generics.UpdateAPIView):
 
 class StatusView(APIView):
     authentication_classes = (BasicAuthentication,)
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     
     def get(self, request, format=None):
         data = {}
