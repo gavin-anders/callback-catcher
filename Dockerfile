@@ -14,7 +14,7 @@ RUN apt-get install -y python3-dev
 RUN apt-get install -y sqlite3
    
 #Setup project
-ENV $PROJECT_DIR=/root/callback-catcher
+ENV PROJECT_DIR=/root/callback-catcher
 COPY . $PROJECT_DIR
 WORKDIR $PROJECT_DIR/src
 
