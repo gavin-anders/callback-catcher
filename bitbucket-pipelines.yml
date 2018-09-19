@@ -6,5 +6,5 @@ pipelines:
         script:
           - ssh $user@$server ls -l /home/$user
           - pip3 install -r requirements.txt
-          - cd callback-catcher-
-          - python3 manage.py runserver 0.0.0.0:12443 --noreload-
+          - cd callback-catcher
+          - python3 manage.py runserver 0.0.0.0:12443 --noreload
