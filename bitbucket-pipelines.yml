@@ -3,10 +3,6 @@ image: python:3
 pipelines:
   default:
     - step:
-        name: Checking access
-        script:
-          - ssh $user@$server 'ls -l ~/' 
-    - step:
         name: Clone
         script:
           - ssh $user@$server 'sh pull.sh'
