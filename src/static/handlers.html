@@ -15,7 +15,7 @@
 	       		<td>{{ h.name }}</td>
 	       		<td>{{ h.description }}</td>
 	       		<td>{{ h.filename }}</td>
-	       		<td><button ng-click="editHandler( h.settings )" type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#settingsModal">&#9998;</button></td>
+	       		<td><button ng-click="editSettings( h )" type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#settingsModal">&#9998;</button></td>
 	    	</tr>
 	  	</tbody>
 	</table>
@@ -25,10 +25,11 @@
         <div class="modal-content">
             <div class="modal-body">
                 <h5>Settings</h5>
-                <pre class="catcher-data-dump-pre">{{ settings }}</pre>
+                <textarea class="catcher-settings-pre" ng-model="settings"></textarea>
             </div>
             <div class="modal-footer">
-            	<button ng-click="saveSettings( settings )" type="button" class="btn btn-info">Save</button>
+            	<p>{{ setting_error }}</p>
+            	<button ng-click="saveSettings()" type="button" class="btn btn-info" data-dismiss="modal">Save</button>
             </div>
         </div>
     </div>

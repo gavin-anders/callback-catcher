@@ -27,7 +27,7 @@ BANNER = """
  \____/\__,_|_|_\____/ \__,_|\___|_|\_\\____/\__,_|\__\___|_| |_|\___|_|   
                                                                                                                                
 """
-DEBUG_LVL = 'DEBUG' #INFO for less noise
+DEBUG_LVL = 'INFO' #INFO for less noise
 USERNAME = 'admin'
 PASSWORD = 'password'
 EMAIL = 'gavin.anders@googlemail.com'
@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'django_filters',
     'restapi',
     'catcher',
+    'sslserver',
 ]
 
 MIDDLEWARE_CLASSES = [

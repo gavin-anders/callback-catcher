@@ -35,8 +35,11 @@ body {
 	white-space: pre-wrap; 
 	overflow-x: hidden; 
 	width: 100%; 
-	min-height: 200px;
-	max-height: 500px;
+	min-height: 100px;
+	max-height: 400px;
+	font-size: 90%;
+	resize: none;
+	font-family: Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }
 .catcher-spacer {
 	padding-top: 20px;
