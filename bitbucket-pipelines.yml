@@ -3,10 +3,18 @@ image: python:3
 pipelines:
   default:
     - step:
-        caches:
-          - pip
+        name: Checking access
         script:
-          - ssh $user@$server ls -l /home/$user
-          - pip3 install -r requirements.txt
-          - cd callback-catcher
-          - python3 manage.py runserver 0.0.0.0:12443 --noreload
+          - ssh $user@$server 'ls -l /home/$user' 
+    - step:
+        name: Clone
+        script:
+          - ssh $user@$server 'sh pull.sh'
+    - step:
+        name: Docker build
+        script:
+          - ssh $user@$server 'docker build --network host -t callback-catcher .'
+    - step:
+        name: Docker run
+        script:
+          - ssh $user@$server 'docker run -d callback-catcher'
