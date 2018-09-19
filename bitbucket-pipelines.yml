@@ -11,5 +11,5 @@ pipelines:
         caches:
           - pip
         script: # Modify the commands below to build your repository.
-          - ssh <user>@<server> ls -l /var/www
-          -        pip install -r requirements.txt
+          - ssh $user@$server ls -l /home/$user
+          - pip install -r requirements.txt
