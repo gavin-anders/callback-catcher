@@ -11,8 +11,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get autoremove && apt-get autocl
 RUN apt-get install -y libssl-dev 
 RUN apt-get install -y build-essential 
 RUN apt-get install -y python3-dev 
-RUN apt-get install -y sqlite3 
-RUN python3 /usr/lib/python3/dist-packages/easy_install.py pip
+RUN apt-get install -y sqlite3
    
 #Setup project
 ENV $PROJECT_DIR=/root/callback-catcher
