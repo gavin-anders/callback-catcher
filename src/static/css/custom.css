@@ -42,7 +42,9 @@ body {
 	font-family: Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }
 .catcher-spacer {
-	padding-top: 20px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
 }
 .catcher-search-box {
 	padding: 1rem 1rem;

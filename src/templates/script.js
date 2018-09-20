@@ -59,12 +59,23 @@ catcherApp.controller('callbackController', ['$scope', '$location', '$http',
 	function($scope, $location, $http) {
 		$scope.message = '';
 		
-		$http.get('/api/callback/').then(function(data) {
-			$scope.callbacks = data.data.results;
-			$scope.next = data.data.next;
-			$scope.previous = data.data.previous;
-		});
+		$scope.getList = function(url) {
+			$http.get(url).then(function(data) {
+				console.log(data);
+				$scope.callbacks = data.data.results;
+				$scope.next = data.data.next;
+				$scope.previous = data.data.previous;
+			});
+		};
 		
+		$scope.nextPage = function(){
+			console.log($scope.next);
+			$scope.getList($scope.next);
+		};
+		$scope.previousPage = function(){
+			$scope.getList($scope.previous);
+		};
+				
 		$scope.message = '';
 		$scope.lookups = [];
 		$scope.queries = [];
@@ -162,6 +173,8 @@ catcherApp.controller('callbackController', ['$scope', '$location', '$http',
 		     var active = (viewLocation === $location.path());
 		     return active;
 	     };
+	     
+	     $scope.getList('/api/callback/');
 	}
 ]);
 
