@@ -7,8 +7,8 @@ LABEL \
     description="Pentesting services framework designed to easily and quickly start and stop different services. Supports collecting and filtering of sucesfull data connections which is then exposed via a REST API."
 
 #Install Required Libs
-RUN apt-get update && apt-get upgrade -y && apt-get autoremove && apt-get autoclean
-RUN apt-get install -y libssl-dev sqlite3 
+#RUN apt-get update && apt-get upgrade -y && apt-get autoremove && apt-get autoclean
+#RUN apt-get install -y libssl-dev sqlite3 
    
 #Setup project
 ENV PROJECT_DIR=/root/callback-catcher
