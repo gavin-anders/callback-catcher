@@ -3,17 +3,6 @@ image: python:3
 pipelines:
   default:
     - step:
-        name: Clone
+        name: Build and Run
         script:
-          - ssh $user@$server 'sh pull.sh'
-    - step:
-        name: Docker build
-        script:
-          - ssh $user@$server 'cd callback-catcher && docker build --network host -t callback-catcher .'
-    - step:
-        name: Docker run
-        script:
-          - echo 'Stopping running docker containers'--
-          - ssh $user@$server 'docker ps -a -q  --filter ancestor=callback-catcher'
-          - echo 'Starting container'--
-          - ssh $user@$server 'cd callback-catcher && docker run -d callback-catcher'
+          - ssh $user@$server 'sh build.sh'
