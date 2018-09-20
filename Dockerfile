@@ -8,7 +8,7 @@ LABEL \
 
 #Install Required Libs
 RUN apt-get update && apt-get upgrade -y && apt-get autoremove && apt-get autoclean
-RUN apt-get install -y libssl-dev build-essential python3-dev sqlite3 
+RUN apt-get install -y libssl-dev sqlite3 
    
 #Setup project
 ENV PROJECT_DIR=/root/callback-catcher
