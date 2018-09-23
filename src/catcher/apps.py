@@ -50,7 +50,7 @@ class CatcherConfig(AppConfig):
         
         #Add handlers to database
         logger.info("Importing handlers")
-        exclude_handlers = ('__init__.py', 'basehandler.py')
+        exclude_handlers = ('__init__.py', 'basehandler.py', 'packets.py')
         handler_settings = {}
         try:
             handler_count = 0

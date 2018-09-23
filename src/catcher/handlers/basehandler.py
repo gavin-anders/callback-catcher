@@ -72,7 +72,7 @@ class BaseCatcherHandler(BaseRequestHandler):
             self.handle_timeout()
         except SSLError as e:
             #SSLError: The read operation timed out
-            log.error("SSL Error - {}".format(str(e)))
+            logger.error("SSL Error - {}".format(str(e)))
         except Exception as e:
             if 'The read operation timed out' in e.args:
                 self.handle_timeout()

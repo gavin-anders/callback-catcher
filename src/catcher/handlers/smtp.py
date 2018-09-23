@@ -2,9 +2,12 @@
 Created on 15 Sep 2017
 
 @author: gavin
+
+test STARTTLS with openssl s_client -connect 127.0.0.1:25 -starttls smtp
 '''
 
 from .basehandler import TcpHandler
+from catcher.settings import SSL_KEY, SSL_CERT
 
 import ssl
 import os
@@ -67,9 +70,7 @@ class smtp(TcpHandler):
         
     def _STARTTLS(self):
         self.send_response(b'220 Ready to start TLS\r\n')
-        key = os.path.join(os.getcwd(), 'ssl', 'server.key')
-        cert = os.path.join(os.getcwd(), 'ssl', 'server.crt')
-        self.request = ssl.wrap_socket(self.request, keyfile=key, certfile=cert, server_side=True)
+        self.request = ssl.wrap_socket(self.request, keyfile=SSL_KEY, certfile=SSL_CERT, server_side=True)
         
     def _MAIL_FROM(self, param=""):
         self.send_response(b'250 Ok\r\n')
