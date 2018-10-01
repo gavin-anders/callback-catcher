@@ -88,7 +88,6 @@ class CatcherConfig(AppConfig):
                     except AttributeError:
                         logger.error("{}: Import failed. Handler missing attribute. Skipping...".format(filename))
                     except Exception as e:
-                        raise
                         logger.exception("{}: Unknown error whilst importing. {}".format(filename, e))
                         sys.exit()
         except:
