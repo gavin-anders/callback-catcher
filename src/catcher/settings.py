@@ -48,6 +48,9 @@ DEFAULT_PORTS = (
      {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
      {'port': 3308, 'protocol': 'tcp', 'handler': 'mysql.py', 'ssl': 0},
      {'port': 8000, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
+     
+     {'port': 445, 'protocol': 'tcp', 'handler': 'smb.py', 'ssl': 0},
+     {'port': 139, 'protocol': 'tcp', 'handler': 'netbios.py', 'ssl': 0},
 )
 SSL_KEY = os.path.join(BASE_DIR, 'files/catcher.key')
 SSL_CERT = os.path.join(BASE_DIR, 'files/catcher.crt')
