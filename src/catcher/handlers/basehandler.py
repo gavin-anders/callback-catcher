@@ -12,6 +12,7 @@ from catcher.models import Callback, Secret, Fingerprint
 import socket
 import base64
 import logging
+import inspect
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +113,15 @@ class BaseCatcherHandler(BaseRequestHandler):
                 self.callback.save()
         return
         
+    def debug(self, l):
+        '''
+        This is to be used by handlers needing to log to stout
+        '''
+        stack = inspect.stack()
+        cls = stack[1][0].f_locals["self"].__class__
+        meth = stack[1][0].f_code.co_name
+        logger.debug("{}.<method '{}'>: {}".format(cls, meth, l))
+        
     def add_secret(self, name, value):
         '''
         Use this to add a secret to the callback
@@ -179,6 +189,7 @@ class TcpHandler(BaseCatcherHandler):
         logger.debug("handle_raw_request()")
         packet = self.request.recv(self.BUFFER_SIZE)
         if packet is not None:
+            self.debug(packet)  
             self.append_data(packet)
             return packet
         
@@ -199,6 +210,7 @@ class TcpHandler(BaseCatcherHandler):
             if encoding is not None:
                 response = response.encode(encoding)
             self.append_data(response)
+            self.debug(response)
             self.request.send(response)
         except LookupError as e:
             logger.warning("{}. Sending default response".format(str(e)))
