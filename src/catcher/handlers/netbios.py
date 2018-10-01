@@ -7,7 +7,7 @@ from .basehandler import TcpHandler
 
 class netbios(TcpHandler):
     NAME = "NetBIOS Session"
-    DESCRIPTION = '''Responds to NetBIOS session requests.'''
+    DESCRIPTION = '''Responds to NetBIOS session requests. To be used along side SMB handler.'''
     SETTINGS = {}
     
     def __init__(self, *args):
