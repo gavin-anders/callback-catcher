@@ -16,7 +16,8 @@ class dns(UdpHandler):
     NAME = "DNS Server"
     DESCRIPTION = "Basic UDP domain server. Responds to A records, supports data DNS exfil and dynamic resolving via hex encoded subdomain values (max length 53 chars)."
     SETTINGS = {
-        "resolveip": "1.2.3.4"
+        "resolveip": "1.2.3.4",
+        "exclude": ["ns1.pentestlabs.uk.", "pentestlabs.uk.", "www.pentestlabs.uk."]
     }
 
     def __init__(self, *args):
@@ -47,10 +48,10 @@ class dns(UdpHandler):
 
     def get_resolved_ip(self, qname=None):
         if qname is not None:
-            self.add_secret("Domain lookup", qname)
-            if "ns1." == qname:
+            if qname in self.exclude: #dont log
                 return self.resolveip
                 
+            self.add_secret("Domain lookup", qname)
             if "local" in qname:
                 logger.info("Static resolving {} to 127.0.0.1".format(qname))
                 return "127.0.0.1"
