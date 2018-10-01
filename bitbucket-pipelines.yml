@@ -5,4 +5,4 @@ pipelines:
     - step:
         name: Build and Run
         script:
-          - ssh $user@$server 'sh build.sh'
+          - ssh $user@$server 'sudo build.sh'
