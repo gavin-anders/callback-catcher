@@ -93,3 +93,14 @@ class Secret(models.Model):
     class Meta:
         db_table = 'secrets'
         
+        
+class Blacklist(models.Model):
+    id = models.AutoField(primary_key=True)
+    ip = models.GenericIPAddressField()
+
+    class Meta:
+        db_table = 'blacklist'
+        
+    def __unicode__(self):
+        return self.ip
+        

@@ -1,4 +1,4 @@
-from catcher.models import Handler, Callback, Fingerprint, Port, Handler, Secret
+from catcher.models import Handler, Callback, Fingerprint, Port, Handler, Secret, Blacklist
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
@@ -60,4 +60,9 @@ class CallbackSerializer(serializers.ModelSerializer):
                   )
 
         
+class BlacklistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Blacklist
+        fields = ('id',
+                  'ip',)
     

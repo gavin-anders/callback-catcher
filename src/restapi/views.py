@@ -9,6 +9,7 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
+from rest_framework.mixins import DestroyModelMixin, ListModelMixin
 
 from django_filters import rest_framework as filters
 
@@ -17,10 +18,10 @@ from catcher.settings import LISTEN_IP, HANDLER_DIR
 from catcher.utils import kill_process
 from catcher import settings as SETTINGS
 from catcher.config import CatcherConfigParser
-from catcher.models import Handler, Callback, Fingerprint, Port, Secret, Handler
+from catcher.models import Handler, Callback, Fingerprint, Port, Secret, Handler, Blacklist
 
 from .serializers import CallbackSerializer
-from .serializers import PortSerializer, SecretSerializer, HandlerSerializer
+from .serializers import PortSerializer, SecretSerializer, HandlerSerializer, BlacklistSerializer
 
 from .filters import CallbackFilter, SecretFilter
 
@@ -144,6 +145,19 @@ class HandlerDetail(generics.UpdateAPIView):
         except Exception as e:
             logger.error(e)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class BlacklistList(generics.ListCreateAPIView):
+    authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = Blacklist.objects.all()
+    serializer_class = BlacklistSerializer
+    
+class BlacklistDetail(generics.DestroyAPIView):
+    authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = BlacklistSerializer
+    queryset = Blacklist.objects.all()
+    lookup_field = 'pk'
 
 class StatusView(APIView):
     authentication_classes = (BasicAuthentication,)

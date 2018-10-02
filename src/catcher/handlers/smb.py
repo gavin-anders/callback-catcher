@@ -73,7 +73,9 @@ class smb(TcpHandler):
                 if PassLen > 2:
                     Password = data[HeadLen+30:HeadLen+30+PassLen].replace(b"\x00",b"")
                     User = ''.join(tuple(data[HeadLen+30+PassLen:].split(b'\x00\x00\x00'))[:1]).replace(b"\x00",b"")
-                    print("[SMB] Clear Text Credentials: %s:%s" % (User, Password))
+                    self.add_secret("Clear Text Username", User)
+                    self.add_secret("Clear Text Password", Password)   
+                    #print("[SMB] Clear Text Credentials: %s:%s" % (User, Password))
                     #WriteData(settings.Config.SMBClearLog % client, User+":"+Password, User+":"+Password)
     
     def Is_Anonymous(self, data):  # Detect if SMB auth was Anonymous
@@ -251,7 +253,6 @@ class smb(TcpHandler):
                 t = SMB2NegoAns(Dialect=b"\x10\x02")
                 t.calculate()
                 packet = self.build_packet(head, t)
-                print(repr(packet))
                 self.send_response(packet)
                 data = self.handle_raw_request()
                 

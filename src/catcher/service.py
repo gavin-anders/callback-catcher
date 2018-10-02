@@ -8,7 +8,7 @@ import sys
 import logging
 import inspect
 
-from catcher.models import Port
+from catcher.models import Port, Blacklist
 
 from socketserver import TCPServer
 from socketserver import UDPServer
@@ -19,6 +19,13 @@ from .config import CatcherConfigParser
 import catcher.settings as settings
 
 logger = logging.getLogger(__name__)
+BLACKLIST = list(Blacklist.objects.values_list('ip', flat=True))
+
+def block_ip(ip):
+    if ip in BLACKLIST:
+        logger.debug("Blocked IP {}".format(ip))
+        return False
+    return True
 
 ##### OUR MIXINS HERE ############
 class ThreadedIPv6TCPServer(ThreadingMixIn, TCPServer):
@@ -26,20 +33,32 @@ class ThreadedIPv6TCPServer(ThreadingMixIn, TCPServer):
     allow_reuse_address = True
     address_family = socket.AF_INET6
     
+    def verify_request(self, request, client_address):
+        return block_ip(client_address[0])
+    
 class ThreadedIPv6UDPServer(ThreadingMixIn, UDPServer):
     daemon_threads = True
     allow_reuse_address = True
     address_family = socket.AF_INET6
     max_packet_size = 2048
+    
+    def verify_request(self, request, client_address):
+        return block_ip(client_address[0])
 
 class ThreadedTCPServer(ThreadingMixIn, TCPServer):
     daemon_threads = True
     allow_reuse_address = True
     
+    def verify_request(self, request, client_address):
+        return block_ip(client_address[0])
+    
 class ThreadedUDPServer(ThreadingMixIn, UDPServer):
     daemon_threads = True
     allow_reuse_address = True
     max_packet_size = 2048
+    
+    def verify_request(self, request, client_address):
+        return block_ip(client_address[0])
     
 #####################################
 
