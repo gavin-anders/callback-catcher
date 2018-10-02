@@ -6,6 +6,8 @@ Created on 15 Sep 2017
 import os
 import logging
 import magic
+import re
+import base64
 from .basehandler import TcpHandler
 
 logger = logging.getLogger(__name__)
@@ -35,6 +37,18 @@ class statichttp(TcpHandler):
         
         if not data:
             return
+        
+        try:
+            auth = re.search(r"Authorization:\s(\w+)\s(.*)\r", data)
+            if "Basic" in auth.group(1):
+                creds = base64.b64decode(auth.group(2)).decode().split(":")
+                self.add_secret('Basic Username', creds[0])
+                self.add_secret('Basic Password', creds[1])
+            elif "Bearer" in auth.group(1):
+                creds = base64.b64decode(auth.group(2)).decode()
+                self.add_secret('Bearer Token', creds)
+        except Exception as e:
+            logger.error("Problem reading creds: {}".format(e))
         
         try:
             verb, path = self.parse_verb(data)
