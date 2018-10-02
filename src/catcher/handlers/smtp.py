@@ -36,8 +36,10 @@ class smtp(TcpHandler):
                 line = data.rstrip()
                 try:
                     if line.startswith('HELO'):
+                        self.set_fingerprint()
                         self._HELO(line.replace('HELO', '').strip())
                     elif line.startswith('EHLO'):
+                        self.set_fingerprint()
                         self._EHLO(line.replace('EHLO', '').strip())
                     elif line.startswith('STARTTLS'):
                         self._STARTTLS()

@@ -238,6 +238,7 @@ class smb(TcpHandler):
             ############################## SMBv2 ##############################
             ##Negotiate proto answer SMBv2.         
             if data[8:10] == b"\x72\x00" and re.search(b"SMB 2.\?\?\?", data):
+                self.set_fingerprint("smb v2")
                 self.debug("SMBv2: Negotiate proto answer SMBv2.")
                 head = SMB2Header(CreditCharge=b"\x00\x00",Credits=b"\x01\x00")
                 t = SMB2NegoAns()
@@ -279,6 +280,7 @@ class smb(TcpHandler):
             ############################## SMBv1 ##############################
             ##Negotiate proto answer.
             if data[8:10] == b"\x72\x00" and data[4:5] == b"\xff" and re.search(b"SMB 2.\?\?\?", data) == None:
+                self.set_fingerprint("smb v1")
                 self.debug("SMBv1: Negotiate Protocol")
                 Header = SMBHeader(cmd=b"\x72",flag1=b"\x88", flag2=b"\x01\xc8", pid=self.pidcalc(data), mid=self.midcalc(data))
                 Body = SMBNegoKerbAns(Dialect=self.Parse_Nego_Dialect(data))

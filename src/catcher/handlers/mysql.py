@@ -32,6 +32,7 @@ class mysql(TcpHandler):
     def base_handle(self):
         authpacket = MySqlGeetingPacket(version=self.version, salt=self.salt)
         self.send_response(authpacket.get_bytes())
+        self.set_fingerprint()
          
         while self.session is True:
             data = self.handle_raw_request()

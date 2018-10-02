@@ -27,6 +27,7 @@ class telnet(TcpHandler):
             data = self.handle_raw_request()
             if len(data) > 0:
                 while self.session is True:
+                    self.set_fingerprint()
                     username = self.handle_plaintext_request()
                     self.add_secret("Telnet Username", username.strip())
                     if len(username.strip()) > 0:

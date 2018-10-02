@@ -31,7 +31,7 @@ class statichttp(TcpHandler):
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
-        self.set_fingerprint('HTTP')
+        self.set_fingerprint('http')
         data = self.handle_plaintext_request()
         path = data.splitlines()[0].split(" ")[1].split("?")[0]
         file = os.path.join(self.webroot, path)

@@ -58,6 +58,7 @@ class pop3(TcpHandler):
         return ("_"+command, param)
     
     def _USER(self, username):
+        self.set_fingerprint()
         self.username = username
         self.add_secret("POP Username", username)
         self.send_response(b'+OK send PASS\r\n')
@@ -86,6 +87,7 @@ class pop3(TcpHandler):
         self.send_response(b'+Ok\r\n')
         
     def _QUIT(self):
+        self.set_fingerprint()
         self.send_response(b'DONE\r\n')
         self.session = False
         
