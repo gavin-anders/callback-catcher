@@ -5,6 +5,7 @@ Created on 15 Sep 2017
 '''
 import os
 import logging
+import magic
 from .basehandler import TcpHandler
 
 logger = logging.getLogger(__name__)
@@ -13,14 +14,12 @@ class statichttp(TcpHandler):
     NAME = "Static HTTP"
     DESCRIPTION = '''A HTTP server that responds with files and content from a local directory.'''
     SETTINGS = {
-        'encoding': 'utf-8',
-        'webroot': '/var/www/html/',
-        'headers': (
+        'webroot'     : '/var/www/html/',
+        'detect_type' : True,
+        'headers'     : (
             {'header': 'Server', 'value': 'CallBackCatcher'}, 
             {'header': 'Set-Cookie', 'value': 'hello12345'}, 
         ),
-        'content': '<html><body>This is a page</body></html>',
-        'resp': 'HTTP/1.1 200 OK'
     }
     
     def __init__(self, *args):
@@ -33,26 +32,96 @@ class statichttp(TcpHandler):
     def base_handle(self):
         self.set_fingerprint('http')
         data = self.handle_plaintext_request()
-        path = data.splitlines()[0].split(" ")[1].split("?")[0]
-        file = os.path.join(self.webroot, path)
-        if os.path.isfile(file):
-            logger.info("Serving {}".format(file))
-            with open(filename) as f:
-                self.content = f.read()
-        r = self._build_response(self.resp, self.headers, self.content)
-        self.send_response(r, encoding=self.encoding)
         
-    def _build_response(self, resp, headers, content):
+        if not data:
+            return
+        
+        try:
+            verb, path = self.parse_verb(data)
+            getattr(self, verb)(path)
+        except:
+            self.send_400()
+            raise
+        
+    def parse_verb(self, line):
         '''
-        Returns response for status 200
+        returns the verb that has been requested
         '''
-        response = self.resp + "\r\n"
+        line = line.strip()
+        param = ''
+        parsed = line.split(' ')
+        if len(parsed) > 2:
+            verb = parsed[0]
+            path = parsed[1]
+        return ("_" + verb.upper(), path)
+    
+    def load_file(self, path):
+        p = os.path.join(self.webroot, path.strip("/"))
+        if os.path.isfile(p):
+            logger.debug("Loading file: {}".format(p))
+            f = open(p, 'r')
+            return f.read()
+        elif os.path.isdir(p):
+            #Load index
+            p = os.path.join(p, 'index.html')
+            logger.debug("Loading file: {}".format(p))
+            try:
+                f = open(p, 'r')
+                return f.read()
+            except:
+                return None
+        else:
+            logger.debug("Loading file failed: {}".format(self.webroot))
+            return None
+            
+    def build_response(self, content=None):
+        '''
+        Build response with headers and content detection
+        '''
+        response = b'HTTP/1.1 200 OK\r\n'
+        if content is not None and self.detect_type is True:
+            content_type = magic.from_buffer(content, mime=True)
+            logger.debug("Autodetect type '{}'".format(content_type))
+            h = {'header': 'Content-type', 'value': content_type}
+            self.headers.append(h)
         for h in self.headers:
             header = "{}: {}\r\n".format(h['header'], h['value'])
-            response = response + header
-        response = response + "Connection: Close\r\n"
-        response = response + "\r\n"
-        response = response + content 
-        response = response + "\r\n"
+            response = response + header.encode()
+        response = response + b"Connection: Close\r\n"
+        response = response + b"\r\n"
+        if content:
+            response = response + content.encode()
         return response
+    
+    def send_404(self):
+        content = b'HTTP/1.1 404 Not Found\r\n'
+        for h in self.headers:
+            header = "{}: {}\r\n".format(h['header'], h['value'])
+            content = content + header.encode()
+        content = content + b"Connection: Close\n\n"
+        self.send_response(content)
+        
+    def send_400(self):
+        content = b'HTTP/1.1 400 Bad Request\r\n'
+        for h in self.headers:
+            header = "{}: {}\r\n".format(h['header'], h['value'])
+            content = content + header.encode()
+        content = content + b"Connection: Close\r\n\r\n"
+        self.send_response(content)
+            
+    def _HEAD(self):
+        resp = self.build_response()
+        self.send_response(resp)
+        
+    def _GET(self, path):
+        content = self.load_file(path)
+        if content:
+            resp = self.build_response(content)
+            self.send_response(resp)
+        else:
+            self.send_404()
+        
+    def _POST(self, path):
+        self._GET(path)
+            
         

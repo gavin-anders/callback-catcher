@@ -9,3 +9,4 @@ dnslib
 django-filter
 jsonfield
 django-sslserver
+python-magic
