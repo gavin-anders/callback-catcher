@@ -5,6 +5,7 @@ from .views import SecretList
 from .views import StatusView
 from .views import HandlerList, HandlerDetail
 from .views import BlacklistList, BlacklistDetail
+from .views import SettingsView
 
 from rest_framework.decorators import renderer_classes, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
@@ -37,4 +38,5 @@ urlpatterns = [
     url(r'^status/$', StatusView.as_view()),
     url(r'^blacklist/$', BlacklistList.as_view()),
     url(r'^blacklist/(?P<pk>[0-9]+)/$', BlacklistDetail.as_view()),
+    url(r'^settings/$', SettingsView.as_view()),
 ]

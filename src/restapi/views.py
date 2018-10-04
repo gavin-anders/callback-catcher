@@ -27,6 +27,7 @@ from .filters import CallbackFilter, SecretFilter
 
 import logging
 import base64
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -188,3 +189,31 @@ class StatusView(APIView):
         except:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return JsonResponse(data)
+    
+class SettingsView(APIView):
+    authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            if 'action' in request.data:
+                action = request.data['action']
+                if action == 'clear_callbacks':
+                    logger.info("Clearing Callback table")
+                    Callback.objects.all().delete()
+                    Secret.objects.all().delete()
+                elif action == 'clear_secret':
+                    logger.info("Clearing Secret table")
+                    Secret.objects.all().delete()
+                elif action == 'stop_ports':
+                    logger.debug("Stopping all ports")
+                    for port in Port.objects.all():
+                        kill_process(port.pid)
+                    Port.objects.all().delete()
+                else:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+        except:
+            raise
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response(status=status.HTTP_200_OK)

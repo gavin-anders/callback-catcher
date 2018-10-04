@@ -269,3 +269,20 @@ catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 		
 	}
 ]);
+
+catcherApp.run(function ($rootScope, $window, $http) {
+    $rootScope.settingsControl = function ($action) {
+        $http({
+    	    method: 'POST',
+    	    url: '/api/settings/',
+    	    data: JSON.stringify({'action': $action}),
+            headers: {'Content-Type': 'application/json'}
+    	}).then(function successCallback(response) {
+    		console.log("Action completed");
+    		window.location.reload();
+    	}, function errorCallback(response) {
+    	    console.log('Action failed');
+    	});
+    };
+});
+
