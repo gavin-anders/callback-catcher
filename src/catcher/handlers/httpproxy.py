@@ -4,10 +4,12 @@ Created on 03 Oct 2018
 @author: gavin
 '''
 from .basehandler import TcpHandler
+from catcher.settings import SSL_KEY, SSL_CERT
 
 import socket
 import re
 import logging
+import ssl
 from urllib import parse as urlparse
 
 logger = logging.getLogger(__name__)
@@ -15,14 +17,15 @@ logger = logging.getLogger(__name__)
 class httpproxy(TcpHandler):
     NAME = "HTTP Proxy"
     DESCRIPTION = '''A HTTP proxy accepting the CONNECT method.'''
-    SETTINGS = {}
+    SETTINGS = {
+            'timeout': 5
+        }
     
     def __init__(self, *args):
         '''
         Constructor
         '''
         self.session = True
-        self.proxy_verbs = ('GET', 'POST', 'CONNECT', 'OPTIONS',)
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
@@ -45,27 +48,50 @@ class httpproxy(TcpHandler):
             logger.error("Problem reading creds: {}".format(e))
             
         try:
-            verb = self.parse_verb(data)
-            getattr(self, verb)(data)
+            reqline, content = data.split('\r', 1)
+            verb, path, ver = reqline.strip().split(' ', 2)
+            if verb == "CONNECT":
+                self.connect(data)
+            else:
+                print("Got non CONNECT method")
+                address = self.read_address(path)
+                r = re.search(r"http(s)?:\/\/[^\/]*(.*)", path)
+                if r:
+                    path = r.group(2)
+                reqline = '{} {} {}'.format(verb, path, ver)
+                request = reqline + content
+                clientsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                clientsock.settimeout(self.timeout)
+                clientsock.connect(address)
+                clientsock.send_all(request.encode())
+                buffer = b""
+                while True:
+                    clientdata = clientsock.recv(1024)
+                    if not clientdata:
+                        break
+                    buffer = buffer + clientdata
+                self.send_response(buffer)
         except Exception as e:
-            self.send_400()   
+            logger.error("Unable to connect to client")
+            self.send_response(b'HTTP/1.1 400 Bad Request\r\nConnection: Close\r\n\r\n')
+            raise
         
-    def _CONNECT(self, data):
+    def connect(self, data):
         line, content = data.split('\n', 1)
-        verb, host, ver = line.split(' ')
+        verb, path, ver = line.split(' ')
         hostheader = None
         h = re.search(r"Host:\s(.*)\r", data)
         if h:
+            logger.debug("Using Host header: {}".format(h.group(1)))
             hostheader = h.group(1)
-        address = self.read_address(host, hostheader)
+        address = self.read_address(path, hostheader)
         clientsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         clientsock.settimeout(5)
         try:
             #try initial connection
             clientsock.connect(address)
             logger.debug("Sending back status 200")
-            self.send_response(b"HTTP/1.1 200 OK\r\n")
-            
+            self.send_response(b"HTTP/1.0 200 Connection established\r\n\r\n")
         except Exception as e:
             logger.debug("Connection failed. Sending back status 504. {}".format(str(e)))
             self.send_response(b"HTTP/1.1 504 Gateway Timeout\r\n")
@@ -73,26 +99,36 @@ class httpproxy(TcpHandler):
         finally:
             clientsock.close()
             
-    def send_400(self):
-        content = b'HTTP/1.1 400 Bad Request\r\n'
-        for h in self.headers:
-            header = "{}: {}\r\n".format(h['header'], h['value'])
-            content = content + header.encode()
-        content = content + b"Connection: Close\r\n\r\n"
-        self.send_response(content)
+        try:
+            self.request = ssl.wrap_socket(self.request, keyfile=SSL_KEY, certfile=SSL_CERT, server_side=True)
+            logger.info("Wrapped HTTP connection in SSL/TLS")
+            self.setup()
+            data = self.handle_plaintext_request()
+            self.debug(data)
             
-    def parse_verb(self, line):
-        '''
-        returns the verb that has been requested
-        '''
-        line = line.strip()
-        param = ''
-        parsed = line.split(' ')
-        if len(parsed) > 2:
-            verb = parsed[0]
-        return ("_" + verb.upper())
+            context = ssl._create_unverified_context()
+            clientsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            clientsock.settimeout(self.timeout)
+            clientsock = context.wrap_socket(clientsock, server_hostname=address[0])
+            clientsock.connect(address)
+            clientsock.send(data.encode())
+            
+            buffer = b""
+            while True:
+                clientdata = clientsock.recv(1024)
+                if not clientdata:
+                    break
+                buffer = buffer + clientdata
+            self.send_response(buffer)
+            
+        except ssl.SSLError as e:
+            logger.error("Wrapping SSL Error: {}".format(e))
+        except socket.timeout:
+            logger.error("Forwarding to client timed out")
+        finally:
+            self.request.close()
         
-    def read_address(self, reqline, hostheader):
+    def read_address(self, reqline, hostheader=''):
         '''
         Should return the host and port for the destination host.
         If possible these values are derived from absolute URI.
@@ -104,8 +140,10 @@ class httpproxy(TcpHandler):
                 host, port = host.split(':')
                 port = int(port)
             else:
-                port = 80
-            #ADD CHECK TO SEE IF WE ARE ALREADY IN SSL TUNNEL
+                if self.is_ssl():
+                    port = 443
+                else:
+                    port = 80
         else:
             host = ''
             port = 443
