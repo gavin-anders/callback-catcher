@@ -39,7 +39,7 @@ def get_client_ip(request):
     return ip
 
 def start_port(number, protocol, ssl, handler=None):
-    process = Service(LISTEN_IP, number, protocol, ssl)
+    process = Service(LISTEN_IP, number, protocol, ssl, SETTINGS.IPV6)
     if handler:
         process.set_handler(handler.filename, handler.settings)
     process.start()

@@ -31,7 +31,8 @@ DEBUG_LVL = 'DEBUG' #INFO for less noise
 USERNAME = 'admin'
 PASSWORD = 'password'
 EMAIL = 'gavin.anders@googlemail.com'
-LISTEN_IP = '0.0.0.0'
+LISTEN_IP = '::'
+IPV6 = True
 EXTERNAL_IP = '18.221.124.159'
 DOMAIN = 'pentestlabs.uk'
 HANDLER_DIR = os.path.join(BASE_DIR, 'catcher/handlers')
@@ -41,14 +42,15 @@ DEFAULT_PORTS = (
      #{'port': 23, 'protocol': 'tcp', 'handler': 'telnet.py', 'ssl': 0},
      {'port': 25, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
      {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
-     {'port': 80, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 0},
+     {'port': 80, 'protocol': 'tcp', 'handler': 'httpstatic.py', 'ssl': 0},
      {'port': 110, 'protocol': 'tcp', 'handler': 'pop3.py', 'ssl': 0},
-     {'port': 443, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
+     {'port': 443, 'protocol': 'tcp', 'handler': 'httpstatic.py', 'ssl': 1},
      {'port': 587, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
      {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
      {'port': 3306, 'protocol': 'tcp', 'handler': 'mysql.py', 'ssl': 0},
-     {'port': 8000, 'protocol': 'tcp', 'handler': 'statichttp.py', 'ssl': 1},
-     
+     {'port': 8000, 'protocol': 'tcp', 'handler': 'httpstatic.py', 'ssl': 1},
+     {'port': 8080, 'protocol': 'tcp', 'handler': 'httpproxy.py', 'ssl': 0},
+
      {'port': 445, 'protocol': 'tcp', 'handler': 'smb.py', 'ssl': 0},
      {'port': 139, 'protocol': 'tcp', 'handler': 'netbios.py', 'ssl': 0},
 )

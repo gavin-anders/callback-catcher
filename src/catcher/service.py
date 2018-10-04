@@ -27,27 +27,16 @@ def block_ip(ip):
         return False
     return True
 
-##### OUR MIXINS HERE ############
-class ThreadedIPv6TCPServer(ThreadingMixIn, TCPServer):
-    daemon_threads = True
-    allow_reuse_address = True
-    address_family = socket.AF_INET6
-    
-    def verify_request(self, request, client_address):
-        return block_ip(client_address[0])
-    
-class ThreadedIPv6UDPServer(ThreadingMixIn, UDPServer):
-    daemon_threads = True
-    allow_reuse_address = True
-    address_family = socket.AF_INET6
-    max_packet_size = 2048
-    
-    def verify_request(self, request, client_address):
-        return block_ip(client_address[0])
+def set_socket_type():
+    family = socket.AF_INET
+    if settings.IPV6:
+        family = socket.AF_INET6
+    return family
 
 class ThreadedTCPServer(ThreadingMixIn, TCPServer):
     daemon_threads = True
     allow_reuse_address = True
+    address_family = set_socket_type()
     
     def verify_request(self, request, client_address):
         return block_ip(client_address[0])
@@ -56,6 +45,7 @@ class ThreadedUDPServer(ThreadingMixIn, UDPServer):
     daemon_threads = True
     allow_reuse_address = True
     max_packet_size = 2048
+    address_family = set_socket_type()
     
     def verify_request(self, request, client_address):
         return block_ip(client_address[0])
@@ -67,7 +57,7 @@ class Service(multiprocessing.Process):
     Represents a single port
     logging is likely not to work
     '''
-    def __init__(self, ip, port, protocol, ssl, ipv6=0):
+    def __init__(self, ip, port, protocol, ssl, ipv6=False):
         multiprocessing.Process.__init__(self)
         self.exit = multiprocessing.Event()
         self.ip = ip
@@ -83,6 +73,12 @@ class Service(multiprocessing.Process):
     def __str__(self):
         return "%s://%s:%i" % (self.protocol, self.ip, self.number)
     
+    def _set_socket_type(self):
+        if self.ipv6 is True:
+            self.address_family = socket.AF_INET6
+        else:
+            self.address_family = socket.AF_INET6
+            
     def shutdown(self):
         logger.info("Terminating {}".format(self.pid))
         self.exit.set()
@@ -92,15 +88,6 @@ class Service(multiprocessing.Process):
         Returns true/false if ssl is enabled
         '''
         if self.ssl is 1:
-            return True
-        else:
-            return False
-        
-    def ipv6_enabled(self):
-        '''
-        Returns true/false if set to run as ipv6
-        '''
-        if self.ipv6 is 1:
             return True
         else:
             return False
@@ -157,35 +144,25 @@ class Service(multiprocessing.Process):
             #Do we need ipv6? - this is a bit shit as it will be either ipv4 or ipv6
             try:
                 address = (self.ip, self.number)
-                if self.ipv6:
-                    address = ('::1', self.number, 0, 0)
-                
                 if self.handler:
                     #start server with specific handler
-                    if self.protocol == 'udp' and self.ipv6 is True:
-                        server = ThreadedIPv6UDPServer(address, self.handler)
-                    elif self.protocol == 'tcp' and self.ipv6 is True:
-                        server = ThreadedIPv6TCPServer(address, self.handler)
-                    elif self.protocol == 'udp':
+                    if self.protocol == 'udp':
                         server = ThreadedUDPServer(address, self.handler)
                     else:
                         server = ThreadedTCPServer(address, self.handler)
                 else:
                     #start server with standard handlers
-                    if self.protocol == 'udp' and self.ipv6 is True:
-                        server = ThreadedIPv6UDPServer(address, basehandler.UdpHandler)
-                    elif self.protocol == 'tcp' and self.ipv6 is True:
-                        server = ThreadedIPv6TCPServer(address, basehandler.TcpHandler)
-                    elif self.protocol == 'udp':
+                    if self.protocol == 'udp':
                         server = ThreadedUDPServer(address, basehandler.UdpHandler)
                     else:
                         server = ThreadedTCPServer(address, basehandler.TcpHandler)
-                        
+    
                 if self.ssl_enabled() is True:
                     server.socket = ssl.wrap_socket(server.socket, 
                                                     certfile=self.sslcert, 
                                                     keyfile=self.sslkey, 
                                                     server_side=True)
+                    
                 logger.info("Starting service on {}/{}".format(self.number, self.protocol))
                 thread = threading.Thread(target=server.serve_forever())
                 thread.start()
