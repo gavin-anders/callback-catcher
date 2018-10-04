@@ -19,22 +19,6 @@ import base64
 
 logger = logging.getLogger(__name__)
 
-def check_ports():
-    ports = Port.objects.all()
-    for p in ports:
-        server_address = (settings.LISTEN_IP, p.number)
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if p.protocol == 'udp':
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        try:
-            sock.bind(server_address)
-            logger.info("Removing {} entry from DB".format(p))
-            p.delete()
-        except:
-            pass
-        finally:
-            sock.close()
-
 def index(request):
     """
     Index route

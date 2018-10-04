@@ -104,7 +104,7 @@ class CatcherConfig(AppConfig):
         #TESTING start services
         for p in settings.DEFAULT_PORTS:
             try:
-                process = Service(settings.LISTEN_IP, p['port'], p['protocol'], p['ssl'])
+                process = Service(settings.LISTEN_IP, p['port'], p['protocol'], p['ssl'], ipv6=settings.IPV6)
                 process.set_handler(p['handler'], config_string=handler_settings[p['handler']])
                 if p['ssl'] is 1:
                     process.set_ssl_context(settings.SSL_CERT, settings.SSL_KEY)

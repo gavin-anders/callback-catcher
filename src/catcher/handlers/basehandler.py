@@ -150,6 +150,12 @@ class BaseCatcherHandler(BaseRequestHandler):
         self.callback.data = self.callback.data + data
         self.callback.datasize = len(self.callback.data)
         self.callback.save()
+        
+    def is_ssl(self):
+        '''
+        Checks if the 'is_ssl' attribute is set in the server
+        '''
+        return self.server.is_ssl
 
 class TcpHandler(BaseCatcherHandler):
     '''

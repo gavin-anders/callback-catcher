@@ -162,6 +162,9 @@ class Service(multiprocessing.Process):
                                                     certfile=self.sslcert, 
                                                     keyfile=self.sslkey, 
                                                     server_side=True)
+                    server.is_ssl = True
+                else:
+                    server.is_ssl = False
                     
                 logger.info("Starting service on {}/{}".format(self.number, self.protocol))
                 thread = threading.Thread(target=server.serve_forever())
