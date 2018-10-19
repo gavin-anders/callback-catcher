@@ -22,4 +22,8 @@ Catcher suports a number of services (all of which can be wrapped in SSL) and it
 + socket forwarding
 
 # Documentation
-[See Callback Catcher Documentation](https://bitbucket.org/gavinanders/callback-catcher/wiki/Documentation)
++ [Installation](https://bitbucket.org/gavinanders/callback-catcher/wiki/Installation)
++ [Running](https://bitbucket.org/gavinanders/callback-catcher/wiki/Running)
++ [GUI](https://bitbucket.org/gavinanders/callback-catcher/wiki/GUI)
++ [API](https://bitbucket.org/gavinanders/callback-catcher/wiki/API)
++ [Handlers](https://bitbucket.org/gavinanders/callback-catcher/wiki/Handlers)
