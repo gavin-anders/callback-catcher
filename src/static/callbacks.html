@@ -100,9 +100,9 @@
 <div class="modal fade" id="secretdataModal" role="dialog">
     <div class="modal-dialog modal-lg text-left">
         <div class="modal-content">
-            <div class="modal-body">
+            <div class="modal-body" style="overflow-x: scroll; margin-right: 15px">
                 <h5>Secrets</h5>
-                <table class="table table-bordered table-condensed table-striped table-responsive">
+                <table class="table table-bordered table-condensed table-striped">
 	                <tbody ng-repeat="s in secrets">
 				    	<tr>
 				       		<td><b>{{ s.name }}</b></td>
