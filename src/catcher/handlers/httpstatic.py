@@ -1,14 +1,10 @@
-'''
-Created on 15 Sep 2017
-
-@author: gavin
-'''
 import os
 import logging
 import magic
 import re
 import base64
 from .basehandler import TcpHandler
+import catcher.settings as SETTINGS
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +12,7 @@ class httpstatic(TcpHandler):
     NAME = "HTTP (static content)"
     DESCRIPTION = '''A HTTP server that responds with files and content from a local directory.'''
     SETTINGS = {
-        'webroot'     : '/var/www/html/',
+        'webroot'     : 'www/',
         'detect_type' : True,
         'headers'     : (
             {'header': 'Server', 'value': 'CallBackCatcher'}, 
@@ -48,7 +44,7 @@ class httpstatic(TcpHandler):
                 creds = base64.b64decode(auth.group(2)).decode()
                 self.add_secret('Bearer Token', creds)
         except Exception as e:
-            logger.error("Problem reading creds: {}".format(e))
+            pass
         
         try:
             verb, path = self.parse_verb(data)
@@ -70,7 +66,8 @@ class httpstatic(TcpHandler):
         return ("_" + verb.upper(), path)
     
     def load_file(self, path):
-        p = os.path.join(self.webroot, path.strip("/"))
+        d = os.path.abspath(os.path.join(SETTINGS.HANDLER_CONTENT_DIR, self.webroot.lstrip("/")))
+        p = os.path.normpath(os.path.join(d, path.lstrip("/")))
         if os.path.isfile(p):
             logger.debug("Loading file: {}".format(p))
             f = open(p, 'r')
@@ -85,7 +82,7 @@ class httpstatic(TcpHandler):
             except:
                 return None
         else:
-            logger.debug("Loading file failed: {}".format(self.webroot))
+            logger.debug("Loading file failed: {}".format(p))
             return None
             
     def build_response(self, content=None):
