@@ -126,16 +126,16 @@ class httpstatic(TcpHandler):
             </html>
         """
         d = path.replace(self.webroot, "")
+        parentdir = os.path.join(path, '..').replace(self.webroot, "")
+        page.replace("$BASEDIR$", parentdir)
         if not d:
             d = "/"
             page = page.replace("$BASEDIR$", "/")
-        else:
-            parentdir = os.path.join(path, '..').replace(self.webroot, "")
-            page.replace("$BASEDIR$", parentdir)
+
         page = page.replace("$DIR$", d)
         
         filelist = ""
-        for item in os.listdir(d):
+        for item in os.listdir(path):
             link = os.path.join(path, item)
             filelist = filelist + '<tr><td><a href='+link+'>'+item+'</a></td></tr>'
         page = page.replace("$FILELIST$", filelist)
