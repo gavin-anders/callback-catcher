@@ -131,17 +131,13 @@ class httpstatic(TcpHandler):
             page = page.replace("$BASEDIR$", "/")
         else:
             parentdir = os.path.join(path, '..').replace(self.webroot, "")
-            page.replace("$BASEDIR$", d)
+            page.replace("$BASEDIR$", parentdir)
         page = page.replace("$DIR$", d)
         
         filelist = ""
-        for path, subdirs, files in os.walk(d):
-            for folder in subdirs:
-                link = os.path.join(path, folder)
-                filelist = filelist + '<tr><td><a href='+link+'>'+name+'</a></td></tr>'
-            for name in files:
-                link = os.path.join(path, name)
-                filelist = filelist + '<tr><td><a href='+link+'>'+name+'</a></td></tr>'
+        for item in os.listdir(d):
+            link = os.path.join(path, item)
+            filelist = filelist + '<tr><td><a href='+link+'>'+item+'</a></td></tr>'
         page = page.replace("$FILELIST$", filelist)
         return page    
         
