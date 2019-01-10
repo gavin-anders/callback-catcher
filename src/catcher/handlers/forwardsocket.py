@@ -14,7 +14,8 @@ class forwardsocket(TcpHandler):
     '''
     SETTINGS = {
         'forwardhost': '127.0.0.1',
-        'forwardport': 4444,
+        'forward_only_for': '155.136.199.53',
+        'forwardport': 9991,
         'buffersize': 4096,
         'timeout': 5
     }

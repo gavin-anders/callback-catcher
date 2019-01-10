@@ -241,7 +241,9 @@ catcherApp.controller('handlersController', ['$scope', '$location', '$http',
 		});
 		
 		$scope.editSettings = function(h) {
-			$scope.settings = h.settings;
+			var obj = JSON.parse(h.settings);
+		    var pretty = JSON.stringify(obj, undefined, 4);
+			$scope.settings = pretty;
 			$scope.settingsid = h.id;
 		};
 		

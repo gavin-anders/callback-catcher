@@ -187,7 +187,7 @@ if __name__ == '__main__':
         print("Callback count:\t{}".format(status["fingerprint_count"]))
         print("Port count:\t{}".format(status["port_count"]))
         print("Handler count:\t{}".format(status["handler_count"]))
-        print("Secret count:\t{}".format(status["secret_count"]))
+        print("Secret count:\t{}".format(status["secret_count"]))cal
         print("##############################")
 
         ports = client.get_ports()

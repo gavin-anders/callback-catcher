@@ -4,7 +4,10 @@ class CatcherConfig(AppConfig):
     name = 'catcher'
     verbose_name = 'CallBack Catcher'
  
-    def ready(self):
+    def read(self):
+        self.pre_run()
+ 
+    def pre_run(self):
         from django.contrib.auth.models import User
         from catcher.models import Port, Fingerprint, Port, Handler
         from catcher.service import Service
