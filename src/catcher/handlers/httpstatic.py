@@ -129,6 +129,9 @@ class httpstatic(TcpHandler):
         if not d:
             d = "/"
             page = page.replace("$BASEDIR$", "/")
+        else:
+            parentdir = os.path.join(path, '..').replace(self.webroot, "")
+            page.replace("$BASEDIR$", d)
         page = page.replace("$DIR$", d)
         
         filelist = ""
