@@ -9,14 +9,15 @@ import catcher.settings as SETTINGS
 logger = logging.getLogger(__name__)
 
 class httpstatic(TcpHandler):
-    NAME = "HTTP (static content)"
+    NAME = "HTTP Static"
     DESCRIPTION = '''A HTTP server that responds with files and content from a local directory.'''
     SETTINGS = {
         'webroot'     : 'www/',
         'detect_type' : True,
+        'dir_browsing': True,
         'headers'     : (
-            {'header': 'Server', 'value': 'CallBackCatcher'}, 
-            {'header': 'Set-Cookie', 'value': 'hello12345'}, 
+             {'header': 'Server', 'value': 'CallBackCatcher'}, 
+             {'header': 'Set-Cookie', 'value': 'hello12345'}, 
         ),
     }
     
@@ -25,6 +26,7 @@ class httpstatic(TcpHandler):
         Constructor
         '''
         self.session = True
+        self.webroot = os.path.abspath(os.path.join(SETTINGS.HANDLER_CONTENT_DIR, self.webroot.lstrip("/")))
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
@@ -66,8 +68,7 @@ class httpstatic(TcpHandler):
         return ("_" + verb.upper(), path)
     
     def load_file(self, path):
-        d = os.path.abspath(os.path.join(SETTINGS.HANDLER_CONTENT_DIR, self.webroot.lstrip("/")))
-        p = os.path.normpath(os.path.join(d, path.lstrip("/")))
+        p = os.path.normpath(os.path.join(self.webroot, path.lstrip("/")))
         if os.path.isfile(p):
             logger.debug("Loading file: {}".format(p))
             f = open(p, 'r')
@@ -103,6 +104,43 @@ class httpstatic(TcpHandler):
         if content:
             response = response + content.encode()
         return response
+    
+    def send_browsable_index(self, path):
+        page = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+            <html>
+            <head>
+            <title>Index of $DIR$</title>
+            </head>
+            <body>
+            <h1>Index of $DIR$</h1>
+            <table>
+            <tr><th><a href="?C=N;O=D">Name</a></th></tr>
+            <tr><td><a href="$BASEDIR$">Parent Directory</a></td></tr>
+            $FILELIST$
+            </table>
+            </body>
+            </html>
+        """
+        d = path.replace(self.webroot, "")
+        if not d:
+            d = "/"
+            page = page.replace("$BASEDIR$", "/")
+        page = page.replace("$DIR$", d)
+        
+        filelist = ""
+        for path, subdirs, files in os.walk(path):
+            for name in files:
+                link = os.path.join(path, name)
+                filelist = filelist + '<tr><td><a href='+link+'>'+name+'</a></td></tr>'
+        page = page.replace("$FILELIST$", filelist)
+            
+        content = b'HTTP/1.1 200\r\n'
+        for h in self.headers:
+            header = "{}: {}\r\n".format(h['header'], h['value'])
+            content = content + header.encode()
+        content = content + b"Connection: Close\n\n"
+        contenet = content + page
+        self.send_response(content)
     
     def send_404(self):
         content = b'HTTP/1.1 404 Not Found\r\n'
