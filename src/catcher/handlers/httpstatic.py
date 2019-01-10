@@ -75,13 +75,17 @@ class httpstatic(TcpHandler):
             return f.read()
         elif os.path.isdir(p):
             #Load index
-            p = os.path.join(p, 'index.html')
-            logger.debug("Loading file: {}".format(p))
+            index = os.path.join(p, 'index.html')
             try:
-                f = open(p, 'r')
+                f = open(index, 'r')
+                logger.debug("Loading file: {}".format(index))
                 return f.read()
             except:
-                return None
+                if self.dir_browsing is True:
+                    logger.debug("Sending directory listing for: {}".format(p))
+                    return self.send_browsable_index(p)
+                else:
+                    return None
         else:
             logger.debug("Loading file failed: {}".format(p))
             return None
@@ -128,20 +132,16 @@ class httpstatic(TcpHandler):
         page = page.replace("$DIR$", d)
         
         filelist = ""
-        for path, subdirs, files in os.walk(path):
+        for path, subdirs, files in os.walk(d):
+            for folder in subdirs:
+                link = os.path.join(path, folder)
+                filelist = filelist + '<tr><td><a href='+link+'>'+name+'</a></td></tr>'
             for name in files:
                 link = os.path.join(path, name)
                 filelist = filelist + '<tr><td><a href='+link+'>'+name+'</a></td></tr>'
         page = page.replace("$FILELIST$", filelist)
-            
-        content = b'HTTP/1.1 200\r\n'
-        for h in self.headers:
-            header = "{}: {}\r\n".format(h['header'], h['value'])
-            content = content + header.encode()
-        content = content + b"Connection: Close\n\n"
-        contenet = content + page
-        self.send_response(content)
-    
+        return page    
+        
     def send_404(self):
         content = b'HTTP/1.1 404 Not Found\r\n'
         for h in self.headers:
