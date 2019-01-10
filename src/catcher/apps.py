@@ -4,7 +4,7 @@ class CatcherConfig(AppConfig):
     name = 'catcher'
     verbose_name = 'CallBack Catcher'
  
-    def read(self):
+    def ready(self):
         self.pre_run()
  
     def pre_run(self):
