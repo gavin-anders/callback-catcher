@@ -136,6 +136,7 @@ class httpproxy(TcpHandler):
         '''
         if reqline.startswith('/'):
             host = hostheader
+            port = int(self.server.server_address[1])
             if ':' in hostheader:
                 host, port = host.split(':')
                 port = int(port)
