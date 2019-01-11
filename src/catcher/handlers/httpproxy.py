@@ -135,15 +135,10 @@ class httpproxy(TcpHandler):
         If absolute URI is not available then host header is used.
         '''
         if reqline.startswith('/'):
-            #This is a non absolute URI
+            host = hostheader
             if ':' in hostheader:
                 host, port = host.split(':')
                 port = int(port)
-            else:
-                if self.is_ssl():
-                    port = 443
-                else:
-                    port = 80
         else:
             host = ''
             port = 443
