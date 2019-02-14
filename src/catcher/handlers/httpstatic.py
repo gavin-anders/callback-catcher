@@ -118,7 +118,7 @@ class httpstatic(TcpHandler):
             <body>
             <h1>Index of $DIR$</h1>
             <table>
-            <tr><th><a href="?C=N;O=D">Name</a></th></tr>
+            <tr><th><a href="">Name</a></th></tr>
             <tr><td><a href="$BASEDIR$">Parent Directory</a></td></tr>
             $FILELIST$
             </table>
@@ -126,8 +126,7 @@ class httpstatic(TcpHandler):
             </html>
         """
         d = path.replace(self.webroot, "")
-        parentdir = os.path.join(path, '..').replace(self.webroot, "")
-        page.replace("$BASEDIR$", parentdir)
+        page.replace("$BASEDIR$", os.path.join(path, '..').replace(self.webroot, ""))
         if not d:
             d = "/"
             page = page.replace("$BASEDIR$", "/")

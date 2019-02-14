@@ -53,7 +53,6 @@ class httpproxy(TcpHandler):
             if verb == "CONNECT":
                 self.connect(data)
             else:
-                print("Got non CONNECT method")
                 address = self.read_address(path)
                 r = re.search(r"http(s)?:\/\/[^\/]*(.*)", path)
                 if r:
@@ -74,7 +73,6 @@ class httpproxy(TcpHandler):
         except Exception as e:
             logger.error("Unable to connect to client")
             self.send_response(b'HTTP/1.1 400 Bad Request\r\nConnection: Close\r\n\r\n')
-            raise
         
     def connect(self, data):
         line, content = data.split('\n', 1)

@@ -23,7 +23,7 @@ class simple(TcpHandler):
         """
         Simple echo handler
         """
-        self.request.send(self.banner)
+        self.send_response(self.banner)
         
         while self.session is True:
             
@@ -33,6 +33,4 @@ class simple(TcpHandler):
                 data = data
                 
                 #SEND DATA TO CLIENT
-                self.request.send(data)
-            else:
-                self.session = False
+                self.send_response(data)
