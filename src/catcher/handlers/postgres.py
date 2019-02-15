@@ -85,7 +85,7 @@ class postgres(TcpHandler):
             print("#" * 25)
         
     def base_handle(self):
-        data = self.handle_one_request()
+        data = self.handle_request()
         init = PostgresInitMessage(data)
         if init.ssl_enabled():
             #Check if request for SSL and settings say we support SSL

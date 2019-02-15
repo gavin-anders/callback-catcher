@@ -28,18 +28,18 @@ class telnet(TcpHandler):
             if len(data) > 0:
                 while self.session is True:
                     self.set_fingerprint()
-                    username = self.handle_plaintext_request()
+                    username = self.handle_request().decode('utf-8')
                     self.add_secret("Telnet Username", username.strip())
                     if len(username.strip()) > 0:
                         self.send_response(b'Password: ')
-                        password = self.handle_raw_request()
+                        password = self.handle_request()
                         self.add_secret("Telnet Password", password.strip())
                         if len(password.strip()) > 0:
                             self.send_response(self.welcome)
                             termsess = True
                             while termsess is True:
                                 self.send_response(b'$')
-                                cmd = self.handle_raw_request()
+                                cmd = self.handle_request()
                                 if cmd[:2] == '\xFF\xF4' or 'exit' in cmd.decode("utf-8") or 'quit' in cmd.decode("utf-8"):
                                     termsess = False
                             self.session = False

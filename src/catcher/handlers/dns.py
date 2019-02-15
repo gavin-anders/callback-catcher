@@ -16,7 +16,7 @@ class dns(UdpHandler):
     NAME = "DNS Server"
     DESCRIPTION = "Basic UDP domain server. Responds to A records, supports data DNS exfil and dynamic resolving via hex encoded subdomain values (max length 53 chars)."
     SETTINGS = {
-        "resolveip": "1.2.3.4",
+        "resolveip": "13.59.5.95",
         "exclude": ["ns1.pentestlabs.uk.", "pentestlabs.uk.", "www.pentestlabs.uk."]
     }
 

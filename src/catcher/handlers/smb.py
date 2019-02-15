@@ -220,7 +220,7 @@ class smb(TcpHandler):
         
     def base_handle(self):
         self.request.settimeout(5.0)
-        data = self.handle_raw_request()
+        data = self.handle_request()
             
         if not data:
             return
@@ -230,7 +230,7 @@ class smb(TcpHandler):
             Buffer = b"\x82\x00\x00\x00"
             try:
                 self.send_response(Buffer)
-                data = self.handle_raw_request()
+                data = self.handle_request()
             except:
                 pass
         
@@ -245,7 +245,7 @@ class smb(TcpHandler):
                 t.calculate()
                 packet = self.build_packet(head, t)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
                 
             ## Session Setup 1 answer SMBv2.
             if data[16:18] == b"\x00\x00" and data[4:5] == b"\xfe":
@@ -255,7 +255,7 @@ class smb(TcpHandler):
                 t.calculate()
                 packet = self.build_packet(head, t)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
                 
             ## Session Setup 2 answer SMBv2.
             if data[16:18] == b"\x01\x00" and data[4:5] == b"\xfe":
@@ -265,7 +265,7 @@ class smb(TcpHandler):
                 t.calculate()
                 packet = self.build_packet(head, t)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
                 
             ## Session Setup 3 answer SMBv2.
             if data[16:18] == b"\x01\x00" and self.GrabMessageID(data)[0:1] == b"\x02" and data[4:5] == b"\xfe":
@@ -275,7 +275,7 @@ class smb(TcpHandler):
                 t = SMB2Session2Data()
                 packet = self.build_packet(head, t)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
             
             ############################## SMBv1 ##############################
             ##Negotiate proto answer.
@@ -287,7 +287,7 @@ class smb(TcpHandler):
                 Body.calculate()
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
                 
             if data[8:10] == b"\x73\x00" and data[4:5] == b"\xff":  # Session Setup AndX Request smbv1
                 self.debug("SMBv1: Session Setup AndX")
@@ -302,7 +302,7 @@ class smb(TcpHandler):
                 Body.calculate()
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
                 
             if data[8:10] == b"\x73\x00" and data[4:5] == b"\xff":  # STATUS_SUCCESS
                 self.debug("SMBv1: STATUS_SUCCESS")
@@ -324,7 +324,7 @@ class smb(TcpHandler):
 
                     packet = self.build_packet(Header, Body)
                     self.send_response(packet)
-                    data = self.handle_raw_request()
+                    data = self.handle_request()
                     
             if data[8:10] == b"\x75\x00" and data[4:5] == b"\xff":  # Tree Connect AndX Request
                 self.debug("SMBv1: Tree Connect AndX Request")
@@ -335,7 +335,7 @@ class smb(TcpHandler):
 
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
                 
                 #Check for Trans2 request
                 
@@ -346,7 +346,7 @@ class smb(TcpHandler):
 
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
 
             if data[8:10] == b"\xa2\x00" and data[4:5] == b"\xff":  #NT_CREATE Access Denied.
                 self.debug("SMBv1: NT_CREATE Access Denied")
@@ -355,7 +355,7 @@ class smb(TcpHandler):
 
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
 
             if data[8:10] == b"\x25\x00" and data[4:5] == b"\xff":  # Trans2 Access Denied.
                 self.debug("SMBv1: Trans2 Access Denied")
@@ -364,7 +364,7 @@ class smb(TcpHandler):
 
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
             
             if data[8:10] == b"\x74\x00" and data[4:5] == b"\xff":  # LogOff
                 self.debug("SMBv1: Logoff")
@@ -373,7 +373,7 @@ class smb(TcpHandler):
 
                 packet = self.build_packet(Header, Body)
                 self.send_response(packet)
-                data = self.handle_raw_request()
+                data = self.handle_request()
             ###################################################################
             
             self.session = False

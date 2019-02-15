@@ -25,7 +25,7 @@ class httppayload(TcpHandler):
         
     def base_handle(self):
         self.set_fingerprint('payload')
-        data = self.handle_plaintext_request()
+        data = self.handle_request().decode('utf-8')
         
         if not data:
             return
