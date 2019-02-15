@@ -6,7 +6,7 @@ Created on 15 Sep 2017
 
 from .basehandler import TcpHandler
 
-class basehttp(TcpHandler):
+class basehttphandler(TcpHandler):
     NAME = "Base HTTP"
     DESCRIPTION = '''A basic HTTP handler and server based on python's BaseHTTPServer.py. Doesnt do anything other that return 400 responses. A base class that should be inherited.'''
     SETTINGS = {
