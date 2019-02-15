@@ -182,30 +182,23 @@ class TcpHandler(BaseCatcherHandler):
         '''
         super().base_handle()
         self.send_response(b'CallBackCatcher (TcpHandler) online\r\n')
-        ignore = self.handle_raw_request()    #dont do anything with it by default
+        ignore = self.handle_request()    #dont do anything with it by default
         
     ########## CUSTOM FUNCTIONS ##############
         
-    def handle_raw_request(self):
+    def handle_request(self):
         '''
         Handles the next incoming raw request in the buffer
         Used by subclasses
         returns buffer in bytes
+        use: self.handle_request().decode('utf-8') for plain text protocols
         '''
-        logger.debug("handle_raw_request()")
+        logger.debug("handle_request()")
         packet = self.request.recv(self.BUFFER_SIZE)
         if packet is not None:
             self.debug(packet)  
             self.append_data(packet)
             return packet
-        
-    def handle_plaintext_request(self):
-        '''
-        Handles the next incoming request as plain text
-        Used by subclasses
-        returns string
-        '''
-        return self.handle_raw_request().decode('utf-8')
         
     def send_response(self, response, encoding=None):
         '''
@@ -244,14 +237,14 @@ class UdpHandler(BaseCatcherHandler):
     def base_handle(self):
         super().base_handle()
         self.send_response(b'CallBackCatcher (UdpHandler) online\r\n')
-        ignore = self.handle_raw_request()    #dont do anything with it by default
+        ignore = self.handle_request()    #dont do anything with it by default
         
-    def handle_raw_request(self):
+    def handle_request(self):
         '''
         Handles the next incoming request in the buffer
         Used by subclasses
         '''
-        logger.debug("handle_raw_request()")
+        logger.debug("handle_request()")
         self.client_socket = self.request[1]
         packet = self.request[0].rstrip()
         if packet is not None:
