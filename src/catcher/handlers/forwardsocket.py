@@ -36,7 +36,7 @@ class forwardsocket(TcpHandler):
             logger.error("Unable to connect to {}:{}".format(self.forwardhost, self.forwardport))
             self.session = False
              
-        data = self.handle_raw_request()
+        data = self.handle_request()
         if len(data) > 0:
             try:
                 clientsock.send(data)

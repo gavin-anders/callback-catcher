@@ -26,7 +26,7 @@ class pop3(TcpHandler):
         self.send_response('+OK pop ready for requests from {}\r\n'.format(self.client_address[0]), encoding='utf-8')
         
         while self.session is True:
-            data = self.handle_plaintext_request()
+            data = self.handle_request().decode('utf-8')
             if data:
                 command, param = self._parse_command(data)
                 try:

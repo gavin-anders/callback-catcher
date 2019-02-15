@@ -27,7 +27,7 @@ class simple(TcpHandler):
         
         while self.session is True:
             
-            data = self.handle_raw_request()
+            data = self.handle_request()
             if data:
                 #MANIPULATE DATA HERE
                 data = data

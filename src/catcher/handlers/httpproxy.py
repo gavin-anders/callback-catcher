@@ -29,7 +29,7 @@ class httpproxy(TcpHandler):
         TcpHandler.__init__(self, *args)
         
     def base_handle(self):
-        data = self.handle_plaintext_request()
+        data = self.handle_request().decode('utf-8')
         
         if not data:
             return
@@ -101,7 +101,7 @@ class httpproxy(TcpHandler):
             self.request = ssl.wrap_socket(self.request, keyfile=SSL_KEY, certfile=SSL_CERT, server_side=True)
             logger.info("Wrapped HTTP connection in SSL/TLS")
             self.setup()
-            data = self.handle_plaintext_request()
+            data = self.handle_request().decode('utf-8')
             self.debug(data)
             
             context = ssl._create_unverified_context()

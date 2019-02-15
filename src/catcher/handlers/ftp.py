@@ -23,7 +23,7 @@ class ftp(TcpHandler):
         self.send_response(self.banner, 'utf-8')
         
         while self.session is True:
-            data = self.handle_plaintext_request()
+            data = self.handle_request().decode('utf-8')
             if data:
                 command, param = self._parse_command(data)
                 try:
