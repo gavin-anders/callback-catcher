@@ -1,10 +1,17 @@
 from django.apps import AppConfig
+import signal
+import sys
+
+def keyboard_signal_handler(signal, frame):
+    print("Killing processes...")
+    sys.exit(0)
 
 class CatcherConfig(AppConfig):
     name = 'catcher'
     verbose_name = 'CallBack Catcher'
- 
+    
     def ready(self):
+        signal.signal(signal.SIGINT, keyboard_signal_handler)
         self.pre_run()
  
     def pre_run(self):
