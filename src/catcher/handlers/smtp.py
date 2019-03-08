@@ -31,7 +31,7 @@ class smtp(TcpHandler):
         self.send_response('220 {} ESMTP CallbackCatcher service ready\r\n'.format(self.hostname), encoding='utf-8')
         
         while self.session is True:
-            data = self.handle_plaintext_request()       
+            data = self.handle_request()       
             if len(data) > 0:
                 line = data.rstrip()
                 try:
@@ -82,7 +82,7 @@ class smtp(TcpHandler):
         
     def _DATA(self):
         while True:
-            data = self.handle_plaintext_request()
+            data = self.handle_request()
             if data.strip() == ".":
                 break
         self.send_response(b'250 Ok\r\n')
@@ -90,7 +90,7 @@ class smtp(TcpHandler):
     def _AUTH_PLAIN(self, param=""):
         if param == "":
             self.send_response(b'334\r\n')
-            param = self.handle_plaintext_request()
+            param = self.handle_request()
         
         credsline = base64.b64decode(param)
         creds = credsline.split(b"\0")
@@ -105,10 +105,10 @@ class smtp(TcpHandler):
         
     def _AUTH_LOGIN(self):
         self.send_response(b'334 VXNlcm5hbWU6\r\n')
-        username = self.handle_plaintext_request()
+        username = self.handle_request()
         self.add_secret("SMTP Username", base64.b64decode(username.strip()))
         self.send_response(b'334 UGFzc3dvcmQ6\r\n')
-        password = self.handle_plaintext_request()
+        password = self.handle_request()
         self.add_secret("SMTP Password", base64.b64decode(password.strip()))
         self.send_response(b'235 Authentication successful\r\n')
         

@@ -6,6 +6,7 @@ Created on 15 Sep 2017
 from .basehandler import TcpHandler
 
 import binascii
+import logging
 
 logger = logging.getLogger(__name__)
 
