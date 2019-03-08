@@ -27,7 +27,7 @@ class dns(UdpHandler):
         UdpHandler.__init__(self, *args)
         
     def base_handle(self):
-        data = self.handle_raw_request()
+        data = self.handle_request()
         if len(data) > 0:
             try:
                 dnsrequest = DNSRecord.parse(data)
