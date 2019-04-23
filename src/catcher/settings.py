@@ -18,7 +18,7 @@ import queue
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 #==================Catcher settings=============
-CATCHER_VERSION = "v0.1"
+CATCHER_VERSION = "v1.0"
 BANNER = """
  _____       _ _______            _    _____       _       _               
 /  __ \     | | | ___ \          | |  /  __ \     | |     | |              
@@ -42,27 +42,19 @@ FINGERPRINT_DEFS = os.path.join(BASE_DIR, 'files/fingerprints.xml')
 DEFAULT_PORTS = (
      {'port': 21, 'protocol': 'tcp', 'handler': 'ftp.py', 'ssl': 0},
      {'port': 80, 'protocol': 'tcp', 'handler': 'http.py', 'ssl': 0},
-     {'port': 23, 'protocol': 'tcp', 'handler': 'telnet.py', 'ssl': 0},
      {'port': 25, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
      {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
-     {'port': 110, 'protocol': 'tcp', 'handler': 'pop3.py', 'ssl': 0},
+     {'port': 443, 'protocol': 'tcp', 'handler': 'http.py', 'ssl': 1},
      {'port': 587, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
      {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
-     {'port': 445, 'protocol': 'tcp', 'handler': 'smb.py', 'ssl': 0},
-     {'port': 139, 'protocol': 'tcp', 'handler': 'netbios.py', 'ssl': 0},
-     {'port': 123, 'protocol': 'tcp', 'handler': 'simple.py', 'ssl': 0},
 )
-#========= TOKEN SETTINGS ==========
 ADVANCED_TOKEN_DETECTION = True
-TOKEN_QUEUE = queue.Queue() # DO NOT CHANGE
-FINGERPRINT_QUEUE = queue.Queue() # DO NOT CHANGE
-#===================================
-#========= SSL SETTINGS ==========
-LETSENCRYPTDIRECTORY = "https://acme-v02.api.letsencrypt.org/directory"
 SSL_KEY = os.path.join(BASE_DIR, 'files/ssl/server.key')
 SSL_CERT = os.path.join(BASE_DIR, 'files/ssl/server.crt')
-#===================================
-#========= USER PERMISSIONS ==========
+
+#========= Advanced Catcher Settings ==========
+
+LETSENCRYPTDIRECTORY = "https://acme-v02.api.letsencrypt.org/directory"
 CLIENT_USER_PERMISSIONS = ["view_blacklist",
                            "view_callback",
                            "view_handler",
@@ -74,7 +66,10 @@ CLIENT_USER_PERMISSIONS = ["view_blacklist",
                            "change_token",
                            "delete_token",
                            "view_token",]
+TOKEN_QUEUE = queue.Queue() # DO NOT CHANGE
+FINGERPRINT_QUEUE = queue.Queue() # DO NOT CHANGE
 #===================================
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'vfbc$jpg#b+dgwkpns9ch-&dipkb2d-ryxf0og92cgh1uja5q^'
 
