@@ -1,0 +1,5 @@
+* Start simple burp plugin
+* Finish python client
+* Finish Java client
+* Add client_id header to restrict certain API requests from basic auth access
+* Handle "address already in use" (not showing error on front end)
