@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 import signal
 import sys
+import inspect
 
 def keyboard_signal_handler(signal, frame):
     print("Killing processes...")
@@ -10,26 +11,36 @@ class CatcherConfig(AppConfig):
     name = 'catcher'
     verbose_name = 'CallBack Catcher'
     
+    def check_python_version(self):
+        if sys.version_info[0] < 3:
+            raise Exception("ERROR: Try using Python 3")
+    
     def ready(self):
         signal.signal(signal.SIGINT, keyboard_signal_handler)
-        self.pre_run()
+        self.check_python_version()
+        #check command arguments
+        if "manage.py" in sys.argv and "runserver" in sys.argv:
+            self.pre_run()
+            pass
  
     def pre_run(self):
-        from django.contrib.auth.models import User
-        from catcher.models import Port, Fingerprint, Port, Handler
+        #from django.contrib.auth.models import User
+        from catcher.models import Port, Port, Handler, Client
         from catcher.service import Service
         from catcher.config import CatcherConfigParser
-        
+        from catcher.utils import is_process_running
         import catcher.signals
         import catcher.settings as settings
         
+        from django.contrib.auth.models import Group, Permission
+        
         import socket
         import logging
-        import xml.etree.ElementTree as ET
         import multiprocessing
         import os
         import sys
         import importlib
+        import time
         
         logger = logging.getLogger(__name__)
         
@@ -37,73 +48,17 @@ class CatcherConfig(AppConfig):
         
         #Drop all the users and add one user to rule them all
         logger.info("Setting up users")
-        User.objects.all().delete() 
-        user = User.objects.create_user(username=settings.USERNAME, 
-                                        email=settings.EMAIL, 
-                                        password=settings.PASSWORD)
-        
-        #Adds fingerprints
-        logger.info("Loading fingerprints")
-        try:
-            tree = ET.parse(settings.FINGERPRINT_DEFS)
-            for fingerprint in tree.getroot():
-                name = fingerprint.find("name").text
-                probe = fingerprint.find("probe").text
-                obj, created = Fingerprint.objects.get_or_create(
-                    name=name,
-                    defaults={'name': name, 'probe': probe},
-                )
-        except:
-            logger.error("Unable to load {}".format(settings.FINGERPRINT_DEFS))
-
-        logger.info("Fingerprints loaded successfully")
-        
-        #Add handlers to database
-        logger.info("Importing handlers")
-        exclude_handlers = ('__init__.py', 'basehandler.py', 'packets.py')
-        handler_settings = {}
-        try:
-            handler_count = 0
-            for filename in os.listdir(settings.HANDLER_DIR):
-                if filename.endswith(".py") and filename not in exclude_handlers: 
-                    try:
-                        handlername, ext = filename.split(".", 1)
-                        plugin = importlib.import_module('catcher.handlers.' + handlername)
-                        handler = getattr(plugin, handlername)
-                                                
-                        description = ""
-                        if hasattr(handler, 'NAME') and hasattr(handler, 'DESCRIPTION'):
-                            handlername = handler.NAME
-                            handlerdesc = handler.DESCRIPTION
-                            #Parse any settings that the handler may have
-                            defaults={'name': handlername, 'filename': filename, 'description': handlerdesc, 'settings': {}}
-                            c = CatcherConfigParser(defaults=settings.DEFAULT_HANDLER_SETTINGS)
-                            if hasattr(handler, 'SETTINGS'):
-                                logger.debug("{}: Found custom settings. Updating db.".format(filename))
-                                for i, v in getattr(handler, 'SETTINGS').items():
-                                    c.add_setting(i, v)
-                                    
-                            defaults['settings'] = c.get_settings(json_format=True)
-                            handler_settings[filename] = defaults['settings']
-                            handlerobj, created = Handler.objects.update_or_create(
-                                name=handlername,
-                                defaults=defaults,
-                            )
-                            handler_count = handler_count + 1
-                        else:
-                            raise AttributeError
-                        logger.debug("{}: Imported".format(filename))
-                    except ImportError:
-                        logger.error("{}: Import failed. Skipping".format(filename))
-                    except AttributeError:
-                        logger.error("{}: Import failed. Handler missing attribute. Skipping...".format(filename))
-                    except Exception as e:
-                        logger.exception("{}: Unknown error whilst importing. {}".format(filename, e))
-                        sys.exit()
-        except:
-            logger.exception("Unable to load handlers")
-            raise
-        logger.info("{} handlers loaded successfully".format(handler_count))
+        clientgroup, created = Group.objects.get_or_create(name='clients')
+        Client.objects.filter(username=settings.USERNAME).delete() 
+        user = Client.objects.create_superuser(username=settings.USERNAME, 
+                                               email=settings.EMAIL, 
+                                               password=settings.PASSWORD,
+                                               is_staff=True,
+                                               is_superuser=True)
+        user.groups.add(clientgroup)    #add the user to the group
+        client_permissions = Permission.objects.filter(codename__in=settings.CLIENT_USER_PERMISSIONS)
+        for p in client_permissions:
+            clientgroup.permissions.add(p)
         
         #Check if any ports are reported as running in the db and remove
         logger.info("Cleaning up database")
@@ -111,20 +66,36 @@ class CatcherConfig(AppConfig):
         for p in ports:
             p.delete()
         
-        #TESTING start services
+        #Start default services
         for p in settings.DEFAULT_PORTS:
             try:
                 process = Service(settings.LISTEN_IP, p['port'], p['protocol'], p['ssl'], ipv6=settings.IPV6)
-                process.set_handler(p['handler'], config_string=handler_settings[p['handler']])
                 if p['ssl'] is 1:
                     process.set_ssl_context(settings.SSL_CERT, settings.SSL_KEY)
-                process.start()
                 handler = Handler.objects.get(filename=p['handler'])
-                pobj = Port.objects.create(number=process.number, protocol=process.protocol, ssl=process.ssl, handler=handler, pid=process.pid)
+                if handler:
+                    process.set_handler(handler.filename)
+                    parser = CatcherConfigParser()
+                    parser.read(handler.default_config)
+                    process.set_config(parser.get_config())
+                    process.start()
+                    if is_process_running(process.pid) is True:
+                        pobj = Port.objects.create(number=process.number, 
+                                                   protocol=process.protocol, 
+                                                   ssl=process.ssl, 
+                                                   handler=handler, 
+                                                   pid=process.pid, 
+                                                   config=handler.default_config)
+                    else:
+                        logger.info("Failed to start port")
+                else:
+                    logger.error("Unknown handler file in DEFAULT_PORTS. Ignoring.")              
             except Exception as e:
-                logger.error("Failed to start process")
-                logger.exception(e)
-                #raise
+                if "Handler matching query does not exist" in str(e):
+                    logger.error("Could not find handler filename in database. Check DEFAULT_PORTS")
+                else:
+                    logger.error("Failed to start process")
+                    logger.exception(e)
+                    raise
         
         
-    
