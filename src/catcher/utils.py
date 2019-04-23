@@ -22,3 +22,21 @@ def kill_process(pid):
             logger.info("Killed process {}".format(pid))
         except:
             logger.error("Failed to kill process")
+            
+def is_process_running(pid):
+    '''
+    Check if the provided pid is running
+    '''
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    else:
+        return True
+            
+def safe_load_path(basedir, path, follow_symlinks=True):
+    if follow_symlinks:
+        return os.path.realpath(path).startswith(basedir)
+
+    return os.path.abspath(path).startswith(basedir)
+
