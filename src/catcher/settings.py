@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 import logging
+import queue
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -30,40 +31,50 @@ BANNER = """
 DEBUG_LVL = 'DEBUG' #INFO for less noise
 USERNAME = 'admin'
 PASSWORD = 'password'
-EMAIL = 'gavin.anders@googlemail.com'
+EMAIL = 'test@example.com'
 LISTEN_IP = '0.0.0.0'
 IPV6 = False
 EXTERNAL_IP = '18.221.124.159'
 DOMAIN = 'pentestlabs.uk'
 HANDLER_DIR = os.path.join(BASE_DIR, 'catcher/handlers')
-HANDLER_CONTENT_DIR = os.path.join(BASE_DIR, 'files/handlers/')
+HANDLER_CONTENT_DIR = os.path.join(BASE_DIR, 'content/')
 FINGERPRINT_DEFS = os.path.join(BASE_DIR, 'files/fingerprints.xml')
 DEFAULT_PORTS = (
      {'port': 21, 'protocol': 'tcp', 'handler': 'ftp.py', 'ssl': 0},
-     #{'port': 23, 'protocol': 'tcp', 'handler': 'telnet.py', 'ssl': 0},
+     {'port': 80, 'protocol': 'tcp', 'handler': 'http.py', 'ssl': 0},
+     {'port': 23, 'protocol': 'tcp', 'handler': 'telnet.py', 'ssl': 0},
      {'port': 25, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
      {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
-     {'port': 8001, 'protocol': 'tcp', 'handler': 'basehttp.py', 'ssl': 0},
-     {'port': 8002, 'protocol': 'tcp', 'handler': 'httpbasic.py', 'ssl': 0},
      {'port': 110, 'protocol': 'tcp', 'handler': 'pop3.py', 'ssl': 0},
-     {'port': 443, 'protocol': 'tcp', 'handler': 'httpstatic.py', 'ssl': 1},
      {'port': 587, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
      {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
-     {'port': 3306, 'protocol': 'tcp', 'handler': 'mysql.py', 'ssl': 0},
      {'port': 445, 'protocol': 'tcp', 'handler': 'smb.py', 'ssl': 0},
      {'port': 139, 'protocol': 'tcp', 'handler': 'netbios.py', 'ssl': 0},
      {'port': 123, 'protocol': 'tcp', 'handler': 'simple.py', 'ssl': 0},
 )
-SSL_KEY = os.path.join(BASE_DIR, 'files/catcher.key')
-SSL_CERT = os.path.join(BASE_DIR, 'files/catcher.crt')
-HANDLER_CONTENT_DIR = os.path.join(BASE_DIR, 'content')
-DEFAULT_HANDLER_SETTINGS = {
-    "timeout": 5,
-    "buffer_size": 1024
-}
-
+#========= TOKEN SETTINGS ==========
+ADVANCED_TOKEN_DETECTION = True
+TOKEN_QUEUE = queue.Queue() # DO NOT CHANGE
+FINGERPRINT_QUEUE = queue.Queue() # DO NOT CHANGE
 #===================================
-
+#========= SSL SETTINGS ==========
+LETSENCRYPTDIRECTORY = "https://acme-v02.api.letsencrypt.org/directory"
+SSL_KEY = os.path.join(BASE_DIR, 'files/ssl/server.key')
+SSL_CERT = os.path.join(BASE_DIR, 'files/ssl/server.crt')
+#===================================
+#========= USER PERMISSIONS ==========
+CLIENT_USER_PERMISSIONS = ["view_blacklist",
+                           "view_callback",
+                           "view_handler",
+                           "add_port",
+                           "delete_port",
+                           "view_port",
+                           "view_secret",
+                           "add_token",
+                           "change_token",
+                           "delete_token",
+                           "view_token",]
+#===================================
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'vfbc$jpg#b+dgwkpns9ch-&dipkb2d-ryxf0og92cgh1uja5q^'
 
@@ -88,12 +99,12 @@ INSTALLED_APPS = [
     'catcher',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -141,14 +152,16 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Customer user class
+AUTH_USER_MODEL = 'catcher.Client'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-
+FILES_DIR = os.path.join(BASE_DIR, 'files/')
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'files/'),
+    os.path.join(FILES_DIR, 'static/'),
 )
 
 # Django rest framework settings
@@ -195,3 +208,4 @@ SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
     "SHOW_REQUEST_HEADERS": True,
 }
+
