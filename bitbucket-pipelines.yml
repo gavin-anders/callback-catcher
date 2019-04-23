@@ -1,8 +1,0 @@
-image: python:3
-
-pipelines:
-  default:
-    - step:
-        name: Build and Run
-        script:
-          - ssh $user@$server 'sudo build.sh'
