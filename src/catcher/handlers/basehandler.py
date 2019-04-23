@@ -157,6 +157,15 @@ class BaseCatcherHandler(BaseRequestHandler):
         Checks if the 'is_ssl' attribute is set in the server
         '''
         return self.server.is_ssl
+    
+    def get_config_value(self, value):
+        '''
+        Returns the config setting
+        '''
+        if value in self.CONFIG:
+            return self.CONFIG[value]
+        else:
+            return None
 
 class TcpHandler(BaseCatcherHandler):
     '''

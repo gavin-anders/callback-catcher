@@ -25,7 +25,7 @@ def to_string(b):
 class smb(TcpHandler):
     NAME = "SMB"
     DESCRIPTION = '''Responder handler. Records username and password to secrets. Code based on https://github.com/lgandx/Responder-Windows. Thanks to Laurent Gaffie!'''
-    SETTINGS = {
+    CONFIG = {
             "challenge": "0B16212C37424D58"
         }
     
@@ -37,7 +37,6 @@ class smb(TcpHandler):
         self.session = True
         self.challenge = bytes.fromhex(self.challenge)
         TcpHandler.__init__(self, *args)
-        
         
     ##### Extract from Responder/servers/SMB.py ########
     #Function used to know which dialect number to return for NT LM 0.12

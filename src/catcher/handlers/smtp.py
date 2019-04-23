@@ -16,8 +16,8 @@ import base64
 class smtp(TcpHandler):
     NAME = "SMTP"
     DESCRIPTION = '''Another basic mail server. Records LOGIN AUTH and AUTH PLAIN to secrets.'''
-    SETTINGS = {
-        'hostname': 'catcher.nccgroup.com',
+    CONFIG = {
+        'hostname': 'catcher.pentestlabs.co.uk',
     }
 
     def __init__(self, *args):

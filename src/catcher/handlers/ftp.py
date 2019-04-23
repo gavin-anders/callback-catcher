@@ -8,7 +8,7 @@ from .basehandler import TcpHandler
 class ftp(TcpHandler):
     NAME = "FTP"
     DESCRIPTION = '''Handles incoming FTPD connections. Records username and password to secrets.'''
-    SETTINGS = {
+    CONFIG = {
         'banner': '220 (CallbackCatcherFTPD 0.1a)\r\n',
     }
     
@@ -18,9 +18,9 @@ class ftp(TcpHandler):
         '''
         self.session = True
         TcpHandler.__init__(self, *args)
-        
+    
     def base_handle(self):
-        self.send_response(self.banner, 'utf-8')
+        self.send_response(self.get_config_value('banner'), 'utf-8')
         
         while self.session is True:
             data = self.handle_request().decode('utf-8')

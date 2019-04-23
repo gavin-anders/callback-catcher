@@ -9,8 +9,8 @@ from .basehandler import TcpHandler
 class pop3(TcpHandler):
     NAME = "POP3"
     DESCRIPTION = '''POP3 mail server. Records username and password to secrets.'''
-    SETTINGS = {
-        'banner': '220 (CallbackCatcherFTPD 0.1a)\r\n',
+    CONFIG = {
+        'banner': '220 (CallbackCatcher 0.1a)\r\n',
     }
 
     def __init__(self, *args):

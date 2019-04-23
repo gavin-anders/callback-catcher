@@ -17,7 +17,7 @@ from .packets import MySqlGeetingPacket
 class mysql(TcpHandler):
     NAME = "MySQL"
     DESCRIPTION = '''Handles incoming MySQL connections. Records username and password to secrets.'''
-    SETTINGS = {
+    CONFIG = {
         'version': '5.1.66', 
         'salt': 'AAAAAAAABBBBBBBBBBBB'
     }

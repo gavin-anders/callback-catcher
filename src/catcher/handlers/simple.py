@@ -9,7 +9,7 @@ from .basehandler import TcpHandler
 class simple(TcpHandler):
     NAME = "Simple"
     DESCRIPTION = '''The most basic of handlers. Echos any data that is sent. Use this as a template or example.'''
-    SETTINGS = {
+    CONFIG = {
         'banner': 'Callback Catcher Online\r\n',
     }
     def __init__(self, *args):

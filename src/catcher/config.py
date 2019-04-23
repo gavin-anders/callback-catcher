@@ -53,7 +53,7 @@ class CatcherConfigParser(object):
     def is_valid(self):
         return self.valid
     
-    def get_settings(self, json_format=False):
+    def get_config(self, json_format=False):
         '''
         Alias function
         '''
@@ -61,7 +61,7 @@ class CatcherConfigParser(object):
             return json.dumps(self.settings)
         return self.settings
     
-    def add_setting(self, name, value):
+    def add_config(self, name, value):
         '''
         Add new setting if doesnt already exist
         '''

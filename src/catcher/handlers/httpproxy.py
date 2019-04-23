@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 class httpproxy(TcpHandler):
     NAME = "HTTP Proxy"
-    DESCRIPTION = '''A HTTP proxy accepting the CONNECT method.'''
-    SETTINGS = {
+    DESCRIPTION = '''WIP: A HTTP proxy accepting the CONNECT method.'''
+    CONFIG = {
             'timeout': 5
         }
     
@@ -26,7 +26,7 @@ class httpproxy(TcpHandler):
         Constructor
         '''
         self.session = True
-        TcpHandler.__init__(self, *args)
+        TcpHandler.__init__(self, *args) 
         
     def base_handle(self):
         data = self.handle_request().decode('utf-8')
@@ -127,11 +127,6 @@ class httpproxy(TcpHandler):
             self.request.close()
         
     def read_address(self, reqline, hostheader=''):
-        '''
-        Should return the host and port for the destination host.
-        If possible these values are derived from absolute URI.
-        If absolute URI is not available then host header is used.
-        '''
         if reqline.startswith('/'):
             host = hostheader
             port = int(self.server.server_address[1])

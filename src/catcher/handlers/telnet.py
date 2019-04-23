@@ -24,7 +24,7 @@ class telnet(TcpHandler):
         try:
             self.send_response(self.banner)
             self.send_response(b'Username: ')
-            data = self.handle_raw_request()
+            data = self.handle_request()
             if len(data) > 0:
                 while self.session is True:
                     self.set_fingerprint()
