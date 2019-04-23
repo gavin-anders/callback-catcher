@@ -2,9 +2,12 @@
 HOST=0.0.0.0
 PORT=12443
 
-if [[ $EUID -ne 0 ]]; then
-    echo "This script should be run as root" 
-    sudo python3 manage.py runserver $HOST:$PORT --noreload
+
+if [[ $EUID -ne 0 ]]
+    then
+    echo "This script should be run as root"
+    sudo python3 manage.py runserver ${1:-$HOST}:${2:-$PORT} --noreload
 else
-    python3 manage.py runserver $HOST:$PORT --noreload
+    python3 manage.py runserver ${1:-$HOST}:${2:-$PORT} --noreload
 fi
+
