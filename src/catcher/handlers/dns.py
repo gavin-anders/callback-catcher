@@ -15,9 +15,18 @@ logger = logging.getLogger(__name__)
 class dns(UdpHandler):
     NAME = "DNS Server"
     DESCRIPTION = "Basic UDP domain server. Responds to A records, supports data DNS exfil and dynamic resolving via hex encoded subdomain values (max length 53 chars)."
-    SETTINGS = {
+    CONFIG = {
         "resolveip": "13.59.5.95",
-        "exclude": ["ns1.pentestlabs.uk.", "pentestlabs.uk.", "www.pentestlabs.uk."]
+        "exclude": ["ns1.pentestlabs.uk.", "pentestlabs.uk.", "www.pentestlabs.uk."],
+        "static_resolve": (
+                {"subdomain": "aws", "ip": "169.254.169.254"},
+                {"subdomain": "googlecloud", "ip": "169.254.169.254"},
+                {"subdomain": "digitalocean", "ip": "169.254.169.254"},
+                {"subdomain": "alibabacloud", "ip": "169.254.169.254"},
+                {"subdomain": "oraclecloud", "ip": "192.0.0.192"},
+                {"subdomain": "openstack", "ip": "169.254.169.254"},
+                {"subdomain": "azure", "ip": "169.254.169.254"},
+            )
     }
 
     def __init__(self, *args):
@@ -52,10 +61,11 @@ class dns(UdpHandler):
                 return self.resolveip
                 
             self.add_secret("Domain lookup", qname)
-            if "local" in qname:
+            subdomain = qname.split(".")[0]
+            if "local" == subdomain:
                 logger.info("Static resolving {} to 127.0.0.1".format(qname))
                 return "127.0.0.1"
-            if "dynamic" in qname:
+            if "dynamic" == subdomain:
                 try:
                     hexdata = qname.split('.')[1]
                     resolve = binascii.a2b_hex(hexdata).decode("utf-8")
@@ -64,7 +74,7 @@ class dns(UdpHandler):
                 except:
                     logger.info("Dynamic resolving {} - FAILED".format(qname))
                     return "127.0.0.1"
-            if "exfil" in qname:
+            if "exfil" == subdomain:
                 try:
                     hexdata = qname.split('.')[1]
                     if re.match('[0-9a-fA-F]{2}', hexdata):   
@@ -74,5 +84,11 @@ class dns(UdpHandler):
                 except:
                     logger.info("Extracting data from {} - FAILED".format(qname))
                 return "127.0.0.1"
+            
+            for d in self.static_resolve:
+                if subdomain == d['subdomain']:
+                    logger.info("Static resolving {} to {}".format(qname, d['ip']))
+                    return d['ip']
+            
         return self.resolveip
 
