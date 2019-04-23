@@ -3,20 +3,20 @@ Created on 15 Sep 2017
 
 @author: gavin
 '''
-
+import re
+import base64
 from .basehandler import TcpHandler
 
 class basehttphandler(TcpHandler):
-    NAME = "Base HTTP"
+    NAME = "Base HTTP Handler"
     DESCRIPTION = '''A basic HTTP handler and server based on python's BaseHTTPServer.py. Doesnt do anything other that return 400 responses. A base class that should be inherited.'''
-    SETTINGS = {
+    CONFIG = {
         'default_content_type': 'text/html',
         'detect_content_type': True,
         'force_keep_alive': False,
         'default_code': 400
     }
-    
-    response_codes = {
+    RESPONSE_CODES = {
         100: ('Continue', 'Request received, please continue'),
         101: ('Switching Protocols', 'Switching to new protocol; obey Upgrade header'),
         200: ('OK', 'Request fulfilled, document follows'),
@@ -58,7 +58,6 @@ class basehttphandler(TcpHandler):
         504: ('Gateway Timeout', 'The gateway server did not receive a timely response'),
         505: ('HTTP Version Not Supported', 'Cannot fulfill request.'),
     }
-    
     DEFAULT_ERROR_MESSAGE = ("<html><head><title>Error response</title>"
     "</head><body><h1>Error response</h1><p>Error code {code}."
     "<p>Message: {message}."
@@ -75,9 +74,7 @@ class basehttphandler(TcpHandler):
         self.req_version = ""
         self.req_headers = []
         self.req_body = None
-        
         self.resp_headers = []
-        
         TcpHandler.__init__(self, *args)
         
     def parse_http_request(self, data=None):
@@ -87,7 +84,11 @@ class basehttphandler(TcpHandler):
         :return: True or False
         """
         if data is None:
-            data = self.handle_request().decode('utf-8')    #get the next bit of data if the child class didnt both
+            try:
+                data = self.handle_request().decode('utf-8')    #get the next bit of data if the child class didnt both
+            except:
+                self.debug("Data most likely not plain text")
+                data = None
             
         if not data:
             return
@@ -99,6 +100,7 @@ class basehttphandler(TcpHandler):
             raw = data.splitlines()
             reqline = raw.pop(0).split(" ")
             if len(reqline) == 3: #probably a HTTP/1.x
+                self.set_fingerprint('HTTP/1.x')
                 [command, path, version] = reqline
                 if version[:5] != 'HTTP/':
                     self.send_error(400, "Bad request version {}".format(version))
@@ -119,6 +121,19 @@ class basehttphandler(TcpHandler):
                 if version_number >= (2, 0):
                     self.send_error(505, "Invalid HTTP Version ({})".format(base_version_number))
                     return False
+                
+                #check for secrets in request
+                try:
+                    auth = re.search(r"Authorization:\s(\w+)\s(.*)\r", data)
+                    if "Basic" in auth.group(1):
+                        creds = base64.b64decode(auth.group(2)).decode().split(":")
+                        self.add_secret('Basic Username', creds[0])
+                        self.add_secret('Basic Password', creds[1])
+                    elif "Bearer" in auth.group(1):
+                        creds = base64.b64decode(auth.group(2)).decode()
+                        self.add_secret('Bearer Token', creds)
+                except Exception as e:
+                    pass
             elif len(reqline) == 2: # probably a HTTP/0.9
                 self.set_fingerprint('HTTP/0.9')
                 [command, path] = reqline
@@ -127,7 +142,7 @@ class basehttphandler(TcpHandler):
             elif not reqline:
                 return False
             else:
-                self.send_error(400, "Bad request syntax ({})".format(requestline))
+                self.send_error(400, "Bad request syntax")
                 return False
             self.req_command, self.req_path, self.req_version = command, path, version
             
@@ -157,6 +172,7 @@ class basehttphandler(TcpHandler):
             self.debug("You dont have code that can handle that verb. Try defining a do_{}() method".format(command))
             self.send_error(400)
         except:
+            raise
             self.send_error(500)
         return False
 
@@ -188,7 +204,7 @@ class basehttphandler(TcpHandler):
         Sends back a simple error page
         """
         try:
-            short, long = self.response_codes[code]
+            short, long = self.RESPONSE_CODES[code]
         except KeyError:
             short, long = '???', '???'
             
@@ -215,7 +231,7 @@ class basehttphandler(TcpHandler):
         ### ADD CODE TO DETECT SUBCLASSES USING HEADERS
         ###################################
         
-        response = str.encode('{} {}\r\n'.format(self.req_version, self.response_codes[code][0]))
+        response = str.encode('{} {}\r\n'.format(self.req_version, self.RESPONSE_CODES[code][0]))
         
         if content is not None:
             content_type = self.default_content_type
