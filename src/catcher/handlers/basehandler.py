@@ -21,13 +21,14 @@ class BaseCatcherHandler(BaseRequestHandler):
     Our base handler that extends BaseRequestHandler and add extra functionality
     '''
     SERVER_PROTOCOL = ''
+    CONFIG = {}
     
     def __init__(self, *args):
         '''
         Constructor
         '''
-        self.callback = None
         BaseRequestHandler.__init__(self, *args)
+        self.callback = None
         
     ######### BASE HANDLER FUNCTIONS ###########
         
@@ -194,11 +195,23 @@ class TcpHandler(BaseCatcherHandler):
         use: self.handle_request().decode('utf-8') for plain text protocols
         '''
         logger.debug("handle_request()")
-        packet = self.request.recv(self.BUFFER_SIZE)
-        if packet is not None:
-            self.debug(packet)  
-            self.append_data(packet)
-            return packet
+        #packet = self.request.recv(self.BUFFER_SIZE)
+        #if packet is not None:
+        #    self.debug(packet)  
+        #    self.append_data(packet)
+        #    return packet
+        
+        #faster way of building streamed data
+        buffer = [b'']
+        while True:
+            part = self.request.recv(self.BUFFER_SIZE)
+            buffer.append(part)
+            if len(part) < self.BUFFER_SIZE:
+                break
+        packet = b''.join(buffer)
+        self.append_data(packet)
+        self.debug(packet) 
+        return packet
         
     def send_response(self, response, encoding=None):
         '''
@@ -230,6 +243,7 @@ class UdpHandler(BaseCatcherHandler):
         UDP Constructor
         '''
         self.client_socket = None
+        BaseCatcherHandler.SETTINGS = {}
         BaseCatcherHandler.__init__(self, *args)
         
      ########## CUSTOM FUNCTIONS ##############
