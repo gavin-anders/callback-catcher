@@ -71,7 +71,7 @@
        		<td>{{ c.fingerprint || '-' }}</td>
        		<td class="hidden-sm-down">{{ c.datasize }}</td>
        		<td class="hidden-sm-down""><button ng-click="viewSecrets( c.secrets )" ng-disabled="c.secrets.length == 0" type="button" class="btn btn-block btn-default" data-toggle="modal" data-target="#secretdataModal">&#128065;</button></td>
-    		<td class="hidden-sm-down"><button ng-click="viewData( c.data )" type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#rawdataModal">&#8505;</button></td>
+    		<td class="hidden-sm-down"><button ng-click="viewData( c.id )" type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#rawdataModal">&#8505;</button></td>
     	</tr>
   	</tbody>
 </table>

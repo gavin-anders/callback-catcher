@@ -1,0 +1,92 @@
+<h1 class="display-3 catcher-page-title">Clients</h1>
+<p>{{ message }}</p>
+
+<div ng-repeat="c in clients" class="d-flex pb-3">
+    <div class="card card-block text-left">
+        <div class="row">
+            <div class="col-9">
+            	<b>ID:</b>&nbsp;<i>{{ c.id }}</i></br>
+                <b>Client API Key:</b>&nbsp;<i>{{ c.apikey }}</i></br>
+                <b>Name:</b>&nbsp;{{ c.username }}</br>
+                <b>Email:</b>&nbsp;{{ c.email || '-' }}</br>
+                <b>IP Address:</b>&nbsp;{{ c.source || '-' }}</br>
+                <b>Agent:</b>&nbsp;{{ c.agent || '-' }}</br>
+                <b>Created:</b>&nbsp;{{ c.created_time || '-' }}</br>
+            </div>
+            <div class="col-3">
+                <a ng-click="generateToken( c.id )" class="btn btn-block btn-info" data-toggle="modal" data-target="#tokenModal">Generate token</a>
+                <a ng-click="viewTokens( c.id )" class="btn btn-block btn-secondary" data-toggle="modal" data-target="#viewTokenModal">View tokens</a>
+                <a ng-click="clearTokens( c.id )" class="btn btn-block btn-warning">Clear tokens&nbsp;<span class="badge"></span></a>
+                <a ng-click="deleteClient( c.id )" class="btn btn-block btn-danger">Delete client</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="d-flex pb-3">
+    <div class="card card-block text-left">
+        <div class="row">
+            <div class="col-9">
+                <div class="form-group row">
+                    <label for="name" class="col-sm-2 col-form-label">Name</label>
+                    <div class="col-sm-10"><input type="text" class="form-control" id="name" placeholder="Name to identify the user/client" ng-model="username" required></div>
+		  		</div>  	
+			  	<div class="form-group row">
+			    	<label for="email" class="col-sm-2 col-form-label">Email</label>
+			    	<div class="col-sm-10"><input type="email" class="form-control" id="email" placeholder="Email address to identify the user/client" ng-model="email" required></div>
+			  	</div>
+		  	</div>
+	        <div class="col-3" style="margin-bottom: 1em;">
+	        	<div class="form-group row" style="height: 100%">
+	        	<a ng-click="addClient()" class="d-flex justify-content-center align-items-center btn btn-block btn-secondary" data-toggle="modal" style="height: 100%;">Add</a>
+	        	</div>
+	        </div>
+		</div>
+    </div>
+</div>
+
+<div class="modal fade ng-scope" id="tokenModal" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg text-left">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-10">
+                        <input value="{{ token }}" id="generatedtoken" class="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched text-center" type="text" readonly>
+                    </div>
+                    <div class="col-2">
+                        <a onclick="copyToClipboard()" class="btn btn-block btn-secondary">Copy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade ng-scope" id="viewTokenModal" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg text-left">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5>Tokens</h5>
+                <table class="table table-condensed table-bordered table-striped ">
+                	<tr>
+                		<th>Token</th>
+                		<th>Expires</th>
+                	</tr>
+	                <tbody ng-repeat="t in tokens">
+				    	<tr>
+				       		<td>{{ t.token }}</td>
+				       		<td>{{ t.expire_time }}</td>
+				    	</tr>
+				    </tbody>
+			    </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function copyToClipboard() {
+    var copyText = document.getElementById("generatedtoken");
+    copyText.select();
+    document.execCommand("copy");
+    console.log("Copied the text:" + copyText.value);
+    $('#tokenModal').modal('hide');
+}
+</script>

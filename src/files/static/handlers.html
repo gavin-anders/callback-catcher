@@ -1,0 +1,33 @@
+<h1 class="display-3 catcher-page-title">Handlers</h1>
+<p>{{ message }}</p>
+<div class="row">
+	<table class="table table-bordered table-condensed table-striped" show-filter="true">
+		<thead>
+	      	<tr>
+		      	<th>Name</th>
+				<th>Description</th>
+				<th>Filename</th>
+				<th>Defaults</th> 
+	      	</tr>
+	    </thead>
+		<tbody ng-repeat="h in handlers | filter : filterTable" >
+	    	<tr>
+	       		<td>{{ h.name }}</td>
+	       		<td>{{ h.description }}</td>
+	       		<td>{{ h.filename }}</td>
+	       		<td><button ng-click="viewConfig(h.default_config)" type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#configModal">&#8505;</button></td>
+	    	</tr>
+	  	</tbody>
+	</table>
+</div>
+
+<div class="modal fade" id="configModal" role="dialog">
+    <div class="modal-dialog modal-lg text-left">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5>Settings</h5>
+                <textarea class="catcher-settings-pre">{{ config }}</textarea>
+            </div>
+        </div>
+    </div>
+</div>

@@ -40,12 +40,15 @@
 	            <li class="nav-item">
 	                <a class="nav-link" href="/handlers">Handlers</a>
 	            </li>
+	            <li class="nav-item">
+	                <a class="nav-link" href="/clients">Clients</a>
+	            </li>
 	            <li class="nav-item dropdown">
 				    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Settings</a>
 				    <div class="dropdown-menu">
 				      	<a class="dropdown-item" href="#" ng-click="settingsControl('clear_callbacks')">Clear callbacks</a>
 				      	<a class="dropdown-item" href="#" ng-click="settingsControl('clear_secrets')">Clear secrets</a>
-				      	<div class="dropdown-divider"></div>
+				      	<a class="dropdown-item" href="#" ng-click="settingsControl('clear_clients')">Clear clients</a>
 				      	<a class="dropdown-item" href="#" ng-click="settingsControl('stop_ports')">Stop ports</a>
 				    </div>
 				</li>

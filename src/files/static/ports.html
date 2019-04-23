@@ -1,0 +1,71 @@
+<h1 class="display-3 catcher-page-title">Ports</h1>
+<p>{{ message }}</p>
+
+<div class="row">
+	<table class="table table-bordered table-condensed table-striped" show-filter="true">
+		<thead>
+	      	<tr>
+		      	<th>Port</th>
+				<th>Protocol</th>
+				<th>SSL</th>
+				<th>Handler</th>
+				<th>Settings</th>
+				<th>Start/Stop</th>
+	      	</tr>
+	    </thead>
+		<tbody ng-repeat="p in ports | orderBy : 'number' | filter : filterTable" >
+	    	<tr>
+	       		<td>{{ p.number }}</td>
+	       		<td>{{ p.protocol | uppercase }}</td>
+	       		<td><input type="checkbox" ng-checked="p.ssl" style="transform: scale(1.5);" disabled></td>
+	       		<td>{{ p.handler || '-' }}</td>
+	       		<td><button ng-click="viewConfig( p.config )" type="button" class="btn btn-block btn-default" data-toggle="modal" data-target="#configModal">&#128065;</button></td>
+	       		<td><button ng-click="stopPort( p.id )" type="button" class="btn btn-block btn-danger">&#10006;</button></td>
+	    	</tr>
+	    </tbody>
+	    	<form>
+	    	<tr>
+	    		
+	       		<td><input class="form-control" type="text" name="number" ng-model="number"></td>
+	       		<td>
+	       			<select class="form-control" name="protocol" ng-model="protocol">
+					  	<option selected="selected">TCP</option>
+					  	<option>UDP</option>
+					</select>
+				</td>
+	       		<td>
+					<select class="form-control" name="protocol" ng-model="ssl">
+					  	<option value=1 >true</option>
+					  	<option value=0 selected="selected">false</option>
+					</select>
+				</td>
+	       		<td>
+		       		<select class="form-control" name="handler" ng-model="handler" ng-change="editConfig()" ng-options="h.name for h in handlers track by h.id" ></select>
+	       		</td>
+	       		<td><input type="submit" ng-click="" class="btn btn-block btn-default" value="&#9998;" data-toggle="modal" data-target="#editConfigModal"></td>
+	       		<td><input type="submit" ng-click="startPort()" class="btn btn-block btn-success" value="&#10003;"></td>
+	    		
+	    	</tr>
+	    	</form>
+	</table>
+</div>
+<div class="modal fade" id="configModal" role="dialog">
+    <div class="modal-dialog modal-lg text-left">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5>Current configuration</h5>
+                <textarea class="catcher-settings-pre" disabled>{{ config }}</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editConfigModal" role="dialog">
+    <div class="modal-dialog modal-lg text-left">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5>Edit configuration</h5>
+                <textarea class="catcher-settings-pre" ng-model="editconfig">{{ editconfig }}</textarea>
+            </div>
+        </div>
+    </div>
+</div>

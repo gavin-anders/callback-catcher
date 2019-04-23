@@ -1,0 +1,116 @@
+<h1 class="display-3 catcher-page-title">Callbacks</h1>
+<p>{{ message }}</p>
+<div class="catcher-search-box">
+	<div class="row">
+		<div class="col-11 align-bottom">
+			<button class="btn btn-link dropdown-toggle catcher-search-toggle" data-toggle="collapse" data-target="#collapseSearch" type="button">
+				<span class="caret"></span>Advanced search
+	    	</button>
+		</div>
+		<div class="col-1">
+			<button type="button" class="btn btn-block btn-info" ng-click="executeQuery()">&#128270;</button>
+		</div>
+	</div>
+	<div class="collapse" id="collapseSearch">
+	    <div class="row" >
+	        <div class="col-3"><small>Field</small></div>
+	        <div class="col-2"><small>Lookup</small></div>
+	        <div class="col-5"><small>Search</small></div>
+	        <div class="col-1"></div>
+	        <div class="col-1"></div>
+	    </div>
+	    <div class="row catcher-search-row" ng-repeat="q in queries track by $index">
+	        <div class="col-3">
+	            <input class="form-control" type="text" value="{{ q.field.label }}" readonly>
+	        </div>
+	        <div class="col-2">
+	            <input class="form-control" type="text" value="{{ q.lookup }}" readonly>
+	        </div>
+	        <div class="col-6">
+	            <input class="form-control" type="text" value="{{ q.value }}" readonly>
+	        </div>
+	        <div class="col-1">
+	            <button type="button" class="btn btn-block btn-danger" ng-click="removeRow(q)" >&#10006;</button>
+	        </div>
+	    </div>
+	    <form class="row" name="empty" ng-submit="addRow()">
+	        <div class="col-3">
+	        	<select class="form-control" ng-model="newfield" ng-options="field as field.label for field in fields track by field.id" ng-change="setLookups(newfield)" ng-model="selected" placeholder="Protocol" required></select>
+	        </div>
+	        <div class="col-2">
+	            <select class="form-control" ng-model="newlookup" ng-options="l for l in lookups" placeholder="contains" required></select>
+	        </div>
+	        <div class="col-6">
+	            <input class="form-control" ng-model="newvalue" type="text" placeholder="tcp" required>
+	        </div>
+	        <div class="col-1">
+	            <button type="submit" class="btn btn-block btn-info" >&#x2b;</button>
+	        </div>
+		</form>
+	</div>
+</div>
+<table class="catcher-spacer table table-bordered table-condensed table-striped">
+	<thead>
+      	<tr>
+	      	<th class="hidden-sm-down">ID</th>
+			<th >Timestamp</th>
+			<th >Client</th>
+			<th >Port</th>
+			<th >Finger</th>
+			<th class="hidden-sm-down" >Size</th>
+			<th class="hidden-sm-down">Secrets</th>
+			<th class="hidden-sm-down">Data</th>
+      	</tr>
+    </thead>
+	<tbody ng-repeat="c in callbacks | filter : filterTable" >
+    	<tr>
+       		<td class="hidden-sm-down">{{ c.id }}</td>
+       		<td>{{ c.timestamp }}</td>
+       		<td>{{ c.sourceip }}:{{ c.sourceport }}</td>
+       		<td>{{ c.serverport }}/{{ c.protocol }}</td>
+       		<td>{{ c.fingerprint || '-' }}</td>
+       		<td class="hidden-sm-down">{{ c.datasize }}</td>
+       		<td class="hidden-sm-down""><button ng-click="viewSecrets( c.secrets )" ng-disabled="c.secrets.length == 0" type="button" class="btn btn-block btn-default" data-toggle="modal" data-target="#secretdataModal">&#128065;</button></td>
+    		<td class="hidden-sm-down"><button ng-click="viewData( c.id )" type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#rawdataModal">&#8505;</button></td>
+    	</tr>
+  	</tbody>
+</table>
+
+<div class="catcher-spacer">
+	<button class="btn btn-default float-left" ng-click="previousPage()">Previous</button>
+	<button class="btn btn-default float-right" ng-click="nextPage()">&nbsp;&nbsp;&nbsp;Next&nbsp;&nbsp;&nbsp;</button>
+</div>
+<div class="footer-copyright text-center py-3">
+      <a href="https://bitbucket.org/gavinanders/">Made by Gavin Anders</a>
+</div>
+
+<div class="modal fade" id="rawdataModal" role="dialog">
+    <div class="modal-dialog modal-lg text-left">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5>Plain text</h5>
+                <pre class="catcher-data-dump-pre">{{ rawdata }}</pre>
+                <h5>Hexdump</h5>
+                <pre id="hexdump" class="catcher-data-dump-pre"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="secretdataModal" role="dialog">
+    <div class="modal-dialog modal-lg text-left">
+        <div class="modal-content">
+            <div class="modal-body" style="overflow-x: scroll; margin-right: 15px">
+                <h5>Secrets</h5>
+                <table class="table table-bordered table-condensed table-striped">
+	                <tbody ng-repeat="s in secrets">
+				    	<tr>
+				       		<td><b>{{ s.name }}</b></td>
+				       		<td>{{ s.value }}</td>
+				    	</tr>
+				    </tbody>
+			    </table>
+            </div>
+        </div>
+    </div>
+</div>

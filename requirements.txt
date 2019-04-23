@@ -10,3 +10,6 @@ django-filter
 jsonfield
 django-sslserver
 python-magic
+django-background-tasks
+pyOpenSSL
+free_tls_certificates

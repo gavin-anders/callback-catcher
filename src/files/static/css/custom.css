@@ -58,3 +58,11 @@ body {
 .catcher-search-toggle {
 	font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
+.catcher-icon-profile {
+	font-size: 5rem	
+}
+.ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
