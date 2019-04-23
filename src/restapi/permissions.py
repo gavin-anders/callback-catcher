@@ -1,16 +1,9 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import DjangoModelPermissions, BasePermission
+from catcher.models import Client
+from catcher.settings import USERNAME
 
-class IsUser(BasePermission):
-    """
-    For logged in users only
-    """
-    def has_permission(self, request, view):
-        return request.user.is_staff
-    
-class IsAnonymous(BasePermission):
-    """
-    For admin users only
-    """
-    def has_permission(self, request, view):
-        return request.user.is_staff
-    
+class ClientUserPermissions(DjangoModelPermissions):
+    def __init__(self):
+        self.perms_map['GET'] = ['%(app_label)s.view_%(model_name)s']
+        
+                

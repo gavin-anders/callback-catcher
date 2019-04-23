@@ -9,3 +9,6 @@ class InvalidConfigSection(Exception):
 
 class InvalidConfigFormat(ValueError):
     pass
+
+class FailedToStartServive(Exception):
+    pass

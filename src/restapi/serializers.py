@@ -1,4 +1,4 @@
-from catcher.models import Handler, Callback, Fingerprint, Port, Handler, Secret, Blacklist
+from catcher.models import Client, Handler, Callback, Fingerprint, Port, Handler, Secret, Blacklist, Token
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
@@ -18,7 +18,7 @@ class HandlerSerializer(serializers.ModelSerializer):
     name = serializers.CharField(read_only=True)
     description = serializers.CharField(read_only=True)
     filename = serializers.CharField(read_only=True)
-    settings = serializers.CharField(read_only=False)
+    default_config = serializers.CharField(read_only=False)
     
     class Meta:
         model = Handler
@@ -26,7 +26,7 @@ class HandlerSerializer(serializers.ModelSerializer):
                   'name',
                   'description', 
                   'filename', 
-                  'settings')
+                  'default_config')
 
 class PortSerializer(serializers.ModelSerializer):
     handler = serializers.SlugRelatedField(many=False, required=False, queryset=Handler.objects.all(), slug_field='filename')
@@ -37,9 +37,30 @@ class PortSerializer(serializers.ModelSerializer):
                   'number', 
                   'protocol', 
                   'ssl',  
-                  'handler')
+                  'handler',
+                  'config')
         
 class CallbackSerializer(serializers.ModelSerializer):
+    secrets = SecretSerializer(many=True, read_only=True)
+    fingerprint = serializers.SlugRelatedField(many=False, read_only=True, slug_field='name')
+    timestamp = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S")
+
+    class Meta:
+        model = Callback
+        fields = ('id',
+                  'sourceip', 
+                  'sourceport', 
+                  'serverip', 
+                  'serverport', 
+                  'protocol',
+                  #'data', - removed to avoid DoS
+                  'datasize',
+                  'fingerprint',
+                  'secrets',
+                  'timestamp'
+                  )
+        
+class CallbackDetailSerializer(serializers.ModelSerializer):
     secrets = SecretSerializer(many=True, read_only=True)
     fingerprint = serializers.SlugRelatedField(many=False, read_only=True, slug_field='name')
     timestamp = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S")
@@ -59,10 +80,39 @@ class CallbackSerializer(serializers.ModelSerializer):
                   'timestamp'
                   )
 
-        
 class BlacklistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blacklist
         fields = ('id',
                   'ip',)
+        
+class TokenSerializer(serializers.ModelSerializer):
+    callback = CallbackSerializer(read_only=True)
+    token = serializers.CharField(required=False)
+    expire_time = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S", required=False)
+    
+    class Meta:
+        model = Token
+        fields = ('token',
+                  'callback',
+                  'expire_time')
+        
+class ClientSerializer(serializers.ModelSerializer):
+    apikey = serializers.UUIDField(read_only=True)
+    update_time = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S", required=False)
+    created_time = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S", required=False)
+    agent = serializers.CharField(read_only=True, required=False)
+    source = serializers.CharField(read_only=True, required=False)
+    
+    class Meta:
+        model = Client
+        fields = ('id',
+                  'apikey',
+                  'username',
+                  'email',
+                  'agent',
+                  'update_time',
+                  'created_time',
+                  'source'
+                  )
     
