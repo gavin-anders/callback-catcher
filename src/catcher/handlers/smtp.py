@@ -31,7 +31,7 @@ class smtp(TcpHandler):
         self.send_response('220 {} ESMTP CallbackCatcher service ready\r\n'.format(self.hostname), encoding='utf-8')
         
         while self.session is True:
-            data = self.handle_request()       
+            data = self.handle_request().decode('utf-8')       
             if len(data) > 0:
                 line = data.rstrip()
                 try:
