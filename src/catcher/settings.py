@@ -30,11 +30,11 @@ BANNER = """
 """
 DEBUG_LVL = 'DEBUG' #INFO for less noise
 USERNAME = 'admin'
-PASSWORD = 'password'
-EMAIL = 'test@example.com'
+PASSWORD = 'Gubbins123'
+EMAIL = 'gavin.anders@googlemail.com'
 LISTEN_IP = '0.0.0.0'
 IPV6 = False
-EXTERNAL_IP = '18.221.124.159'
+EXTERNAL_IP = '85.187.140.59'
 DOMAIN = 'pentestlabs.uk'
 HANDLER_DIR = os.path.join(BASE_DIR, 'catcher/handlers')
 HANDLER_CONTENT_DIR = os.path.join(BASE_DIR, 'content/')
@@ -127,10 +127,18 @@ WSGI_APPLICATION = 'catcher.wsgi.application'
 
 # Database
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+#}
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+      'ENGINE': 'django.db.backends.mysql',
+      'OPTIONS': {
+        'read_default_file': '/etc/mysql/conf.d/mysql.cnf',
+      },
     }
 }
 

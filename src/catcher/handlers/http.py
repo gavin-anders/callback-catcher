@@ -37,7 +37,13 @@ class http(basehttphandler):
         '''
         self.www_root = os.path.join(SETTINGS.HANDLER_CONTENT_DIR, 'www/')
         basehttphandler.__init__(self,  *args)
-        
+       
+    def do_OPTIONS(self):
+        self.add_resp_header('Access-Control-Allow-Origin', "*")
+        self.add_resp_header('Access-Control-Allow-Methods', "*")
+        self.add_resp_header('Access-Control-Allow-Headers', "*")
+        self.send_http_response(200)
+
     def do_GET(self):
         if self.req_path.startswith('/payload/'):
             m = re.search(r"\/payload\/(\d+)", self.req_path)

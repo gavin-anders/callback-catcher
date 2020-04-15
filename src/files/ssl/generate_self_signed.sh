@@ -1,6 +1,6 @@
 #!/bin/bash
 CA_CN="CallBackCatcherCA"
-CERT_CN="*.pentestlabs.uk"
+CERT_CN="*.callbackcatcher.uk"
 
 openssl genrsa -out ca.key 2048
 openssl req -new -x509 -days 360 -key ca.key -subj "/CN=$CA_CN" -out ca.crt 

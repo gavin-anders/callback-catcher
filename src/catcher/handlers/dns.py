@@ -16,8 +16,8 @@ class dns(UdpHandler):
     NAME = "DNS Server"
     DESCRIPTION = "Basic UDP domain server. Responds to A records, supports data DNS exfil and dynamic resolving via hex encoded subdomain values (max length 53 chars)."
     CONFIG = {
-        "resolveip": "13.59.5.95",
-        "exclude": ["ns1.pentestlabs.uk.", "pentestlabs.uk.", "www.pentestlabs.uk."],
+        "resolveip": "85.187.140.59",
+        "exclude": ["ns1.callbackcatcher.uk.", "ns2.callbackcatcher.uk.", "callbackcatcher.uk.", "www.callbackcatcher.uk."],
         "static_resolve": (
                 {"subdomain": "aws", "ip": "169.254.169.254"},
                 {"subdomain": "googlecloud", "ip": "169.254.169.254"},

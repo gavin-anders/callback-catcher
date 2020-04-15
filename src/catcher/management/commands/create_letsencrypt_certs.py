@@ -33,7 +33,7 @@ from catcher.settings import SSL_KEY, SSL_CERT, FILES_DIR, DOMAIN, EMAIL, EXTERN
 logging.disable(logging.CRITICAL)
 
 TXTRECORDS = []
-#LETSENCRYPTDIRECTORY = "https://acme-staging-v02.api.letsencrypt.org/directory"
+LETSENCRYPTDIRECTORY = "https://acme-staging-v02.api.letsencrypt.org/directory"
 
 class Command(BaseCommand):
     help = 'Creates certificates and keys for services supporting SSL'
@@ -49,6 +49,8 @@ class Command(BaseCommand):
             servercertpath = os.path.join(FILES_DIR, 'ssl/server.crt')
             serverkeypath = os.path.join(FILES_DIR, 'ssl/server.key')
     
+            sys.stdout.write("[+] Writting to: {}\n".format(FILES_DIR))
+
             self.start_verify_server(EXTERNAL_IP)
             TXTRECORDS.append("test123")
     
@@ -71,16 +73,20 @@ class Command(BaseCommand):
                 name, value = (c.validation_domain_name(a.body.identifier.value), c.validation(client.net.key))
                 TXTRECORDS.append(value)
                 client.answer_challenge(c, c.response(client.net.key))
-            
+           
+            print(TXTRECORDS)
             order = client.poll_and_finalize(order)
+            print(order)
             cert = crypto.load_certificate(crypto.FILETYPE_PEM, order.fullchain_pem)
             with open(servercertpath, 'w') as file:
+                print("writting file")
                 file.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode('utf-8'))
             sys.stdout.write("OK!\n")
                 
             sys.stdout.write("[+] Successfully signed certificate for '{}'\n".format(d))
             sys.stdout.write("[+] Certificate and keys can be found under {}\n".format(os.path.join(FILES_DIR, 'ssl/')))
-        except acme.errors.ValidationError:
+        except acme.errors.ValidationError as e:
+            raise
             sys.stdout.write("FAILED!\n")
 
     def start_verify_server(self, resolveip):

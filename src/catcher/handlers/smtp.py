@@ -32,7 +32,7 @@ class smtp(TcpHandler):
         
         while self.session is True:
             data = self.handle_request().decode('utf-8')       
-            if len(data) > 0:
+            if data:
                 line = data.rstrip()
                 try:
                     if line.startswith('HELO'):
@@ -57,10 +57,9 @@ class smtp(TcpHandler):
                         self._QUIT()
                 except Exception as e:
                     raise
-                    session = False
+                    self.session = False
             else:
-                break
-        return
+                self.session = False
         
     def _HELO(self, param=""):
         resp = '220 Hello {} pleased to meet you\r\n'.format(param)
@@ -83,9 +82,9 @@ class smtp(TcpHandler):
     def _DATA(self):
         while True:
             data = self.handle_request()
-            if data.strip() == ".":
+            if data.startswith(b'.'):
+                self.send_response(b'250 Ok\r\n')
                 break
-        self.send_response(b'250 Ok\r\n')
         
     def _AUTH_PLAIN(self, param=""):
         if param == "":

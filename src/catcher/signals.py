@@ -30,7 +30,7 @@ def token_detect_worker():
                 rawtoken = t.token.encode()
                 hextoken = binascii.hexlify(rawtoken)
                 searches.append(hextoken) #hex encoded
-                searches.append(binascii.b2a_base64(rawtoken, newline=False)) #base64 encoded
+                searches.append(binascii.b2a_base64(rawtoken)) #base64 encoded
                 urlencodedtoken = ""
                 for i in range(0, len(hextoken), 2):
                     urlencodedtoken = urlencodedtoken + "%{}".format(hextoken[i:i+2].decode("utf-8")) 
