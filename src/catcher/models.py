@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django_extensions.db.fields.encrypted import EncryptedCharField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser

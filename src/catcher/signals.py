@@ -2,6 +2,8 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models.signals import post_save
+from django.core import signals
+from django.db import connections
 
 from catcher.models import Callback, Fingerprint, Token
 from catcher.settings import TOKEN_QUEUE, FINGERPRINT_QUEUE, ADVANCED_TOKEN_DETECTION
@@ -64,6 +66,10 @@ def fingerprint_detect_worker():
                 pass
         FINGERPRINT_QUEUE.task_done()
 
+def close_old_connections(**kwargs):
+    for conn in connections.all():
+        conn.close_if_unusable_or_obsolete()
+
 @receiver(post_save, sender=Callback)
 def detect_fingerprint(sender, instance, created, **kwargs):
     """
@@ -89,3 +95,5 @@ def detect_token(sender, instance, created, **kwargs):
     thread = threading.Thread(target=token_detect_worker,)
     thread.start()
             
+signals.request_started.connect(close_old_connections)
+signals.request_finished.connect(close_old_connections)

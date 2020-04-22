@@ -39,15 +39,6 @@ DOMAIN = 'pentestlabs.uk'
 HANDLER_DIR = os.path.join(BASE_DIR, 'catcher/handlers')
 HANDLER_CONTENT_DIR = os.path.join(BASE_DIR, 'content/')
 FINGERPRINT_DEFS = os.path.join(BASE_DIR, 'files/fingerprints.xml')
-DEFAULT_PORTS = (
-     {'port': 21, 'protocol': 'tcp', 'handler': 'ftp.py', 'ssl': 0},
-     {'port': 80, 'protocol': 'tcp', 'handler': 'http.py', 'ssl': 0},
-     {'port': 25, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
-     {'port': 53, 'protocol': 'udp', 'handler': 'dns.py', 'ssl': 0},
-     {'port': 443, 'protocol': 'tcp', 'handler': 'http.py', 'ssl': 1},
-     {'port': 587, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 0},
-     {'port': 465, 'protocol': 'tcp', 'handler': 'smtp.py', 'ssl': 1},
-)
 ADVANCED_TOKEN_DETECTION = True
 SSL_KEY = os.path.join(BASE_DIR, 'files/ssl/server.key')
 SSL_CERT = os.path.join(BASE_DIR, 'files/ssl/server.crt')
@@ -136,16 +127,18 @@ WSGI_APPLICATION = 'catcher.wsgi.application'
 DATABASES = {
     'default': {
       'ENGINE': 'django.db.backends.mysql',
-      'OPTIONS': {
-        'read_default_file': '/etc/mysql/conf.d/mysql.cnf',
-      },
+      'NAME': 'catcher',
+      'USER': 'root',
+      'PASSWORD': 'password',
+      'HOST': '127.0.0.1',   
+      'PORT': '3306',
     }
 }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-uk'
 
 TIME_ZONE = 'UTC'
 
@@ -211,4 +204,5 @@ SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
     "SHOW_REQUEST_HEADERS": True,
 }
+
 
