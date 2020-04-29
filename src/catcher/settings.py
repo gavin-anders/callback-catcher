@@ -118,22 +118,22 @@ WSGI_APPLICATION = 'catcher.wsgi.application'
 
 # Database
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 #DATABASES = {
 #    'default': {
-#      'ENGINE': 'django.db.backends.mysql',
-#      'NAME': 'catcher',
-#      'USER': 'root',
-#      'PASSWORD': 'password',
-#      'HOST': 'db',   
-#      'PORT': '3306',
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #    }
 #}
+DATABASES = {
+    'default': {
+      'ENGINE': 'django.db.backends.mysql',
+      'NAME': 'catcher',
+      'USER': 'root',
+      'PASSWORD': 'password',
+      'HOST': 'db',   
+      'PORT': '3306',
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
