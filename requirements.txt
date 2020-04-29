@@ -13,3 +13,4 @@ django-background-tasks
 pyOpenSSL
 free_tls_certificates
 mysqlclient
+drf_yasg
