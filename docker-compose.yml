@@ -1,16 +1,26 @@
 version: "3"
 
 services:
-  mysql:
+  db:
     container_name: db
     image: mariadb
     volumes:
         - ./mysql/data:/var/lib/mysql
-    ports:
-      - "3306:3306"
     environment:
         MYSQL_USER: "catcher"
         MYSQL_USER_PASSWORD: "password"
         MYSQL_ROOT_PASSWORD: "password"
         MYSQL_DATABASE: "catcher"
 
+  catcher:
+    container_name: catcher
+    image: catcher
+    build: ./
+    volumes:
+      - /var/log/catcher/:/catcher-app/logs/
+    ports:
+      - "12443:12443"
+    depends_on:
+      - db
+    links:
+      - db
