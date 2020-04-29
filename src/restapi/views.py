@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group, Permission
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django import forms
+from django.db import connections
 
 from rest_framework import status, generics, authentication, exceptions, permissions
 from rest_framework.response import Response
@@ -53,7 +54,10 @@ def start_port(number, protocol, ssl, handler, config_string):
         process.set_config(parser.get_config())
     if ssl is 1:
         process.set_ssl_context(SSL_CERT, SSL_KEY)
+    connections.close_all()
+    logger.debug("Killed DB connections")
     process.start()
+    time.sleep(1)   #hack to make sure parent process doesnt restart the connections
     return process.pid
 
 class CallbackList(generics.ListAPIView):

@@ -23,7 +23,6 @@ from .catcherexceptions import *
 import catcher.settings as settings
 
 logger = logging.getLogger(__name__)
-django.setup()
 
 def block_ip(ip):
     BLACKLIST = list(Blacklist.objects.values_list('ip', flat=True))
@@ -150,8 +149,6 @@ class Service(multiprocessing.Process):
         '''
         Starts the port as a service
         '''
-        #logger.debug("Terminating DB connection")
-        #connections.close_all()
         while not self.exit.is_set():
             #Do we need ipv6? - this is a bit shit as it will be either ipv4 or ipv6
             try:
