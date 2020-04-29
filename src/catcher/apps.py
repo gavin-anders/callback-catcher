@@ -16,7 +16,6 @@ class CatcherConfig(AppConfig):
             raise Exception("ERROR: Try using Python 3")
     
     def ready(self):
-        signal.signal(signal.SIGINT, keyboard_signal_handler)
         self.check_python_version()
         #check command arguments
         if "manage.py" in sys.argv and "runserver" in sys.argv:
@@ -50,7 +49,7 @@ class CatcherConfig(AppConfig):
         clientgroup, created = Group.objects.get_or_create(name='clients')
         Client.objects.filter(username=settings.USERNAME).delete() 
         user = Client.objects.create_superuser(username=settings.USERNAME, 
-                                               email=settings.EMAIL, 
+                                               email=settings.USERNAME + "@catcher.com", 
                                                password=settings.PASSWORD,
                                                is_staff=True,
                                                is_superuser=True)

@@ -2,6 +2,8 @@ FROM debian:latest
 MAINTAINER Gavin Anders
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV CATCHER_USERNAME admin
+ENV CATCHER_PASSWORD admin
 
 RUN apt-get update -y && apt-get dist-upgrade -y
 RUN apt-get install -y \
@@ -20,16 +22,11 @@ RUN a2enmod \
     ssl \
     wsgi 
 
-# Allow python to open ports
-RUN setcap 'cap_net_bind_service=+ep' $(readlink -f `which python3`)
-
-ARG 1
-
 # Setup pip
 COPY ./requirements.txt /
 RUN pip3 install -r /requirements.txt
 
-ARG 5
+ARG 11
 
 # Setup catcher
 COPY ./src/ /catcher-app/

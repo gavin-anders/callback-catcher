@@ -14,6 +14,12 @@ import os
 import logging
 import queue
 
+def get_env(name):
+    try:
+        return os.environ[name]
+    except:
+        return ""
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -29,9 +35,8 @@ BANNER = """
                                                                                                                                
 """
 DEBUG_LVL = 'DEBUG' #INFO for less noise
-USERNAME = 'admin'
-PASSWORD = 'Gubbins123'
-EMAIL = 'gavin.anders@googlemail.com'
+USERNAME = get_env('USERNAME')
+PASSWORD = get_env('PASSWORD')
 LISTEN_IP = '0.0.0.0'
 IPV6 = False
 EXTERNAL_IP = '85.187.140.59'
@@ -118,19 +123,19 @@ WSGI_APPLICATION = 'catcher.wsgi.application'
 
 # Database
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    }
-#}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 DATABASES = {
     'default': {
       'ENGINE': 'django.db.backends.mysql',
       'NAME': 'catcher',
       'USER': 'root',
       'PASSWORD': 'password',
-      'HOST': 'db',   
+      'HOST': '127.0.0.1',   
       'PORT': '3306',
     }
 }

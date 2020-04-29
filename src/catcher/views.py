@@ -14,6 +14,6 @@ def script(request):
     Script route
     """
     template = "script.js"
-    return render(request, template)
+    return render(request, template, content_type="application/javascript")
 
 

@@ -5,22 +5,29 @@ services:
     container_name: db
     image: mariadb
     volumes:
-        - ./mysql/data:/var/lib/mysql
+      - ./mysql/data:/var/lib/mysql
     environment:
-        MYSQL_USER: "catcher"
-        MYSQL_USER_PASSWORD: "password"
-        MYSQL_ROOT_PASSWORD: "password"
-        MYSQL_DATABASE: "catcher"
+      MYSQL_USER: "catcher"
+      MYSQL_USER_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: "catcher"
+    ports:
+      - "127.0.0.1:3306:3306"
 
   catcher:
     container_name: catcher
     image: catcher
-    build: ./
+    build: .
+    sysctls:
+      - net.ipv4.ip_unprivileged_port_start=1
     volumes:
-      - /var/log/catcher/:/catcher-app/logs/
+      - /opt/catcher/logs/:/catcher-app/logs/
+      - /opt/catcher/content/:/catcher-app/content/
+    environment:
+      CATCHER_USERNAME: "admin"
+      CATCHER_PASSWORD: "password"
     ports:
       - "12443:12443"
     depends_on:
       - db
-    links:
-      - db
+    network_mode: host
