@@ -16,22 +16,22 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.response import Response
 from rest_framework.schemas import SchemaGenerator
 from rest_framework.views import APIView
-from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
-from rest_framework_swagger.views import get_swagger_view
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
-class SwaggerSchemaView(APIView):
-    title='Callback Catcher API'
-    authentication_classes = [BasicAuthentication, ]
-    permission_classes = [IsAuthenticated, ]
-    renderer_classes = [SwaggerUIRenderer, OpenAPIRenderer]
-
-    def get(self, request):
-        generator = SchemaGenerator()
-        schema = generator.get_schema(request=request)
-        return Response(schema)
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Catcher API",
+      default_version='v1',
+      description="Callback catcher REST API",
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
 
 urlpatterns = [
-    url(r'^$', SwaggerSchemaView.as_view()),
+    url(r'^$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     url(r'^client/$', ClientList.as_view()),
     url(r'^client/(?P<pk>[0-9]+)/$', ClientDetail.as_view()),
     url(r'^client/(?P<pk>[0-9]+)/tokens$', TokenList.as_view()),
