@@ -4,6 +4,7 @@ MAINTAINER Gavin Anders
 ENV DEBIAN_FRONTEND noninteractive
 ENV CATCHER_USERNAME admin
 ENV CATCHER_PASSWORD admin
+ENV CATCHER_DOMAIN callbackcatcher.uk
 
 RUN apt-get update -y && apt-get dist-upgrade -y
 RUN apt-get install -y \
@@ -17,16 +18,14 @@ RUN apt-get install -y \
     libmariadbclient-dev \
     netcat \
     dnsutils \
-    libcap2-bin
+    default-mysql-client
 RUN a2enmod \
     ssl \
     wsgi 
 
 # Setup pip
-COPY ./requirements.txt /
-RUN pip3 install -r /requirements.txt
-
-ARG 11
+COPY ./requirements.txt /catcher-app/requirements.txt
+RUN pip3 install -r /catcher-app/requirements.txt
 
 # Setup catcher
 COPY ./src/ /catcher-app/
@@ -39,8 +38,8 @@ RUN python3 manage.py collectstatic
 # Enable site
 COPY ./catcher-site.conf /etc/apache2/sites-available/catcher-site.conf
 RUN sed -i "s/PY_VERSION/python$(python3 -V | grep -oP '(\d.\d)')/" /etc/apache2/sites-available/catcher-site.conf
-RUN sed -i "s/Listen 80/Listen 12443/" /etc/apache2/ports.conf
-#RUN sed -i "s/Listen 443/Listen 12443/" /etc/apache2/ports.conf
+RUN sed -i '/Listen 80/d' /etc/apache2/ports.conf
+RUN sed -i "s/Listen 443/Listen 12443/" /etc/apache2/ports.conf
 RUN a2dissite 000-default && a2ensite catcher-site
 
 EXPOSE 12443 12443

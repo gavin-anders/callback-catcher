@@ -21,11 +21,13 @@ services:
     sysctls:
       - net.ipv4.ip_unprivileged_port_start=1
     volumes:
-      - /opt/catcher/logs/:/catcher-app/logs/
-      - /opt/catcher/content/:/catcher-app/content/
+      - ./logs:/catcher-app/logs
+      - ./src/content:/catcher-app/content
+      - ./src/files/ssl:/catcher-app/files/ssl
     environment:
       CATCHER_USERNAME: "admin"
       CATCHER_PASSWORD: "password"
+      CATCHER_DOMAIN: "callbackcatcher.uk"
     ports:
       - "12443:12443"
     depends_on:
